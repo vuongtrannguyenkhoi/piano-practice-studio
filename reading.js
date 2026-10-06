@@ -11,12 +11,12 @@
       $('reading-start').disabled=true;$('reading-status').textContent='Đang mở ngân hàng bài…';
       loading=(async()=>{
         try{
-          const response=await fetch('assets/books/reading-bank.json?v=0a7152c-703037b64d94');if(!response.ok)throw Error('Không tải được ngân hàng bài');
+          const response=await fetch('assets/books/reading-bank.json?v=0a7152c-eae104bfb684');if(!response.ok)throw Error('Không tải được ngân hàng bài');
           bank=await response.json();if(bank.version!=='reading-bank-v1'||bank.families.length!==252)throw Error('Ngân hàng bài không đúng phiên bản');
           for(const family of bank.families){families.set(family.code,family);for(const variant of family.variants)variants.set(variant.id,{family,variant});}
           let raw=null;try{raw=JSON.parse(localStorage.getItem(KEY)||'null');}catch(_){}
           saved=C.sanitize(raw,bank);render();return true;
-        }catch(error){bank=null;$('reading-status').textContent=`${error.message}. Bấm thử lại; cần mở app qua server local.`;$('reading-start').textContent='Thử lại';return false;}
+        }catch(error){bank=null;$('reading-status').textContent=`${error.message}. Kiểm tra kết nối rồi bấm Thử lại. Nếu dùng offline, hãy mở ngân hàng bài một lần khi có mạng.`;$('reading-start').textContent='Thử lại';return false;}
         finally{$('reading-start').disabled=false;loading=null;}
       })();return loading;
     }

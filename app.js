@@ -60,7 +60,7 @@
     document.querySelectorAll('.primary-nav [data-view],.mobile-nav [data-view]').forEach(button=>{
       if(button.dataset.view===view)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
     });
-    $('practice-exit').hidden=view!=='practice';$('topbar-count').hidden=view!=='practice';
+    $('practice-exit').hidden=view!=='practice';$('practice-exit').textContent=state.reading?'← Đọc nhạc':'← Luyện tập';$('topbar-count').hidden=view!=='practice';
     $('view-label').textContent=({today:'LUYỆN TẬP HÔM NAY',journey:'KHÓA HỌC',songs:'BÀI HÁT',practice:'LUYỆN ĐÀN',skills:'BẢN ĐỒ KỸ NĂNG',reading:'ĐỌC NHẠC MỖI NGÀY'})[view];
     closeMenu();
     if(route)try{history.replaceState(null,'',view==='practice'?(state.reading?'#doc-nhac/tap':state.song?`#nhac-${state.song.id}`:`#bai-${ex().id}`):({today:'#hom-nay',journey:'#hanh-trinh',songs:'#bai-nhac',skills:'#ky-nang',reading:'#doc-nhac'})[view]);}catch(_){}
@@ -1043,7 +1043,7 @@
       propertyIfChanged(button,'disabled',!!micTempoSession?.running||busy);
       propertyIfChanged(button,'title','');
     });
-    let guidance=scored&&practiceSupported()?'Sheet chạy theo tempo sau một ô đếm vào; micro chấm cao độ (70%) và nhịp (30%) từng nốt và hợp âm, tổng kết cuối lượt.':timeline&&!scored?'Sheet chạy theo tempo để bạn tự chơi trên đàn. Không cần micro, không chấm điểm.':observing?'Bấm bắt đầu, rồi đánh đủ hợp âm trên đàn. Ưu tiên C3–C6; nhả pedal để các nốt rõ hơn. Chưa chấm hoặc chạy sheet.':listening?'Chọn tay và tempo rồi nghe câu mẫu.':!practiceSupported()?practiceUnavailableReason():`Chọn tay, bấm Bắt đầu tập rồi đánh nốt trên đàn. Micro nghe ${state.hand==='rh'?'tay phải':state.hand==='lh'?'tay trái':'hai tay'}; đúng nốt thì sheet đi tiếp.`;
+    let guidance=scored&&practiceSupported()?'Sheet chạy theo tempo sau một ô đếm vào; micro chấm cao độ (70%) và nhịp (30%) từng nốt và hợp âm, tổng kết cuối lượt.':timeline&&!scored?'Sheet chạy theo tốc độ đã chọn để bạn tự chơi trên đàn. Không cần micro, không chấm điểm.':observing?'Bấm bắt đầu, rồi đánh đủ hợp âm trên đàn. Ưu tiên C3–C6; nhả pedal để các nốt rõ hơn. Chưa chấm hoặc chạy sheet.':listening?'Chọn tay và tempo rồi nghe câu mẫu.':!practiceSupported()?practiceUnavailableReason():`Chọn tay, bấm Bắt đầu tập rồi đánh nốt trên đàn. Micro nghe ${state.hand==='rh'?'tay phải':state.hand==='lh'?'tay trái':'hai tay'}; đúng nốt thì sheet đi tiếp.`;
     if(!listening&&!(timeline&&!scored)&&microphone?.lastError&&!microphone.active&&!busy)guidance=microphone.lastError;
     if(busy)guidance=microphone?.pending?'Cho phép micro trong trình duyệt để bắt đầu.':'Nhả phím và chờ tiếng mẫu tắt…';
     if(evalRun?.round===2)guidance=`Lượt 2 · đánh giá: ở ${evalRun.slips.length} nốt viền cam, đánh phím ngay bên phải (cao hơn nửa cung); các nốt khác chơi đúng.`;
@@ -1191,7 +1191,7 @@
     const missing=inputs.keys.filter(midi=>!takes[midi]);
     if(missing.length){scoreModel={key,status:'missing',missing,have:inputs.keys.length-missing.length,model:null,background:[]};renderScoreModel();return;}
     scoreModel={key,status:'building',missing:[],model:null,background:[]};renderScoreModel();
-    modelWorker??=new Worker('audio/model-worker.js?v=0a7152c-703037b64d94');
+    modelWorker??=new Worker('audio/model-worker.js?v=0a7152c-eae104bfb684');
     const result=await new Promise(resolve=>{
       modelWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};modelWorker.onerror=event=>resolve({request,error:event.message||'lỗi Worker'});
       modelWorker.postMessage({type:'build',request,id:key,notes:inputs.notes,targets:inputs.targets,takes:Object.fromEntries(Object.entries(takes).map(([midi,take])=>[midi,{pcm:take.pcm,rate:take.rate}]))});
@@ -1292,7 +1292,7 @@
     if(!run.params||!run.samples){textIfChanged(status,'Không thu được âm thanh · thử lại.');renderEval();return;}
     const pcm=new Float32Array(run.samples);let at=0;for(const block of run.blocks){pcm.set(block,at);at+=block.length;}
     textIfChanged(status,'Đang phân tích bằng cả hai cách chấm…');renderEval();
-    evalWorker??=new Worker('audio/eval-worker.js?v=0a7152c-703037b64d94');const request=++evalRequest;
+    evalWorker??=new Worker('audio/eval-worker.js?v=0a7152c-eae104bfb684');const request=++evalRequest;
     const result=await new Promise(resolve=>{
       evalWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};evalWorker.onerror=event=>resolve({error:event.message||'lỗi Worker'});
       evalWorker.postMessage({type:'evaluate',request,pcm,rate:run.rate,...run.params,startTime:run.params.startTime-run.firstTime});

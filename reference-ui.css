@@ -307,3 +307,13 @@ body.practice-focus[data-practicing=true][data-input-mode=step] #mic-settings,bo
   body.practice-focus.focus-controls-hidden[data-view=practice]:not(.reading-active) .score-panel{padding-top:54px}
   body.practice-focus.focus-controls-hidden[data-view=practice]:not(.reading-active) .focus-controls-toggle{inset:calc(12px + env(safe-area-inset-top)) auto auto 18px;width:auto;background:#402464}
 }
+
+/* Shared interaction styles across course, reading, practice and offline tools. */
+:root{--ui-focus:#ffe49e;--ui-secondary-bg:#ffffff14;--ui-secondary-border:#ffffff30;--ui-secondary-text:#f4e6ff}
+:where(button,a,summary,input,select):focus-visible{outline:3px solid var(--ui-focus);outline-offset:3px}
+.practice-mode-switch button:focus-visible,.practice-setup button:focus-visible,#mic-settings summary:focus-visible,.mobile-nav button:focus-visible{outline-color:var(--ui-focus)}
+.reading-practice .eyebrow,.reading-hero .eyebrow{color:#dbc0ff}
+#take-dialog{max-height:86dvh;overflow:auto}
+:where(#eval-dialog,#take-dialog,#mic-timed-result) button{min-height:44px}
+:where(#eval-close,#take-close,#mic-timed-close){background:var(--ui-secondary-bg);color:var(--ui-secondary-text);border-color:var(--ui-secondary-border)}
+#eval-dialog #eval-close{background:var(--ui-secondary-bg)}
