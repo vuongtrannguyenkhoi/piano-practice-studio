@@ -49,6 +49,17 @@ Khi dùng micro, nên tập ở phòng yên tĩnh và đeo tai nghe khi nghe m�
 
 Chú thích màu hiện ngay dưới sheet khi đang chấm điểm. Tên đoạn và hợp âm nằm phía trên khuông; sắc thái (*p*, *mf*…) và chữ diễn cảm nằm dưới khuông của tay tương ứng.
 
+### Điểm và combo
+
+Khi luyện có micro chấm (**Tập từng nốt**, hoặc **Chơi theo nhịp** có bật chấm bằng micro), mỗi lượt có điểm như game âm nhạc:
+
+- **Điểm mỗi nốt:** đúng nốt 100 điểm (chơi theo nhịp mà hơi sớm hoặc muộn: 70); đúng tên nhưng lệch quãng tám 50; sai hoặc bỏ sót 0.
+- **Combo:** đúng liên tiếp 8 nốt thì điểm ×2, 16 nốt ×3, 32 nốt ×4. Sai hoặc bỏ sót thì combo về 0. Micro nghe không rõ thì không tính sai và không làm mất combo.
+- **Thưởng cuối lượt:** không lỗi +20%, đạt tempo của bài +10%, lượt đầu tiên trong ngày ×1,5.
+- **Hạng theo độ chính xác:** S (≥ 98% và đạt tempo), A (≥ 90%), B (≥ 75%), C.
+- **Kỷ lục:** mỗi bài lưu điểm cao nhất của bạn.
+- **Màn hình:** góc trên sheet hiện tổng điểm, hệ số và combo; cuối lượt có bảng tổng kết. Không có âm thanh; nếu máy bật giảm chuyển động thì chỉ đổi màu.
+
 ## Hiệu chỉnh theo đàn của bạn
 
 Trong phần micro, mở **Hiệu chỉnh với đàn thật** để đo tiếng ồn phòng, độ lên dây (A4) và thử vài nốt, hợp âm. Kết quả được lưu và dùng cho mọi bài. Với từng bài, bạn có thể chọn **Thu phím cho bài này** để thu các phím của bài trên đàn của mình để app nhận diện chính xác hơn.
@@ -155,6 +166,17 @@ For microphone practice, use a quiet room and headphones when listening to examp
 | Faded dark red, dashed outline | Missed |
 
 A colour legend appears under the sheet while grading is on. Section names and chords sit above the staff; dynamics (*p*, *mf*…) and expression words sit under the staff of their hand.
+
+### Score and combo
+
+When the microphone grades a round (**Tập từng nốt** / Note by note, or **Chơi theo nhịp** / Play in time with microphone scoring), it scores like a rhythm game:
+
+- **Points per note:** right note 100 (in play-in-time, slightly early or late: 70); right name in another octave 50; wrong or missed 0.
+- **Combo:** 8 right notes in a row double the points, 16 triple them, 32 quadruple them. A wrong or missed note resets the combo; sounds the microphone can't make out never count as wrong and never break it.
+- **Round bonuses:** no mistakes +20%, at the lesson's tempo +10%, first round of the day ×1.5.
+- **Grade by accuracy:** S (≥ 98% and at tempo), A (≥ 90%), B (≥ 75%), C.
+- **Personal best:** each lesson keeps your best score.
+- **On screen:** the total, multiplier and combo sit in the corner of the sheet, with a summary at the end of the round. No sound; with reduced motion, only colours change.
 
 ## Calibrate for your piano
 
