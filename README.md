@@ -1,47 +1,49 @@
 # Piano Practice Studio
 
-A browser-based piano learning app with interactive sheet music, independent-hand exercises, daily sight-reading rotation, a skill graph, microphone-assisted note practice, and sampled piano playback.
+Practice piano with interactive sheet music, guided exercises, daily reading sessions, and microphone-assisted feedback.
 
-## Features
+## Get started
 
-- Separate right-hand, left-hand, and two-hand practice.
-- Sheet music with a smooth timeline, adjustable tempo, passage loops, and a focused view.
-- Daily reading rotation: 252 exercise families and 1,008 variations.
-- A skill graph connecting lessons and learning goals.
-- Local microphone analysis for supported note practice, with experimental chord features.
-- Salamander piano samples; audio processing and practice progress stay on the device.
+1. Open **Khóa học** (Courses) and choose a lesson, or return to your current exercise from **Luyện tập** (Practice).
+2. Select **Tay phải** (Right hand), **Tay trái** (Left hand), or **Hai tay** (Both hands).
+3. Listen to the example, then choose a practice mode and start playing.
+4. Adjust the tempo and practice range to a comfortable level.
 
-## Run locally
+## Practice modes
 
-Requires Python 3. From this directory:
+- **Nghe mẫu — Listen:** hear the piano example while following the highlighted sheet music.
+- **Tập từng nốt — Note-by-note:** enable the microphone and allow access. For supported exercises, the sheet waits for you to play the required notes.
+- **Chơi theo nhịp — Play in time:** follow the sheet as it moves at your selected tempo. Practice without a microphone, or enable microphone scoring when available.
+- **Nghe hợp âm — Chord listening:** try the experimental chord display to see what the microphone hears.
 
-```sh
-python3 -m http.server 8080
-```
+For microphone practice, use a quiet room and headphones when listening to examples. Low-confidence input may remain ungraded. Some chords, ranges, and playing techniques require self-assessment.
 
-Open http://localhost:8080/. Serve the files over HTTP instead of opening index.html directly. Microphone access requires HTTPS or localhost. Native SFZ engines require the development project's local server and are unavailable in this static distribution.
+## Sheet music and playback
 
-## Publish on GitHub Pages
+- Change **Tempo** to slow down or speed up practice.
+- Select a starting and ending measure to work on a short passage.
+- Enable **Lặp đoạn** (Loop) to repeat that passage.
+- Use **Replay** to return to the beginning of the selected passage.
+- Toggle the metronome for a steady beat.
+- Show or hide the on-screen keyboard.
+- Enter **Tập trung** (Focus) for a larger practice view, and use the previous/next controls to move between exercises.
 
-Create an empty repository named `piano-practice-studio` (or your preferred name), then upload the CONTENTS of this directory to its root, including `.nojekyll`.
+## Daily reading practice
 
-For a fresh public repository, extract `piano-practice-studio-public.zip` into a NEW empty directory. The ZIP excludes existing Git history. Run the following there, replacing YOUR_USERNAME:
+Open **Đọc nhạc mỗi ngày** (Daily Reading) for a rotating session across 10 skill areas, with 252 exercise families and 1,008 variations.
 
-```sh
-git init -b main
-git add .
-git commit -m "Publish Piano Practice Studio"
-git remote add origin https://github.com/YOUR_USERNAME/piano-practice-studio.git
-git push -u origin main
-```
+Follow each exercise's goal, play it on your piano, and select **Ổn** (Done) or **Cần luyện lại** (Needs review). You can skip an exercise or save and resume the session later. Sight-reading exercises limit repeat readings to encourage moving on to fresh music.
 
-In GitHub: Settings → Pages → Deploy from a branch → main → /(root).
-The site URL will be https://YOUR_USERNAME.github.io/piano-practice-studio/.
+## Explore your skills
 
-This is a static distribution, not the development repository. No npm install or build step is required. Rebuild it from the original project with `npm run build:static`, then commit and push the updated files here. The builder preserves this directory's `.git` folder.
+Open **Kỹ năng** (Skills) to explore learning goals, prerequisites, and related lessons. Use the graph to find skills you have practiced and choose what to work on next.
 
-## Assets and attribution
+## Piano sound
 
-See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for third-party credits and terms. VexFlow is MIT-licensed; Salamander recordings and their adaptations use CC BY 3.0. Those licenses do not automatically cover the application or book-derived lesson content. This distribution does not grant a new open-source license.
+Open the sound settings to choose an available piano sound. The web version uses Salamander samples and loads the notes needed for each exercise.
 
-Original book PDFs, imported XML/MIDI sources, the hidden song, native engines, development tools, and local user recordings are excluded. Lesson data remains included. Microphone recognition is experimental; self-assessment is used where reliable automatic evaluation is unavailable.
+## Progress and personal settings
+
+Practice progress and microphone settings are saved in your current browser. Return to **Luyện tập** (Practice) to continue. Progress is separate across browsers and devices; clearing browser data may remove it.
+
+Microphone audio is processed on your device. Use your own judgment to evaluate fingering, posture, articulation, and other techniques that audio recognition cannot assess reliably.
