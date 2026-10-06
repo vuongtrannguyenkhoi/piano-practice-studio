@@ -21,6 +21,7 @@ Trang **Hôm nay** có thẻ **Mục tiêu tuần**:
 - **Theo dõi tiến độ:** bảy ô ngày trong tuần đổi màu khi ngày đó đủ số phút; thanh "Hôm nay" cho biết bạn đã tập bao lâu. App chỉ tính thời gian khi bạn ở màn luyện tập và đang chơi, nghe mẫu hoặc vừa thao tác.
 - **Tập nhanh:** **▶ Tập 10 phút ngay** xếp sẵn một buổi ngắn: ôn một bài đến hạn, tập bài đang dở, rồi một bài Đọc nhạc. Thanh màu vàng ở đầu màn luyện tập cho biết bước hiện tại, thời gian, và nút **Bước tiếp**.
 - **Ôn bài:** mỗi bài hoàn thành được nhắc ôn sau 1, 3, 7, 21 và 60 ngày, trong mục **Cần ôn hôm nay**.
+- **Tiến độ:** mục **Tiến độ** trên thanh điều hướng cho thấy tổng thời gian luyện, số ngày đã tập, số tuần liền đạt mục tiêu, lịch luyện tập 12 tuần, số phút mỗi tuần, tốc độ đã tăng ở từng bài và các cột mốc.
 
 ## Chế độ luyện
 
@@ -124,6 +125,7 @@ The **Hôm nay** (Today) screen has a **Mục tiêu tuần** (Weekly goal) card:
 - **Track progress:** the seven day circles change colour when a day reaches its minutes, and the "Today" bar shows how long you've practised. Time counts only on the practice screen while you play, listen or have just used the page.
 - **Quick session:** **▶ Tập 10 phút ngay** (Practise 10 minutes now) lines up a short session: one review that is due, your current lesson, then one Daily Reading exercise. A yellow bar at the top of the practice screen shows the step, the time and a **Bước tiếp** (Next step) button.
 - **Reviews:** each completed lesson comes back for review after 1, 3, 7, 21 and 60 days, under **Cần ôn hôm nay** (Due for review today).
+- **Progress:** **Tiến độ** (Progress) in the navigation shows total practice time, days practised, weeks in a row on goal, a 12-week practice calendar, minutes per week, tempo gains per lesson and milestones.
 
 ## Practice modes
 
