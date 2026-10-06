@@ -42,7 +42,7 @@ Trong phần micro, mở **Hiệu chỉnh với đàn thật** để đo tiếng
 
 ## Cài ứng dụng và luyện offline
 
-Mở **Hôm nay** và tìm **Cài app & luyện offline**. Chọn **Cài ứng dụng**, hoặc dùng mục Thêm vào Màn hình chính trong menu trình duyệt. Ứng dụng đã cài mở trong cửa sổ riêng.
+Bấm nút **⬇ Cài app** ở góc trên bên phải, có ở mọi màn hình. Trên Chrome, Edge và Android, hộp cài đặt của trình duyệt hiện ngay. Trên iPhone/iPad, bảng hướng dẫn hiện ra: bấm Chia sẻ rồi chọn “Thêm vào Màn hình chính”. Ứng dụng đã cài mở trong cửa sổ riêng; lần mở đầu từ màn hình chính, app đề nghị tải bộ đàn để luyện offline. Sau khi cài, nút đổi thành **☁ Offline** (tải âm, cập nhật) và thành **↻ Cập nhật** khi có bản mới.
 
 Đợi thông báo sẵn sàng offline rồi mới ngắt mạng. Bài tập và bộ đàn gọn được lưu tự động. Âm đàn web được lưu dần khi bạn dùng; chọn **Tải âm để luyện offline** để tải trọn bộ. Giữ app mở trong lúc tải; có thể hủy và tải tiếp sau. Thiết bị có thể tự xóa bộ nhớ trình duyệt, nên hãy kiểm tra lại trước khi luyện không có mạng.
 
@@ -136,7 +136,7 @@ In the microphone settings, open **Hiệu chỉnh với đàn thật** (Calibrat
 
 ## Install and practise offline
 
-Open **Hôm nay** (Today) and find **Cài app & luyện offline** (Install & practise offline). Use **Cài ứng dụng** (Install app), or choose Add to Home Screen in your browser menu. The installed app opens in its own window.
+Press **⬇ Cài app** (Install app) at the top right, on every screen. In Chrome, Edge and Android the browser's install prompt opens straight away. On iPhone/iPad a short guide appears: tap Share, then “Add to Home Screen”. The installed app opens in its own window; the first time you open it from the home screen, it offers to download the piano for offline practice. Once installed, the button becomes **☁ Offline** (sounds, updates) and **↻ Cập nhật** (Update) when a new version is available.
 
 Wait for the offline-ready message before disconnecting. Lessons and the compact piano bank are saved automatically. Web piano samples are saved as you use them; choose **Tải âm để luyện offline** (Download sounds for offline) to download the complete web bank. Keep the app open while downloading; you can cancel and resume later. The device may clear browser storage, so check availability before practising without a connection.
 

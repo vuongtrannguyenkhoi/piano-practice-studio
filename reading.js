@@ -12,7 +12,7 @@
       $('reading-start').disabled=true;$('reading-status').textContent=_t('Đang mở ngân hàng bài…');
       loading=(async()=>{
         try{
-          const response=await fetch('assets/books/reading-bank.json?v=9be74ce-1627866aaad1');if(!response.ok)throw Error(_t('Không tải được ngân hàng bài'));
+          const response=await fetch('assets/books/reading-bank.json?v=f7c5e8e-d256c112f5fe');if(!response.ok)throw Error(_t('Không tải được ngân hàng bài'));
           bank=await response.json();if(bank.version!=='reading-bank-v1'||bank.families.length!==252)throw Error(_t('Ngân hàng bài không đúng phiên bản'));globalThis.I18N?.translateData(bank);
           for(const family of bank.families){families.set(family.code,family);for(const variant of family.variants)variants.set(variant.id,{family,variant});}
           let raw=null;try{raw=JSON.parse(localStorage.getItem(KEY)||'null');}catch(_){}

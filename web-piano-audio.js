@@ -9,7 +9,7 @@
       this.info={instrument:'Salamander web',velocityLayers:8};
     }
     async loadManifest(){
-      this.manifest??=await fetch(this.base+'manifest.json?v=9be74ce-1627866aaad1').then(response=>{if(!response.ok)throw new Error(_t('Không tải được bộ mẫu Salamander web'));return response.json();});
+      this.manifest??=await fetch(this.base+'manifest.json?v=f7c5e8e-d256c112f5fe').then(response=>{if(!response.ok)throw new Error(_t('Không tải được bộ mẫu Salamander web'));return response.json();});
       return this.manifest;
     }
     region(midi){
