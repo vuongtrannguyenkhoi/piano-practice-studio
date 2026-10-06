@@ -8,25 +8,26 @@
  const $=id=>document.getElementById(id);let registration,prompt,abort,reloadRequested=false,hadController=!!navigator.serviceWorker?.controller;
  const busy=()=>document.body.dataset.practicing==='true';
  const status=text=>{$('pwa-status').textContent=text;};
+ const track=(name,params)=>window.pianoAnalytics?.track(name,params);
  const installed=()=>window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
  function installState(){if(installed()){$('pwa-install').hidden=true;}else $('pwa-install').hidden=false;}
- window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();prompt=event;installState();});window.addEventListener('appinstalled',()=>{prompt=null;installState();status('Đã cài ứng dụng. Mở Piano Practice Studio từ màn hình chính.');});
- $('pwa-install').onclick=async()=>{if(prompt){const current=prompt;prompt=null;await current.prompt();await current.userChoice;installState();}else status('Mở menu trình duyệt và chọn “Cài ứng dụng” hoặc “Thêm vào màn hình chính”.');};
+ window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();prompt=event;installState();});window.addEventListener('appinstalled',()=>{track('pwa_install',{stage:'installed'});prompt=null;installState();status('Đã cài ứng dụng. Mở Piano Practice Studio từ màn hình chính.');});
+ $('pwa-install').onclick=async()=>{if(prompt){const current=prompt;prompt=null;track('pwa_install',{stage:'prompt'});await current.prompt();const choice=await current.userChoice;track('pwa_install',{stage:choice?.outcome==='accepted'?'accepted':'dismissed'});installState();}else{track('pwa_install',{stage:'manual'});status('Mở menu trình duyệt và chọn “Cài ứng dụng” hoặc “Thêm vào màn hình chính”.');}};
  const waiting=()=>{if(registration?.waiting){$('pwa-update').hidden=false;$('pwa-update').disabled=busy();$('pwa-update').textContent=busy()?'Có bản mới · kết thúc lượt tập để cập nhật':'Cập nhật ứng dụng';}};
  new MutationObserver(waiting).observe(document.body,{attributes:true,attributeFilter:['data-practicing']});
- $('pwa-update').onclick=()=>{if(busy()){status('Kết thúc lượt tập rồi cập nhật để giữ buổi luyện liên tục.');return;}if(registration?.waiting){reloadRequested=true;registration.waiting.postMessage({type:'ACTIVATE_UPDATE'});}else location.reload();};
+ $('pwa-update').onclick=()=>{if(busy()){status('Kết thúc lượt tập rồi cập nhật để giữ buổi luyện liên tục.');return;}if(registration?.waiting){track('app_update',{stage:'applied'});reloadRequested=true;registration.waiting.postMessage({type:'ACTIVATE_UPDATE'});}else location.reload();};
  navigator.serviceWorker?.addEventListener('message',event=>{if(event.data?.type==='CHECK_PRACTICE')event.ports[0]?.postMessage({busy:busy()});if(event.data?.type==='UPDATE_DEFERRED'){reloadRequested=false;status('Có lượt tập đang chạy trong một tab khác. Kết thúc lượt đó rồi cập nhật.');waiting();}});
  navigator.serviceWorker?.addEventListener('controllerchange',()=>{if(reloadRequested){reloadRequested=false;location.reload();}else if(hadController&&registration){$('pwa-update').hidden=false;$('pwa-update').disabled=busy();$('pwa-update').textContent='Áp dụng bản cập nhật';}hadController=true;});
  window.addEventListener('offline',()=>status('Đang offline. Dùng bộ đàn gọn hoặc các mẫu âm đã tải; tiến độ vẫn lưu trên thiết bị.'));
  window.addEventListener('online',()=>{status('Đã kết nối lại. Bạn có thể tải thêm âm hoặc kiểm tra cập nhật.');registration?.update().catch(()=>{});});
  async function download(){
-  abort=new AbortController();const signal=abort.signal;$('pwa-download').disabled=true;$('pwa-cancel').hidden=false;$('pwa-progress').hidden=false;
+  abort=new AbortController();const signal=abort.signal;track('offline_download',{stage:'start'});$('pwa-download').disabled=true;$('pwa-cancel').hidden=false;$('pwa-progress').hidden=false;
   try{
-   const response=await fetch(new URL('offline-audio.json?v=f9e32bb-7661dc6904bf',base),{signal});if(!response.ok)throw Error('Không tải được danh sách âm');const bank=await response.json(),cache=await caches.open(audioCache);let done=0,next=0;
+   const response=await fetch(new URL('offline-audio.json?v=c6e43d0-cd65f9a2f2cd',base),{signal});if(!response.ok)throw Error('Không tải được danh sách âm');const bank=await response.json(),cache=await caches.open(audioCache);let done=0,next=0;
    $('pwa-progress').max=bank.files.length;
    const worker=async()=>{while(next<bank.files.length){if(signal.aborted)throw new DOMException('Canceled','AbortError');const file=bank.files[next++],url=new URL(file,base).href;if(!await cache.match(url)){const sound=await fetch(url,{signal});if(!sound.ok||sound.status===206)throw Error('Thiếu mẫu âm');await cache.put(url,sound);}done++;$('pwa-progress').value=done;status(`Đang lưu bộ đàn offline · ${done}/${bank.files.length} mẫu`);}};
-   await Promise.all(Array.from({length:4},worker));status(`Đã lưu đủ ${done} mẫu. Bộ đàn web sẵn sàng luyện offline trên thiết bị này.`);$('pwa-download').textContent='Kiểm tra / bổ sung âm offline';
-  }catch(error){abort.abort();status(error.name==='AbortError'?'Đã hủy tải. Các mẫu đã lưu vẫn dùng được; bấm tải để tiếp tục.':'Chưa tải đủ bộ đàn. Kiểm tra mạng hoặc dung lượng và bấm tải lại. Các mẫu đã lưu vẫn được giữ.');}
+   await Promise.all(Array.from({length:4},worker));track('offline_download',{stage:'complete',files:done});status(`Đã lưu đủ ${done} mẫu. Bộ đàn web sẵn sàng luyện offline trên thiết bị này.`);$('pwa-download').textContent='Kiểm tra / bổ sung âm offline';
+  }catch(error){abort.abort();track('offline_download',{stage:error.name==='AbortError'?'cancel':'fail'});status(error.name==='AbortError'?'Đã hủy tải. Các mẫu đã lưu vẫn dùng được; bấm tải để tiếp tục.':'Chưa tải đủ bộ đàn. Kiểm tra mạng hoặc dung lượng và bấm tải lại. Các mẫu đã lưu vẫn được giữ.');}
   finally{abort=null;$('pwa-download').disabled=false;$('pwa-cancel').hidden=true;}
  }
  $('pwa-download').onclick=download;$('pwa-cancel').onclick=()=>abort?.abort();installState();

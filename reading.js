@@ -11,7 +11,7 @@
       $('reading-start').disabled=true;$('reading-status').textContent='Đang mở ngân hàng bài…';
       loading=(async()=>{
         try{
-          const response=await fetch('assets/books/reading-bank.json?v=f9e32bb-7661dc6904bf');if(!response.ok)throw Error('Không tải được ngân hàng bài');
+          const response=await fetch('assets/books/reading-bank.json?v=c6e43d0-cd65f9a2f2cd');if(!response.ok)throw Error('Không tải được ngân hàng bài');
           bank=await response.json();if(bank.version!=='reading-bank-v1'||bank.families.length!==252)throw Error('Ngân hàng bài không đúng phiên bản');
           for(const family of bank.families){families.set(family.code,family);for(const variant of family.variants)variants.set(variant.id,{family,variant});}
           let raw=null;try{raw=JSON.parse(localStorage.getItem(KEY)||'null');}catch(_){}
@@ -48,7 +48,7 @@
       if(!saved.session||saved.session.finished){
         const next=C.plan(bank,saved,Date.now(),only);
         if(!next.items.length){$('reading-status').textContent='Chưa có bài đủ điều kiện: đổi mức hoặc chờ thời gian giãn cách 7 ngày. Nếu đã dùng hết lượt thị tấu, cần sheet mới. Tiến độ được giữ nguyên.';return;}
-        saved.session=next;persist();
+        saved.session=next;persist();window.pianoAnalytics?.track('reading_session_start',{items:next.items.length,module:only||'all'});
       }
       open();
     }
@@ -96,7 +96,7 @@
     function finishItem(needsReview){
       if(!$('reading-confirm').checked||!current)return;
       snapshot();const session=saved.session,item=session.items[session.cursor];
-      if(item.status!=='done'){const r=record(item.id);r.completed++;r.needsReview=needsReview;item.status='done';item.needsReview=needsReview;}
+      if(item.status!=='done'){const r=record(item.id);r.completed++;r.needsReview=needsReview;item.status='done';item.needsReview=needsReview;window.pianoAnalytics?.track('reading_item',{module:item.module,result:needsReview?'review':'ok',fresh:!!item.fresh});}
       advance();
     }
     function advance(){
@@ -106,6 +106,7 @@
       if(next>=0){session.cursor=next;persist();open();}
       else if(previousPending>=0){session.cursor=previousPending;persist();open();}
       else{
+        window.pianoAnalytics?.track('reading_session_complete',{done:session.items.filter(i=>i.status==='done').length,review:session.items.filter(i=>i.needsReview).length,skipped:session.items.filter(i=>i.status==='skipped').length});
         session.finished=true;saved.sessions++;saved.previousFamilies=session.items.map(i=>i.family);persist();current=null;api.stop();api.dashboard();render();
       }
     }
@@ -124,7 +125,7 @@
     $('reading-level').addEventListener('change',()=>{saved.level=Number($('reading-level').value)===1?1:2;persist();render();});
     $('reading-confirm').addEventListener('change',()=>{$('reading-good').disabled=!$('reading-confirm').checked;$('reading-review').disabled=!$('reading-confirm').checked;});
     $('reading-good').addEventListener('click',()=>finishItem(false));$('reading-review').addEventListener('click',()=>finishItem(true));
-    $('reading-skip').addEventListener('click',()=>{if(!current)return;snapshot();const item=saved.session.items[saved.session.cursor];if(item.status==='pending')item.status='skipped';advance();});
+    $('reading-skip').addEventListener('click',()=>{if(!current)return;snapshot();const item=saved.session.items[saved.session.cursor];if(item.status==='pending'){item.status='skipped';window.pianoAnalytics?.track('reading_item',{module:item.module,result:'skip',fresh:!!item.fresh});}advance();});
     $('reading-pause').addEventListener('click',()=>{snapshot();api.stop();current=null;api.dashboard();render();});
     $('reading-reveal').addEventListener('click',()=>{api.stop();api.conceal(null);$('reading-reveal').hidden=true;});
     $('reading-preview-hide').addEventListener('click',()=>{api.conceal('all');$('reading-preview-hide').hidden=true;$('reading-reveal').hidden=false;$('reading-reveal').textContent='Hiện sheet để kiểm tra';});

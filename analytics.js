@@ -21,7 +21,15 @@
     star_earned:['lesson_id','collection','stars','tempo_bpm'],
     offline_usage:['practice_starts'],
     app_error:['where','message'],
-    analytics_consent:['choice']
+    analytics_consent:['choice'],
+    mic_permission:['result'],
+    calibration_save:['a4_offset_band','threshold_db','noise_db','tests'],
+    pwa_install:['stage'],
+    offline_download:['stage','files'],
+    app_update:['stage'],
+    reading_session_start:['items','module'],
+    reading_item:['module','result','fresh'],
+    reading_session_complete:['done','review','skipped']
   };
   let consent=store.get(CONSENT),loaded=false,lastPath=null,lastScreen='direct',settle=0,errors=0;
 
@@ -38,7 +46,8 @@
     window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments);};
     gtag('consent','default',{analytics_storage:'granted',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
     gtag('js',new Date());
-    gtag('config',id,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,app_version:version});
+    // ?ga_debug=1 shows this browser's events live in GA4 DebugView.
+    gtag('config',id,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,app_version:version,...(/[?&]ga_debug=1\b/.test(location.search)?{debug_mode:true}:{})});
     gtag('set','user_properties',{display_mode:matchMedia('(display-mode: standalone)').matches?'installed':'browser',app_version:version});
     const script=document.createElement('script');script.async=true;script.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(id);
     document.head.append(script);
@@ -55,8 +64,10 @@
   // Page views: the app is one page with hash routes (#bai-5, #doc-nhac/tap). Each route that stays for
   // 400 ms becomes a virtual page /bai-5, /doc-nhac/tap; transient routes during start-up are not counted.
   const screenOf=path=>/^\/bai-\d+/.test(path)||/^\/nhac-/.test(path)||path==='/doc-nhac/tap'?'practice':(path.split('/')[1]||'home');
+  // Other pages (calibrate.html) are reported under their own name: /calibrate.
+  const page=location.pathname.split('/').pop().replace(/\.html$/,'');
   function route(){
-    const path='/'+(location.hash.slice(1)||'');
+    const hash=location.hash.slice(1),path=page&&page!=='index'?'/'+page+(hash?'/'+hash:''):'/'+hash;
     if(path===lastPath)return;
     const previous=lastScreen;lastPath=path;lastScreen=screenOf(path);
     const base=location.origin+location.pathname.replace(/\/[^/]*$/,'');

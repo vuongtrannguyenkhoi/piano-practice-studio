@@ -50,7 +50,7 @@
     // Raw mono blocks for single-key takes, from the same microphone source as recognition.
     async startTakes(onBlock){
       if(!this.active||!this.context||!this.source)throw Error('Bật micro trước khi thu phím.');
-      if(!this.takeModule){await this.context.audioWorklet.addModule('audio/take-worklet.js?v=f9e32bb-7661dc6904bf');this.takeModule=true;}
+      if(!this.takeModule){await this.context.audioWorklet.addModule('audio/take-worklet.js?v=c6e43d0-cd65f9a2f2cd');this.takeModule=true;}
       this.stopTakes();
       this.takeNode=new AudioWorkletNode(this.context,'piano-take',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
       this.takeNode.port.onmessage=({data})=>onBlock(data.block,this.context?.sampleRate,data.time);
@@ -81,9 +81,9 @@
         if(token!==this.generation){stream.getTracks().forEach(t=>t.stop());return;}
         this.stream=stream;
         this.context=new AudioContext({latencyHint:'interactive'});await this.context.resume();
-        await this.context.audioWorklet.addModule('audio/mic-worklet.js?v=f9e32bb-7661dc6904bf');
+        await this.context.audioWorklet.addModule('audio/mic-worklet.js?v=c6e43d0-cd65f9a2f2cd');
         if(token!==this.generation)return;
-        this.worker=new Worker('audio/pitch-worker.js?v=f9e32bb-7661dc6904bf');
+        this.worker=new Worker('audio/pitch-worker.js?v=c6e43d0-cd65f9a2f2cd');
         this.node=new AudioWorkletNode(this.context,'piano-capture',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
         this.node.onprocessorerror=()=>{if(token!==this.generation)return;this.stop();this.status('Bộ thu âm bị lỗi · bật micro để thử lại.');};
         const channel=new MessageChannel();this.worker.postMessage({port:channel.port1},[channel.port1]);this.node.port.postMessage({port:channel.port2},[channel.port2]);
@@ -96,11 +96,13 @@
         $('mic-device-settings').textContent=`${track.label||'Micro'} · AudioContext ${this.context.sampleRate} Hz · thiết bị ${settings.sampleRate||'không báo'} Hz · ${controls}`;
         $('mic-processing-warning').hidden=!['echoCancellation','noiseSuppression','autoGainControl'].some(key=>settings[key]!==false);
         track.onended=()=>{this.stop();this.status('Micro đã ngắt kết nối.');};
+        if(!this.permissionReported){this.permissionReported=true;window.pianoAnalytics?.track('mic_permission',{result:'granted'});}
         this.active=true;this.pending=false;this.metrics=[];this.needsQuiet=false;this.quietFrames=0;$('mic-toggle').textContent='■ Dừng micro';$('mic-toggle').setAttribute('aria-pressed','true');
         this.configure();this.configureGuard();this.worker.postMessage({type:'expect',notes:this.expected??null,...(this.expectOptions||{})});this.status(this.observationOnly?.()?'Đang nghe hợp âm · thử nghiệm':'Đang nghe · đánh một nốt');
       }catch(error){
         if(token!==this.generation)return;
         this.stop();
+        window.pianoAnalytics?.track('mic_permission',{result:({NotAllowedError:'denied',NotFoundError:'no_device',NotReadableError:'busy',OverconstrainedError:'unsupported'})[error?.name]||'error'});
         this.lastError=({NotAllowedError:'Quyền micro bị từ chối · cấp quyền trong trình duyệt rồi thử lại.',NotFoundError:'Không tìm thấy micro.',NotReadableError:'Micro đang bận hoặc không thể mở.',OverconstrainedError:'Thiết bị không chấp nhận cấu hình micro.'})[error.name]||error.message||'Không mở được micro.';
         this.status(this.lastError);
       }

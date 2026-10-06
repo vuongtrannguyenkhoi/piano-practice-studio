@@ -41,8 +41,8 @@
       if(!navigator.mediaDevices?.getUserMedia||!window.AudioWorkletNode||!window.Worker)throw Error('Trình duyệt này chưa hỗ trợ thu âm AudioWorklet.');
       stream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false});
       context=new AudioContext({latencyHint:'interactive'});await context.resume();
-      await context.audioWorklet.addModule('audio/mic-worklet.js?v=f9e32bb-7661dc6904bf');
-      worker=new Worker('audio/pitch-worker.js?v=f9e32bb-7661dc6904bf');
+      await context.audioWorklet.addModule('audio/mic-worklet.js?v=c6e43d0-cd65f9a2f2cd');
+      worker=new Worker('audio/pitch-worker.js?v=c6e43d0-cd65f9a2f2cd');
       const node=new AudioWorkletNode(context,'piano-capture',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
       const channel=new MessageChannel();worker.postMessage({port:channel.port1},[channel.port1]);node.port.postMessage({port:channel.port2},[channel.port2]);
       const source=context.createMediaStreamSource(stream);source.connect(node);node.connect(context.destination);
@@ -235,6 +235,7 @@
   $('test-run').addEventListener('click',()=>state.phase==='test'?finishPhase(true):startTest());
   $('save').addEventListener('click',()=>{
     try{localStorage.setItem(STORAGE,JSON.stringify({a4:state.a4,thresholdDb:state.thresholdDb,date:new Date().toISOString()}));
+      window.pianoAnalytics?.track('calibration_save',{a4_offset_band:Math.round(1200*Math.log2(state.a4/440)/5)*5,threshold_db:Math.round(state.thresholdDb/5)*5,noise_db:state.noise?Math.round(state.noise.medianDb/5)*5:undefined,tests:Object.keys(state.tests).length});
       setText('save-status',`Đã lưu A4 ${state.a4.toFixed(1)} Hz và ngưỡng ${state.thresholdDb} dBFS. App dùng giá trị này từ lần mở tiếp theo.`);}
     catch(_){setText('save-status','Trình duyệt không cho lưu (chế độ riêng tư?). Hãy nhập tay A4 và ngưỡng trong Thiết lập micro.');}
   });
