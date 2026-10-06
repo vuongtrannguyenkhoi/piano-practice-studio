@@ -22,6 +22,8 @@ Trang **Hôm nay** có thẻ **Mục tiêu tuần**:
 - **Tập nhanh:** **▶ Tập 10 phút ngay** xếp sẵn một buổi ngắn: ôn một bài đến hạn, tập bài đang dở, rồi một bài Đọc nhạc. Thanh màu vàng ở đầu màn luyện tập cho biết bước hiện tại, thời gian, và nút **Bước tiếp**.
 - **Ôn bài:** mỗi bài hoàn thành được nhắc ôn sau 1, 3, 7, 21 và 60 ngày, trong mục **Cần ôn hôm nay**.
 - **Khi bị kẹt:** nếu ba lượt chấm điểm liền chưa ổn, hoặc sau 6 lượt hay 15 phút tập một bài mà chưa nhận sao mới, thẻ **Thử một cách dễ hơn** hiện trong màn luyện tập: chậm lại 8 BPM, tập riêng một tay, tập nửa đoạn, ôn một bài nền dễ hơn cùng kỹ năng, hoặc nghỉ rồi quay lại.
+- **Nhắc tập:** trong thẻ Mục tiêu tuần, mục **🔔 Nhắc tôi tập qua lịch** tạo một file lịch (.ics) lặp lại vào các ngày và giờ bạn chọn; mở file để thêm vào Lịch của điện thoại hoặc máy tính. Lịch nhắc kể cả khi không mở app. Khi đã cài app, biểu tượng app hiện số 1 cho đến khi hôm nay tập đủ số phút (trên trình duyệt hỗ trợ). Quay lại sau vài ngày nghỉ, app gợi ý bắt đầu nhẹ nhàng bằng một bài ôn.
+- **Chia sẻ:** nút **↗ Chia sẻ tuần này** ở trang Tiến độ tạo ảnh tóm tắt tuần (số ngày, số phút, số tuần liền, tốc độ tăng nhiều nhất) để gửi qua ứng dụng khác, hoặc tải ảnh về.
 - **Tiến độ:** mục **Tiến độ** trên thanh điều hướng cho thấy tổng thời gian luyện, số ngày đã tập, số tuần liền đạt mục tiêu, lịch luyện tập 12 tuần, số phút mỗi tuần, tốc độ đã tăng ở từng bài và các cột mốc.
 
 ## Chế độ luyện
@@ -127,6 +129,8 @@ The **Hôm nay** (Today) screen has a **Mục tiêu tuần** (Weekly goal) card:
 - **Quick session:** **▶ Tập 10 phút ngay** (Practise 10 minutes now) lines up a short session: one review that is due, your current lesson, then one Daily Reading exercise. A yellow bar at the top of the practice screen shows the step, the time and a **Bước tiếp** (Next step) button.
 - **Reviews:** each completed lesson comes back for review after 1, 3, 7, 21 and 60 days, under **Cần ôn hôm nay** (Due for review today).
 - **When you're stuck:** after three graded rounds in a row that didn't go well, or 6 rounds or 15 minutes on a lesson without a new star, a **Thử một cách dễ hơn** (Try an easier way) card appears in the practice screen: slow down by 8 BPM, practise one hand, practise half the passage, review an easier foundation lesson for the same skill, or take a break.
+- **Reminders:** in the weekly goal card, **🔔 Nhắc tôi tập qua lịch** (Remind me through my calendar) creates a repeating calendar file (.ics) on the days and time you choose; open it to add it to your phone or computer calendar, which reminds you even when the app isn't open. When the app is installed, its icon shows a 1 until today's minutes are reached (in browsers that support it). Coming back after a few days off, the app suggests starting gently with a review.
+- **Sharing:** **↗ Chia sẻ tuần này** (Share this week) on the Progress screen makes an image of your week (days, minutes, weeks in a row, biggest tempo gain) to send through another app, or to download.
 - **Progress:** **Tiến độ** (Progress) in the navigation shows total practice time, days practised, weeks in a row on goal, a 12-week practice calendar, minutes per week, tempo gains per lesson and milestones.
 
 ## Practice modes
