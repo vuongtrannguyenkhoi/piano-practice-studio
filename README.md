@@ -60,6 +60,14 @@ Khi luyện có micro chấm (**Tập từng nốt**, hoặc **Chơi theo nhịp
 - **Kỷ lục:** mỗi bài lưu điểm cao nhất của bạn; trang **Tiến độ** có mục **Kỷ lục điểm** (số lần đạt từng hạng và các bài điểm cao nhất). Lượt hạng C được tính là lượt khó: app gợi ý chậm lại, tập riêng một tay hoặc đoạn ngắn hơn.
 - **Màn hình:** góc trên sheet hiện tổng điểm, hệ số và combo; cuối lượt có bảng tổng kết. Không có âm thanh; nếu máy bật giảm chuyển động thì chỉ đổi màu.
 
+### Nốt vàng và phần thưởng
+
+- **Nốt vàng 🪙:** mỗi lượt có micro chấm cho 1 nốt vàng mỗi 100 điểm, thêm 20 khi đạt hạng S và 10 khi đạt A.
+- **Cửa hàng** (trang **Tiến độ** → **Nốt vàng & phần thưởng**): đổi nốt vàng lấy giao diện bàn phím (Gỗ ấm, Đêm xanh, Kem sữa, Neon), màu nốt trên sheet (Đại dương, Quả mọng, Mực) và tiếng nhịp gõ (Mõ gỗ, Nhẹ nhàng, Chuông; bấm ▶ để nghe thử). Màu chấm đúng, sai và nốt cần đánh không đổi.
+- **Rương tuần:** mỗi tuần đạt mục tiêu mở được một rương, chứa một món chưa có hoặc nốt vàng.
+- **Danh hiệu:** Chuỗi 32, Thợ săn hạng S, Nhịp chuẩn, Tay trái vững, Kiên trì 4 tuần, Người đọc nhạc, 100 lượt có điểm. Danh hiệu đã chọn hiện ở trang Tiến độ và trên ảnh chia sẻ.
+- Mọi bài học luôn mở; phần thưởng chỉ để trang trí.
+
 ## Hiệu chỉnh theo đàn của bạn
 
 Trong phần micro, mở **Hiệu chỉnh với đàn thật** để đo tiếng ồn phòng, độ lên dây (A4) và thử vài nốt, hợp âm. Kết quả được lưu và dùng cho mọi bài. Với từng bài, bạn có thể chọn **Thu phím cho bài này** để thu các phím của bài trên đàn của mình để app nhận diện chính xác hơn.
@@ -177,6 +185,14 @@ When the microphone grades a round (**Tập từng nốt** / Note by note, or **
 - **Grade by accuracy:** S (≥ 98% and at tempo), A (≥ 90%), B (≥ 75%), C.
 - **Personal best:** each lesson keeps your best score; the **Tiến độ** (Progress) screen has **Kỷ lục điểm** (Score records) with your grade counts and top lessons. A grade-C round counts as a hard round: the app suggests slowing down, one hand or a shorter passage.
 - **On screen:** the total, multiplier and combo sit in the corner of the sheet, with a summary at the end of the round. No sound; with reduced motion, only colours change.
+
+### Gold notes and rewards
+
+- **Gold notes 🪙:** every microphone-graded round gives 1 gold note per 100 points, plus 20 for grade S and 10 for grade A.
+- **Shop** (**Tiến độ** / Progress → **Nốt vàng & phần thưởng** / Gold notes & rewards): spend gold notes on keyboard skins (Warm wood, Blue night, Cream, Neon), note colours on the sheet (Ocean, Berry, Ink) and metronome sounds (Woodblock, Soft, Bell; press ▶ to preview). The grading colours and the note-to-play colour never change.
+- **Weekly chest:** each week you meet your goal opens a chest with an item you don't have yet, or gold notes.
+- **Titles:** Run of 32, S-grade hunter, Steady timing, Strong left hand, Four steady weeks, Music reader, 100 scored rounds. Your chosen title shows on the Progress screen and on the share image.
+- Every lesson is always open; rewards are cosmetic only.
 
 ## Calibrate for your piano
 
