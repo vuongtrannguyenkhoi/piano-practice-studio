@@ -47,7 +47,7 @@
     $('today-goal').textContent=lesson.goal;
     $('today-progress').textContent=$('journey-progress').textContent;
   }
-  let exitFocusForNavigation=()=>{};
+  let exitFocusForNavigation=()=>{},enterPracticeFocus=()=>{};
   function showView(view,route=true){
     if(!['today','journey','songs','practice','skills','reading'].includes(view))return;
     // A build may ship without songs (scripts/build-static.py --hide-song): the library falls back to the journey.
@@ -827,10 +827,16 @@
       try{localStorage.setItem('piano-practice-view',JSON.stringify(viewSettings));}catch(_){}
     }
     controlsToggle.addEventListener('click',()=>{viewSettings.landscapeControls=!viewSettings.landscapeControls;applyViewSettings();});
+    enterPracticeFocus=()=>{
+      if(viewSettings.focus)return;
+      const request=++focusRequest;viewSettings.focus=true;viewSettings.keyboard=true;
+      $('keyboard-view').open=true;$('practice-options').open=false;
+      window.scrollTo?.({top:0,behavior:'instant'});
+      enterFocusFullscreen(request);applyViewSettings();
+    };
     $('focus-mode').addEventListener('click',()=>{
-      const request=++focusRequest;viewSettings.focus=!viewSettings.focus;
-      if(viewSettings.focus){viewSettings.keyboard=true;$('keyboard-view').open=true;$('practice-options').open=false;window.scrollTo?.({top:0,behavior:'instant'});enterFocusFullscreen(request);}
-      applyViewSettings();
+      if(!viewSettings.focus){enterPracticeFocus();return;}
+      focusRequest++;viewSettings.focus=false;applyViewSettings();
     });
     const fullscreenChanged=()=>{if(!document.fullscreenElement&&!document.webkitFullscreenElement&&ownFullscreen){ownFullscreen=false;focusRequest++;viewSettings.focus=false;applyViewSettings();}state.scoreGeometry=null;layoutScore();paintCursor(state.beat);};
     document.addEventListener('fullscreenchange',fullscreenChanged);document.addEventListener('webkitfullscreenchange',fullscreenChanged);
@@ -1086,7 +1092,8 @@
       cancelPracticeStart();stop(false);if(practiceMode!=='listen')microphone.stop();updatePracticeUX();return;
     }
     if(practiceMode!=='listen'&&!practiceSupported()){beginPractice(true);return;}
-    start(true);document.querySelector('.score-panel').scrollIntoView?.({behavior:'smooth',block:'start'});
+    if(practiceMode!=='listen')enterPracticeFocus();
+    start(true);if(!document.body.classList.contains('practice-focus'))document.querySelector('.score-panel').scrollIntoView?.({behavior:'smooth',block:'start'});
   }
   function lockMicTempoControls(locked){
     for(const id of ['tempo','progress','bar-start','bar-end','full-piece','loop','metronome'])$(id).disabled=locked;
@@ -1184,7 +1191,7 @@
     const missing=inputs.keys.filter(midi=>!takes[midi]);
     if(missing.length){scoreModel={key,status:'missing',missing,have:inputs.keys.length-missing.length,model:null,background:[]};renderScoreModel();return;}
     scoreModel={key,status:'building',missing:[],model:null,background:[]};renderScoreModel();
-    modelWorker??=new Worker('audio/model-worker.js?v=0a7152c-bcbfccb4548a');
+    modelWorker??=new Worker('audio/model-worker.js?v=0a7152c-703037b64d94');
     const result=await new Promise(resolve=>{
       modelWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};modelWorker.onerror=event=>resolve({request,error:event.message||'lỗi Worker'});
       modelWorker.postMessage({type:'build',request,id:key,notes:inputs.notes,targets:inputs.targets,takes:Object.fromEntries(Object.entries(takes).map(([midi,take])=>[midi,{pcm:take.pcm,rate:take.rate}]))});
@@ -1285,7 +1292,7 @@
     if(!run.params||!run.samples){textIfChanged(status,'Không thu được âm thanh · thử lại.');renderEval();return;}
     const pcm=new Float32Array(run.samples);let at=0;for(const block of run.blocks){pcm.set(block,at);at+=block.length;}
     textIfChanged(status,'Đang phân tích bằng cả hai cách chấm…');renderEval();
-    evalWorker??=new Worker('audio/eval-worker.js?v=0a7152c-bcbfccb4548a');const request=++evalRequest;
+    evalWorker??=new Worker('audio/eval-worker.js?v=0a7152c-703037b64d94');const request=++evalRequest;
     const result=await new Promise(resolve=>{
       evalWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};evalWorker.onerror=event=>resolve({error:event.message||'lỗi Worker'});
       evalWorker.postMessage({type:'evaluate',request,pcm,rate:run.rate,...run.params,startTime:run.params.startTime-run.firstTime});
