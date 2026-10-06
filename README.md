@@ -18,6 +18,10 @@ Practice piano with interactive sheet music, guided exercises, daily reading ses
 
 For microphone practice, use a quiet room and headphones when listening to examples. Low-confidence input may remain ungraded. Some chords, ranges, and playing techniques require self-assessment.
 
+## Using a phone
+
+Use the bottom navigation to switch between Courses, Daily Reading, Skills, and Practice. Playback controls stay within reach while you scroll. Choose your mode and hand, then enter Focus to give more space to the score and keyboard. Focus requests fullscreen and landscape orientation on supported phones. If automatic rotation is unavailable, rotate your phone manually. Landscape places controls beside the sheet. Tap “Ẩn điều khiển” to hide the left controls and expand the sheet; tap “Hiện điều khiển” to bring them back. Exit Focus to change the practice setup.
+
 ## Sheet music and playback
 
 - Change **Tempo** to slow down or speed up practice.

@@ -47,16 +47,17 @@
     $('today-goal').textContent=lesson.goal;
     $('today-progress').textContent=$('journey-progress').textContent;
   }
+  let exitFocusForNavigation=()=>{};
   function showView(view,route=true){
     if(!['today','journey','songs','practice','skills','reading'].includes(view))return;
     // A build may ship without songs (scripts/build-static.py --hide-song): the library falls back to the journey.
     if(view==='songs'&&!window.PIANO_SONGS?.length)view='journey';
-    if(view!=='practice'){reading?.leave();cancelPracticeStart();microphone?.stop();rememberPractice();stop(false);refreshToday();}
+    if(view!=='practice'){exitFocusForNavigation();reading?.leave();cancelPracticeStart();microphone?.stop();rememberPractice();stop(false);refreshToday();}
     document.body.dataset.view=view;
     for(const name of ['today','journey','songs','practice','skills','reading'])$(name+'-view').hidden=name!==view;
     if(view==='skills')skillGraph?.render();
     if(view==='reading')reading?.ready();
-    document.querySelectorAll('.primary-nav [data-view]').forEach(button=>{
+    document.querySelectorAll('.primary-nav [data-view],.mobile-nav [data-view]').forEach(button=>{
       if(button.dataset.view===view)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
     });
     $('practice-exit').hidden=view!=='practice';$('topbar-count').hidden=view!=='practice';
@@ -773,7 +774,7 @@
     $('practice-recovery-range').addEventListener('click',()=>{$('practice-options').open=true;$('bar-start').focus();});
     $('practice-segment').addEventListener('click',()=>{const open=!$('practice-options').open;$('practice-options').open=open;$('practice-segment').setAttribute('aria-expanded',String(open));});
     $('practice-options').addEventListener('toggle',()=>$('practice-segment').setAttribute('aria-expanded',String($('practice-options').open)));
-    let viewSettings={focus:false,keyboard:true,tempo:true,play:true,replay:true,timeline:true,follow:true};
+    let viewSettings={landscapeControls:true,focus:false,keyboard:true,tempo:true,play:true,replay:true,timeline:true,follow:true};
     try{const saved=JSON.parse(localStorage.getItem('piano-practice-view')||'null');for(const key in viewSettings)if(typeof saved?.[key]==='boolean')viewSettings[key]=saved[key];}catch(_){}
     const lessonNav=document.querySelector('.lesson-nav');
     const playbackCluster=document.querySelector('.playback-cluster');
@@ -781,12 +782,40 @@
     const viewTools=document.querySelector('.practice-view-tools');
     const transportMain=document.querySelector('.transport-main');
     const practiceView=$('practice-view');
-    let ownFullscreen=false;
+    const controlsToggle=document.createElement('button');controlsToggle.id='focus-controls-toggle';controlsToggle.type='button';controlsToggle.className='focus-controls-toggle';controlsToggle.setAttribute('aria-controls','focus-transport');document.querySelector('.transport').id='focus-transport';practiceView.append(controlsToggle);
+    let ownFullscreen=false,orientationRequested=false,focusRequest=0;
+    const orientationHint=document.createElement('p');orientationHint.id='focus-orientation-hint';orientationHint.hidden=true;orientationHint.setAttribute('role','status');orientationHint.textContent='Xoay điện thoại ngang để xem sheet và bàn phím rộng hơn.';transportMain.append(orientationHint);
+    const mobileFocus=()=>!!window.matchMedia?.('(max-width:850px)')?.matches;
+    function updateOrientationHint(){orientationHint.hidden=!(viewSettings.focus&&mobileFocus()&&innerHeight>innerWidth);}
+    function unlockFocusOrientation(){
+      if(orientationRequested){orientationRequested=false;try{window.screen?.orientation?.unlock?.();}catch(_){}}
+    }
+    async function enterFocusFullscreen(request){
+      const root=document.documentElement,enter=root.requestFullscreen||root.webkitRequestFullscreen;
+      if(enter){
+        ownFullscreen=true;
+        try{await enter.call(root,{navigationUI:'hide'});}catch(_){if(request===focusRequest)ownFullscreen=false;updateOrientationHint();return;}
+      }
+      if(request!==focusRequest||!viewSettings.focus){
+        if(!viewSettings.focus&&ownFullscreen&&(document.fullscreenElement||document.webkitFullscreenElement)){try{await (document.exitFullscreen||document.webkitExitFullscreen)?.call(document);}catch(_){}}
+        return;
+      }
+      if(mobileFocus()&&window.screen?.orientation?.lock){
+        orientationRequested=true;
+        try{await window.screen.orientation.lock('landscape');}catch(_){unlockFocusOrientation();}
+        if(!viewSettings.focus)unlockFocusOrientation();
+      }
+      updateOrientationHint();
+    }
+    exitFocusForNavigation=()=>{if(viewSettings.focus){focusRequest++;viewSettings.focus=false;applyViewSettings();}};
     const displayIds={keyboard:'show-keyboard',tempo:'show-tempo',play:'show-play',replay:'show-replay',timeline:'show-timeline',follow:'follow-score'};
     function applyViewSettings(){
       document.body.classList.toggle('practice-focus',viewSettings.focus);
+      document.body.classList.toggle('focus-controls-hidden',!viewSettings.landscapeControls);
+      controlsToggle.textContent=viewSettings.landscapeControls?'Ẩn điều khiển':'☰ Hiện điều khiển';controlsToggle.setAttribute('aria-expanded',String(viewSettings.landscapeControls));
       if(viewSettings.focus){if(lessonNav.parentElement!==playbackCluster)playbackCluster.append(lessonNav);if(viewTools.parentElement!==transportMain)transportMain.append(viewTools);}
-      else{if(lessonNav.parentElement!==lessonHeading)lessonHeading.append(lessonNav);if(viewTools.parentElement!==practiceView)lessonHeading.after(viewTools);if(document.fullscreenElement&&ownFullscreen)document.exitFullscreen?.().catch(()=>{});}
+      else{if(lessonNav.parentElement!==lessonHeading)lessonHeading.append(lessonNav);if(viewTools.parentElement!==practiceView)lessonHeading.after(viewTools);unlockFocusOrientation();if((document.fullscreenElement||document.webkitFullscreenElement)&&ownFullscreen){try{const exit=(document.exitFullscreen||document.webkitExitFullscreen)?.call(document);exit?.catch?.(()=>{});}catch(_){}}}
+      updateOrientationHint();
       state.scoreGeometry=null;
       $('focus-mode').setAttribute('aria-pressed',String(viewSettings.focus));$('focus-mode').textContent=viewSettings.focus?'⛶ Thoát tập trung':'⛶ Tập trung';
       $('keyboard-view').hidden=!viewSettings.keyboard;
@@ -797,19 +826,22 @@
       if(state.events.length){layoutScore();syncLoopStrip();layoutScore();paintCursor(state.beat);}
       try{localStorage.setItem('piano-practice-view',JSON.stringify(viewSettings));}catch(_){}
     }
+    controlsToggle.addEventListener('click',()=>{viewSettings.landscapeControls=!viewSettings.landscapeControls;applyViewSettings();});
     $('focus-mode').addEventListener('click',()=>{
-      viewSettings.focus=!viewSettings.focus;
-      if(viewSettings.focus){viewSettings.keyboard=true;$('keyboard-view').open=true;$('practice-options').open=false;window.scrollTo?.({top:0,behavior:'instant'});if(document.documentElement.requestFullscreen){ownFullscreen=true;document.documentElement.requestFullscreen().catch(()=>{ownFullscreen=false;});}}
+      const request=++focusRequest;viewSettings.focus=!viewSettings.focus;
+      if(viewSettings.focus){viewSettings.keyboard=true;$('keyboard-view').open=true;$('practice-options').open=false;window.scrollTo?.({top:0,behavior:'instant'});enterFocusFullscreen(request);}
       applyViewSettings();
     });
-    document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&ownFullscreen){ownFullscreen=false;viewSettings.focus=false;applyViewSettings();}state.scoreGeometry=null;layoutScore();paintCursor(state.beat);});
+    const fullscreenChanged=()=>{if(!document.fullscreenElement&&!document.webkitFullscreenElement&&ownFullscreen){ownFullscreen=false;focusRequest++;viewSettings.focus=false;applyViewSettings();}state.scoreGeometry=null;layoutScore();paintCursor(state.beat);};
+    document.addEventListener('fullscreenchange',fullscreenChanged);document.addEventListener('webkitfullscreenchange',fullscreenChanged);
+    window.screen?.orientation?.addEventListener?.('change',updateOrientationHint);
     for(const [key,id] of Object.entries(displayIds))$(id).addEventListener('change',()=>{viewSettings[key]=$(id).checked;applyViewSettings();syncLoopStrip();paintCursor(state.beat);if(key==='follow'&&viewSettings.follow)followScore(state.beat);});
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&viewSettings.focus){viewSettings.focus=false;applyViewSettings();$('focus-mode').focus();}});
     applyViewSettings();
     if(window.ResizeObserver){
       const scoreResize=new ResizeObserver(()=>{state.scoreGeometry=null;if(state.events.length){layoutScore();syncLoopStrip();layoutScore();if($('follow-score').checked)followScore(state.beat);else paintCursor(state.beat);}});scoreResize.observe($('score-scroll'));scoreResize.observe(document.querySelector('.score-viewport'));
     }
-    window.addEventListener('resize',()=>{state.scoreGeometry=null;});
+    window.addEventListener('resize',()=>{state.scoreGeometry=null;updateOrientationHint();});
     $('score-scroll').addEventListener('scroll',()=>{if(!state.playing||!$('follow-score').checked)paintCursor(state.beat);},{passive:true});
     document.querySelectorAll('[data-view]').forEach(button=>button.addEventListener('click',()=>showView(button.dataset.view)));
     $('today-resume').addEventListener('click',()=>{
@@ -1152,7 +1184,7 @@
     const missing=inputs.keys.filter(midi=>!takes[midi]);
     if(missing.length){scoreModel={key,status:'missing',missing,have:inputs.keys.length-missing.length,model:null,background:[]};renderScoreModel();return;}
     scoreModel={key,status:'building',missing:[],model:null,background:[]};renderScoreModel();
-    modelWorker??=new Worker('audio/model-worker.js?v=0a7152c-aa1e0109dc52');
+    modelWorker??=new Worker('audio/model-worker.js?v=0a7152c-96802d346793');
     const result=await new Promise(resolve=>{
       modelWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};modelWorker.onerror=event=>resolve({request,error:event.message||'lỗi Worker'});
       modelWorker.postMessage({type:'build',request,id:key,notes:inputs.notes,targets:inputs.targets,takes:Object.fromEntries(Object.entries(takes).map(([midi,take])=>[midi,{pcm:take.pcm,rate:take.rate}]))});
@@ -1253,7 +1285,7 @@
     if(!run.params||!run.samples){textIfChanged(status,'Không thu được âm thanh · thử lại.');renderEval();return;}
     const pcm=new Float32Array(run.samples);let at=0;for(const block of run.blocks){pcm.set(block,at);at+=block.length;}
     textIfChanged(status,'Đang phân tích bằng cả hai cách chấm…');renderEval();
-    evalWorker??=new Worker('audio/eval-worker.js?v=0a7152c-aa1e0109dc52');const request=++evalRequest;
+    evalWorker??=new Worker('audio/eval-worker.js?v=0a7152c-96802d346793');const request=++evalRequest;
     const result=await new Promise(resolve=>{
       evalWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};evalWorker.onerror=event=>resolve({error:event.message||'lỗi Worker'});
       evalWorker.postMessage({type:'evaluate',request,pcm,rate:run.rate,...run.params,startTime:run.params.startTime-run.firstTime});
