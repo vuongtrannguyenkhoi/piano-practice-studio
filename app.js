@@ -523,12 +523,14 @@
       $('book-practice-steps').replaceChildren(...e.book.steps.map(step=>{const li=document.createElement('li');li.textContent=step;return li;}));
       $('book-repair').textContent=e.book.repair;$('book-review').textContent=e.book.review;
       const curriculum=(DATA.bookCurricula||[DATA.bookCurriculum]).find(c=>c.id===e.book.id);
-      $('book-source-link').href=curriculum.source+'#page='+e.book.pages[0];
+      const sourceLink=$('book-source-link');
+      if(sourceLink&&curriculum?.source)sourceLink.href=curriculum.source+'#page='+e.book.pages[0];
     }
-    $('book-musicxml-link').hidden=!e.book?.musicxml;
-    if(e.book?.musicxml)$('book-musicxml-link').href=e.book.musicxml;
+    const sourceDownloads=document.documentElement.dataset.sourceDownloads!=='false';
+    $('book-musicxml-link').hidden=!sourceDownloads||!e.book?.musicxml;
+    if(sourceDownloads&&e.book?.musicxml)$('book-musicxml-link').href=e.book.musicxml;
     $('book-downloads').replaceChildren();
-    for(const [hand,url] of Object.entries(e.book?.midi||{})){
+    for(const [hand,url] of Object.entries(sourceDownloads?(e.book?.midi||{}):{})){
       const a=document.createElement('a');a.href=url;a.download='';a.textContent=({both:'MIDI hai tay',right:'MIDI tay phải',left:'MIDI tay trái'})[hand];$('book-downloads').append(a);
     }
     $('book-repair-links').replaceChildren();
@@ -1150,7 +1152,7 @@
     const missing=inputs.keys.filter(midi=>!takes[midi]);
     if(missing.length){scoreModel={key,status:'missing',missing,have:inputs.keys.length-missing.length,model:null,background:[]};renderScoreModel();return;}
     scoreModel={key,status:'building',missing:[],model:null,background:[]};renderScoreModel();
-    modelWorker??=new Worker('audio/model-worker.js?v=0a7152c-dirty');
+    modelWorker??=new Worker('audio/model-worker.js?v=0a7152c-aa1e0109dc52');
     const result=await new Promise(resolve=>{
       modelWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};modelWorker.onerror=event=>resolve({request,error:event.message||'lỗi Worker'});
       modelWorker.postMessage({type:'build',request,id:key,notes:inputs.notes,targets:inputs.targets,takes:Object.fromEntries(Object.entries(takes).map(([midi,take])=>[midi,{pcm:take.pcm,rate:take.rate}]))});
@@ -1251,7 +1253,7 @@
     if(!run.params||!run.samples){textIfChanged(status,'Không thu được âm thanh · thử lại.');renderEval();return;}
     const pcm=new Float32Array(run.samples);let at=0;for(const block of run.blocks){pcm.set(block,at);at+=block.length;}
     textIfChanged(status,'Đang phân tích bằng cả hai cách chấm…');renderEval();
-    evalWorker??=new Worker('audio/eval-worker.js?v=0a7152c-dirty');const request=++evalRequest;
+    evalWorker??=new Worker('audio/eval-worker.js?v=0a7152c-aa1e0109dc52');const request=++evalRequest;
     const result=await new Promise(resolve=>{
       evalWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};evalWorker.onerror=event=>resolve({error:event.message||'lỗi Worker'});
       evalWorker.postMessage({type:'evaluate',request,pcm,rate:run.rate,...run.params,startTime:run.params.startTime-run.firstTime});
