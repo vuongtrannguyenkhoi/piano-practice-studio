@@ -18,6 +18,14 @@ Practice piano with interactive sheet music, guided exercises, daily reading ses
 
 For microphone practice, use a quiet room and headphones when listening to examples. Low-confidence input may remain ungraded. Some chords, ranges, and playing techniques require self-assessment.
 
+## Install and practice offline
+
+Open **Luyện tập** (Practice) and find **Mang buổi tập theo bạn**. Use **Cài ứng dụng** to install, or choose Add to Home Screen in your browser menu. The installed app opens in its own window.
+
+Wait for the offline-ready message before disconnecting. Lessons and the compact piano bank are saved automatically. Web piano samples are saved as you use them; choose **Tải âm để luyện offline** to download the complete web bank. Keep the app open while downloading. You can cancel and resume later. Browser storage may be cleared by the device, so check availability before practicing without a connection.
+
+When a new version is available, use **Cập nhật ứng dụng** after your practice round. Updates keep your progress and settings. If another tab is practicing, finish that round before updating.
+
 ## Using a phone
 
 Use the bottom navigation to switch between Courses, Daily Reading, Skills, and Practice. Playback controls stay within reach while you scroll. Choose your mode and hand, then enter Focus to give more space to the score and keyboard. Focus requests fullscreen and landscape orientation on supported phones. If automatic rotation is unavailable, rotate your phone manually. Landscape places controls beside the sheet. Tap “Ẩn điều khiển” to hide the left controls and expand the sheet; tap “Hiện điều khiển” to bring them back. Exit Focus to change the practice setup.
