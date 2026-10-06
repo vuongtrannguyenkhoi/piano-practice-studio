@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="vi"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#291251">
+  <meta name="description" content="172 bài nền tảng và độc lập hai tay piano với âm thanh, sheet tô sáng theo nốt và bàn phím trực quan.">
+  <title>Piano Hand Independence · Giáo trình tương tác</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css?v=1afbbe0-dirty">
+  <script src="vendor/vexflow-4.2.5.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="assets/salamander-samples.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="piano-audio.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="web-piano-audio.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="full-piano-audio.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="data.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="adult-book-lessons.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="adult-book2-lessons.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="chords24-lessons.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="pieces18-lessons.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="skill-data.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="skill-graph.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="composer.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="journey.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="songs-data.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="song-expression.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="songs.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="microphone.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="mic-practice.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="mic-tempo.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="audio/pitch-core.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="audio/score-model-core.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="key-takes.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="audio/evaluation-core.js?v=1afbbe0-dirty" defer=""></script>
+  <script src="reading-core.js?v=1afbbe0-dirty" defer></script>
+  <script src="reading.js?v=1afbbe0-dirty" defer></script>
+  <script src="app.js?v=1afbbe0-dirty" defer=""></script>
+<link rel="stylesheet" href="reference-ui.css?v=1afbbe0-dirty">  <link rel="stylesheet" href="reading-ui.css?v=1afbbe0-dirty">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Điều hướng Piano Lab">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span><strong>Piano Lab</strong><small>Hand Independence</small></span></div><nav class="primary-nav" aria-label="Điều hướng chính"><button data-view="journey"><span aria-hidden="true">▦</span> Khóa học</button><button data-view="reading"><span aria-hidden="true">▤</span> Đọc nhạc mỗi ngày</button><button data-view="skills"><span aria-hidden="true">◇</span> Kỹ năng</button><button data-view="songs"><span aria-hidden="true">♫</span> Bài hát</button><button data-view="today" aria-current="page"><span aria-hidden="true">◷</span> Luyện tập</button></nav>
+
+
+      <div class="sidebar-message"><span class="eyebrow">MỖI LƯỢT MỘT BƯỚC</span><p>Hai tay ăn ý hơn,<br>từng câu nhạc một.</p><span>172 bài luyện · 38 phần</span></div><div class="sidebar-foot">P <span class="dot teal"></span> tay phải <span class="divider">/</span> T <span class="dot coral"></span> tay trái</div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><button class="menu-button" id="menu-button" aria-label="Mở điều hướng" aria-expanded="false">☰</button><div class="topbar-title" id="view-label">KHÔNG GIAN LUYỆN PIANO</div><a class="pdf-link" href="book.pdf" id="pdf-link">Tải PDF ↗</a><button id="practice-exit" class="quiet-button" hidden="">← Luyện tập</button><span class="topbar-count" id="topbar-count">01 / 172</span></header>
+      <div class="content"><section id="today-view" class="screen today-screen" aria-labelledby="today-title"><div class="page-heading"><span class="eyebrow">MỘT CHÚT PIANO MỖI NGÀY</span><h1 id="today-title" tabindex="-1">Tiếp tục chơi piano</h1><p>Một đoạn ngắn. Một mục tiêu rõ. Tập theo nhịp của bạn.</p></div><article class="resume-card"><div class="resume-copy"><span class="eyebrow">TIẾP TỤC TỪ ĐÂY</span><h2 id="today-lesson">Bài luyện của bạn</h2><p id="today-goal"></p><button id="today-resume" class="primary-button">Tiếp tục luyện <span aria-hidden="true">→</span></button><span id="today-progress" class="resume-progress"></span></div><div class="piano-illustration" aria-hidden="true"><div class="music-line">♫</div><div class="illustration-keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span>TRÁI GIỮ NHỊP · PHẢI KỂ CHUYỆN</span></div></article><div class="today-options"><article class="daily-card"><span class="card-symbol" aria-hidden="true">▤</span><span class="eyebrow">ĐỌC NHẠC MỖI NGÀY</span><h2>10 phần, một buổi tập.</h2><p>Xoay vòng 252 nhóm bài để đi qua đủ các kỹ năng đọc và chơi.</p><button class="text-button" data-view="reading">Mở buổi tập →</button></article><article class="daily-card"><span class="card-symbol" aria-hidden="true">↗</span><span class="eyebrow">KHÁM PHÁ KỸ NĂNG</span><h2>Hai tay, hai vai trò.</h2><p>Từ giữ nốt đến đệm và giai điệu. Chọn chặng phù hợp với bạn.</p><button class="text-button" data-view="skills">Xem bản đồ kỹ năng →</button></article></div><p class="today-footnote">Nghe mẫu để hiểu câu nhạc, rồi thử trên đàn. Tiến độ được giữ trên thiết bị này.</p></section><section id="journey-view" class="screen" aria-labelledby="path-title" hidden=""><div class="page-heading"><span class="eyebrow">TỪNG BƯỚC ĐẾN ĐIỀU BẠN MUỐN CHƠI</span><h1 id="path-title" tabindex="-1">Chọn khóa học của bạn</h1><p>Học một kỹ năng mới, rồi đưa nó vào câu nhạc.</p></div><section class="journey panel" aria-labelledby="journey-title">
+          <div class="journey-header"><div><span class="eyebrow">HÀNH TRÌNH PIANO</span><h2 id="journey-title">Bạn muốn chơi được điều gì?</h2></div><strong id="journey-total" class="journey-total">★ 0 / 516</strong></div>
+          <details id="journey-map" class="journey-map" open=""><summary>Chọn hướng luyện của bạn</summary>
+          <div class="destination-options" role="group" aria-label="Chọn đích đến">
+            <button type="button" data-destination="melody" aria-pressed="false">♫ Giai điệu nổi bật</button>
+            <button type="button" data-destination="rhythm" aria-pressed="false">♩ Phần đệm vững vàng</button>
+            <button type="button" data-destination="together" aria-pressed="false">♬ Hai tay ăn ý</button>
+          </div>
+          <p class="destination-note" id="destination-note"></p>
+
+          </details><section class="book-curriculum" aria-labelledby="book-curriculum-title"><div class="book-curriculum-heading"><div><span class="eyebrow">BẮT ĐẦU TỪ PHÍM ĐẦU TIÊN</span><h3 id="book-curriculum-title">Piano cho người lớn mới bắt đầu</h3><p>35 bài ngắn theo sách · 7 phần từ nền tảng đến đệm hát. Tập 20 phút: khởi động, ôn một lượt, học mới, rồi chơi nhạc.</p></div><a href="assets/books/piano-nguoi-lon-moi-bat-dau.pdf" target="_blank" rel="noopener">Mở sách ↗</a></div><nav id="book-course-map" class="world-map" aria-label="7 phần theo giáo trình người lớn"></nav></section><section class="book-curriculum" aria-labelledby="book2-curriculum-title"><div class="book-curriculum-heading"><div><span class="eyebrow">TIẾP NỐI TẬP 1</span><h3 id="book2-curriculum-title">Piano cho người lớn · Tập 2</h3><p>45 bài · 9 phần vượt thế năm ngón: gam hai tay, giọng thứ, 6/8, hợp âm 7, đệm rải, đọc mới và sáng tạo. Bắt đầu bằng lượt kiểm tra, rồi chọn phần vừa sức.</p></div><a href="assets/books/piano-nguoi-lon-tap-2.pdf" target="_blank" rel="noopener">Mở Tập 2 ↗</a></div><nav id="book2-course-map" class="world-map" aria-label="9 phần theo giáo trình Tập 2"></nav></section><section class="book-curriculum" aria-labelledby="chords24-curriculum-title"><div class="book-curriculum-heading"><div><span class="eyebrow">TỪ BẤM HỢP ÂM ĐẾN ĐỆM NHẠC</span><h3 id="chords24-curriculum-title">24 bài hợp âm hai tay</h3><p>24 bài nguyên tác · 6 mức · đủ 8 ô mỗi bài. Tập hình hợp âm, đổi thế, rải, giữ độc lập và cân bằng giai điệu với phần đệm.</p></div><a href="assets/books/piano-24-hop-am-hai-tay.pdf" target="_blank" rel="noopener">Mở sách ↗</a></div><nav id="chords24-course-map" class="world-map" aria-label="6 mức luyện hợp âm hai tay"></nav></section><section class="book-curriculum" aria-labelledby="pieces18-curriculum-title"><div class="book-curriculum-heading"><div><span class="eyebrow">TỪ KỸ THUẬT ĐẾN MỘT CÂU NHẠC</span><h3 id="pieces18-curriculum-title">Những ngày êm đềm · 18 tiểu phẩm</h3><p>18 bài hoàn chỉnh · 6 mức · đủ 16 ô. Nghe giai điệu, học từng câu A/A1/B/A2, nối các đoạn rồi chơi trọn bài.</p></div><a href="assets/books/piano-18-tieu-pham.pdf" target="_blank" rel="noopener">Mở sách ↗</a></div><nav id="pieces18-course-map" class="world-map" aria-label="6 mức tiểu phẩm nhẹ nhàng"></nav></section><h3 class="course-section-title">Luyện độc lập hai tay</h3><nav id="world-map" class="world-map" aria-label="Bản đồ 10 vùng"></nav>
+          <div class="journey-resume"><span id="journey-progress"></span><button type="button" id="journey-resume">Tiếp tục hành trình →</button></div>
+        </section><details class="course-browser"><summary>Xem từng bài trong khóa học</summary><nav id="lesson-list" class="lesson-list" aria-label="Các bài tập"></nav></details></section><section id="songs-view" class="screen" aria-labelledby="library-title" hidden=""><div class="page-heading"><span class="eyebrow">BIẾN BÀI TẬP THÀNH ÂM NHẠC</span><h1 id="library-title" tabindex="-1">Bài hát của bạn</h1><p>Nghe trước, luyện từng đoạn, rồi chơi liền cả bài.</p></div><section class="song-library panel" aria-labelledby="song-library-title">
+          <div class="section-top"><div><span class="eyebrow">TỪ BÀI TẬP ĐẾN GIAI ĐIỆU</span><h2 id="song-library-title">Luyện bài hát từng bước</h2></div><span class="song-badge">Bài đích đến</span></div>
+          <article class="song-card"><div><h3></h3><p>Giữ phần đệm đều, làm nổi giai điệu · Nhịp 3/4</p><span id="song-card-progress">0/50 thử thách · 47 ô nhịp</span></div><div class="song-card-actions"><button id="song-preview" type="button">▶ Nghe thử</button><button id="song-open" type="button" class="song-primary">Bắt đầu chơi →</button></div></article>
+        </section></section><section id="skills-view" class="screen" aria-labelledby="skills-title" hidden>
+  <div class="page-heading"><span class="eyebrow">MỘT KỸ NĂNG · NHIỀU CON ĐƯỜNG</span><h1 id="skills-title" tabindex="-1">Bản đồ kỹ năng</h1><p>Chọn điều bạn muốn chơi tốt hơn. Tìm bài nền, luyện một đoạn, rồi đưa vào âm nhạc.</p></div>
+  <p id="skills-summary" class="skills-summary"></p>
+  <article class="skill-next"><span class="eyebrow">BƯỚC NHỎ TIẾP THEO</span><h2 id="skill-next-title"></h2><p id="skill-next-reason"></p><button id="skill-next-button" type="button"></button></article>
+  <div class="skill-workspace"><div class="skill-overview"><h2>Khám phá kỹ năng</h2><nav id="skill-groups" aria-label="Nhóm kỹ năng"></nav><div class="skill-legend"><span>○ Có thể bắt đầu</span><span>◒ Đang luyện</span><span>✓ Đã luyện</span><span>↖ Ôn nền trước</span></div><div id="skill-map"></div></div>
+  <section class="skill-detail" aria-labelledby="skill-detail-title"><span class="eyebrow">KỸ NĂNG ĐANG CHỌN</span><h2 id="skill-detail-title"></h2><p id="skill-detail-description"></p><p id="skill-detail-progress" role="status"></p><div id="skill-relations" class="skill-relations" aria-label="Quan hệ nền tảng và kỹ năng tiếp theo"></div>
+  <div class="skill-lesson-heading"><h3>Bài để luyện kỹ năng này</h3><span id="skill-lesson-count"></span></div><div class="skill-filters"><label>Bộ bài<select id="skill-source"></select></label><label>Hiển thị<select id="skill-filter"><option value="all">Tất cả bài liên quan</option><option value="direct">Luyện trực tiếp</option><option value="unfinished">Chưa hoàn thành</option></select></label></div><div id="skill-lessons" class="skill-lessons"></div><div id="skill-songs"></div></section></div>
+  <details class="skill-explanation"><summary>Bản đồ ghi nhận tiến độ thế nào?</summary><p>“Đã luyện” nghĩa là bạn đã hoàn thành hai bài luyện trực tiếp (hoặc toàn bộ nếu kỹ năng chỉ có một bài). Một kỹ năng được tính là nền đã có sau ít nhất một bài luyện trực tiếp hoàn thành. Mọi bài luôn mở.</p><p>Sao là các bước bạn tự xác nhận sau khi chơi trên đàn. “Đã tập”, nghe mẫu và kỹ năng chỉ được vận dụng trong bài không tự tính là hoàn thành kỹ năng. Bản đồ chưa chứng nhận độ thành thạo; micro vẫn chỉ hỗ trợ nốt đơn C2–C6.</p></details>
+</section><section id="reading-view" class="screen reading-screen" aria-labelledby="reading-title" hidden>
+  <div class="page-heading"><span class="eyebrow">ĐỌC MỚI · TẬP ĐỀU · ĐI QUA ĐỦ CÁC PHẦN</span><h1 id="reading-title" tabindex="-1">Đọc nhạc mỗi ngày</h1><p>Một buổi đi qua 10 kỹ năng. App chọn bài tiếp theo để bạn tập trung vào việc chơi.</p></div>
+  <article class="reading-hero panel"><div><span class="eyebrow">BUỔI TẬP CỦA BẠN</span><h2>45 phút bên cây đàn</h2><p>Quan sát, chơi, tự kiểm tra rồi chuyển bài. Micro không bắt buộc.</p><strong id="reading-total">252 nhóm · 1.008 biến thể</strong></div><div class="reading-entry-actions"><label>Mức bài <select id="reading-level"><option value="2">Cả mức 1 &amp; 2</option><option value="1">Chỉ mức 1 · làm quen</option></select></label><button id="reading-start" class="primary-button" type="button">Bắt đầu 45 phút</button></div></article>
+  <p id="reading-status" role="status">10 phần · khoảng 22 lượt · tiến độ lưu trên thiết bị này.</p><p id="reading-storage-note" role="alert" hidden>Trình duyệt không lưu được tiến độ. Buổi này chỉ được giữ khi trang còn mở.</p>
+  <div id="reading-modules" class="reading-modules" aria-label="Tiến độ 10 phần"></div>
+  <details class="reading-details"><summary>Danh sách buổi tập &amp; cách xoay vòng</summary><p>Ưu tiên bài chưa hoàn thành. Tránh nhóm vừa tập ở buổi trước và cùng biến thể trong 7 ngày. Khi hết bài mới, bài ôn được ghi rõ. Bỏ qua không tính đã tập; đã tập không chứng nhận thành thạo.</p><ol id="reading-session-plan"></ol><p>Ngân sách 45 phút gồm thời gian quan sát và tự kiểm tra. Bạn tự chuyển bài ở cuối câu; app không cắt giữa đoạn.</p></details>
+</section><section id="practice-view" class="screen practice-screen" aria-label="Luyện tập" hidden=""><section class="lesson-heading" aria-labelledby="lesson-title"><div><div class="stage-line" id="stage-line"></div><h1 id="lesson-title" tabindex="-1">Đang tải bài tập...</h1><p id="lesson-goal"></p><div id="lesson-skills" class="lesson-skills" aria-label="Kỹ năng trong bài"></div></div><div class="lesson-nav"><button id="prev-lesson" aria-label="Bài trước">← <span class="focus-nav-label">Bài trước</span></button><button id="next-lesson" aria-label="Bài tiếp"><span class="focus-nav-label">Bài tiếp</span> →</button></div></section><div class="practice-view-tools"><button id="focus-mode" type="button" aria-pressed="false">⛶ Tập trung</button><details id="display-options"><summary>Hiển thị &amp; chuyển động</summary><div class="display-options-grid"><label><input id="show-keyboard" type="checkbox" checked=""> Bàn phím</label><label><input id="show-tempo" type="checkbox" checked=""> Tempo</label><label><input id="show-play" type="checkbox" checked=""> Play / Pause</label><label><input id="show-replay" type="checkbox" checked=""> Replay</label><label><input id="show-timeline" type="checkbox" checked=""> Timeline</label><label><input id="follow-score" type="checkbox" checked=""> Sheet đi theo nhạc</label></div><p>Space: phát / dừng · Esc: thoát tập trung</p></details></div><section id="quest" class="quest panel" aria-labelledby="quest-title"><details class="practice-disclosure"><summary>Mục tiêu khóa học &amp; tiến độ</summary><div class="quest-top"><span id="quest-location" class="eyebrow"></span><span id="quest-stars" class="quest-stars" aria-label="Chưa có sao">☆☆☆</span></div><h2 id="quest-title"></h2><p id="quest-purpose" class="quest-purpose"></p></details><ol class="quest-steps" id="quest-steps" aria-label="Ba thử thách của màn"></ol>
+
+
+
+          <div class="quest-mission"><span id="quest-step-label" class="eyebrow"></span><h3 id="quest-task"></h3><p id="quest-rule"></p><p id="quest-setup" class="quest-setup"></p></div>
+          <details id="book-lesson-guide" class="book-lesson-guide" hidden><summary>Cách tập &amp; đối chiếu trong sách</summary><p id="book-lesson-reference"></p><ol id="book-practice-steps"></ol><p><strong>Nếu còn vấp:</strong> <span id="book-repair"></span></p><p id="book-review"></p><a id="book-source-link" href="assets/books/piano-nguoi-lon-moi-bat-dau.pdf" target="_blank" rel="noopener">Xem trang trong sách ↗</a> <a id="book-musicxml-link" href="#" download hidden>Tải MusicXML ↗</a><div id="book-downloads" class="book-source-links"></div><div id="book-repair-links" class="book-source-links"></div></details><p id="quest-feedback" class="quest-feedback" role="status"></p>
+          <div class="quest-actions"><button type="button" id="quest-start" class="quest-primary">Vào thử thách</button><button type="button" id="quest-easier">Chậm lại một chút</button><button type="button" id="quest-next" hidden="">Màn tiếp theo →</button><button type="button" id="quest-replay" hidden="">Chơi lại màn này</button></div>
+
+
+        <details class="practice-disclosure completion-disclosure"><summary>Ghi nhận sau khi chơi trên đàn</summary><div id="quest-check" class="quest-check"><label><input type="checkbox" id="quest-confirm"> <span id="quest-confirm-text">Tôi đã chơi trên đàn 3 lượt và đạt mục tiêu trên.</span></label><button type="button" id="quest-claim" disabled="">Nhận ngôi sao ★</button></div><p id="quest-note" class="quest-note">Nghe mẫu, rồi thử trên đàn. Bạn tự kiểm tra mỗi lượt; nghe mẫu không tự nhận sao. Có thể nghỉ và quay lại, sao của bạn vẫn được giữ.</p></details></section><section id="song-practice" class="song-practice panel" aria-labelledby="song-practice-title" hidden=""><details class="practice-disclosure"><summary>Chọn đoạn nhạc · xem tiến độ</summary><div class="section-top"><div><span class="eyebrow">BẢN ĐỒ CÂU NHẠC</span><h2 id="song-practice-title"> · 47 ô nhịp</h2></div><button id="song-back" type="button">Về bài luyện</button></div><div class="song-progress-row"><label for="song-progress-bar" id="song-progress">0/50 thử thách đã chơi ổn</label><progress id="song-progress-bar" max="50" value="0"></progress></div><nav id="song-phrases" class="song-phrases" aria-label="Chọn câu nhạc"></nav><p class="song-unavailable">Đủ hai trang · 47 ô nhịp. Chọn từng đoạn hoặc “Toàn bài” để chơi đúng dấu lặp và hai kết.</p></details>
+
+
+          <div class="song-listening"><label>Cách nghe <select id="song-expression"><option value="practice">Luyện nhịp đều</option><option value="expressive">Nghe có sắc thái</option></select></label><span id="song-expression-note">Lực nhấn ổn định để dễ ghép hai tay.</span></div>
+
+
+
+          <nav id="song-steps" class="song-steps" aria-label="Các bước luyện câu"></nav>
+          <div class="quest-mission"><span class="eyebrow">MỘT MỤC TIÊU MỖI LƯỢT</span><h3 id="song-task"></h3><p id="song-rule"></p></div>
+          <p id="song-feedback" class="quest-feedback" role="status"></p>
+          <div class="song-actions"><button id="song-begin" class="song-primary" type="button">Vào thử thách</button><button id="song-retry" type="button">Tập lại chỗ này · chậm hơn</button></div>
+
+
+        <details class="practice-disclosure completion-disclosure"><summary>Ghi nhận đoạn đã chơi ổn</summary><div class="quest-check"><label><input id="song-confirm" type="checkbox"> Tôi đã chơi trên đàn 3 lượt và đạt mục tiêu trên.</label><button id="song-claim" type="button" disabled="">Đã chơi ổn ✓</button></div><p id="song-settings-note" class="quest-note"></p></details></section><section id="reading-practice" class="reading-practice panel" aria-labelledby="reading-task-title" hidden>
+  <div class="reading-task-top"><span id="reading-location" class="eyebrow"></span><span id="reading-clock">0:00 / 45 phút</span><button id="reading-pause" type="button">Lưu &amp; nghỉ</button></div>
+  <div class="reading-task-heading"><h2 id="reading-task-title"></h2><span id="reading-kind" class="reading-kind"></span></div><p id="reading-task-rule"></p><p id="reading-listen-help"></p>
+  <div class="reading-check"><label><input id="reading-confirm" type="checkbox"> <span id="reading-confirm-label">Tôi đã thực hiện mục tiêu bài này.</span></label><div class="reading-check-actions"><button id="reading-good" type="button" disabled>Ổn · bài tiếp →</button><button id="reading-review" type="button" disabled>Cần luyện lại · bài tiếp</button><button id="reading-skip" type="button">Bỏ qua</button><button id="reading-reveal" type="button" hidden>Hiện sheet kiểm tra</button><button id="reading-preview-hide" type="button" hidden>Đã quan sát · giấu sheet</button></div></div>
+  <p id="reading-feedback" role="status"></p><details><summary>Đối chiếu nội dung</summary><p id="reading-source-note"></p><p id="reading-unavailable"></p><p>Tự đánh giá sau khi chơi; nghe mẫu hoặc chạy timeline không tự tính hoàn thành.</p></details>
+</section><section class="transport panel" aria-label="Điều khiển phát">
+          <div class="practice-mode-switch" role="group" aria-label="Chọn cách luyện tập">
+  <button type="button" data-practice-mode="listen" aria-pressed="true"><strong>Nghe mẫu</strong><span>Nghe và nhìn sheet</span></button>
+  <button type="button" data-practice-mode="step" aria-pressed="false"><strong>Tập từng nốt</strong><span>Sheet chờ bạn đánh</span></button>
+  <button type="button" data-practice-mode="timed" aria-pressed="false"><strong>Chơi theo nhịp</strong><span>Sheet chạy theo tempo</span></button>
+  <button type="button" data-practice-mode="chords" aria-pressed="false"><strong>Nghe hợp âm</strong><span>Thử nghiệm · không chấm</span></button></div>
+<div class="practice-setup"><div class="hand-control" role="group" aria-label="Chọn tay luyện tập">
+              <button type="button" data-hand="both" aria-pressed="true">Hai tay</button>
+              <button type="button" data-hand="rh" aria-pressed="false">Tay phải</button>
+              <button type="button" data-hand="lh" aria-pressed="false">Tay trái</button>
+            </div><button id="practice-segment" type="button" aria-controls="practice-options" aria-expanded="false">Ô 1–4 ▾</button><details id="mic-settings"><summary>Micro &amp; nâng cao</summary>
+  <label>Cách chấm <select id="mic-grading-mode" aria-describedby="mic-mode-hint"><option value="relaxed">Học thoải mái</option><option value="precise">Luyện chính xác</option></select></label>
+  <p id="mic-mode-hint"></p><p id="mic-flow-hint"></p>
+  <details class="practice-feedback-detail"><summary>Kết quả lượt tập</summary><p id="mic-target"></p><p id="mic-feedback" role="status"></p><p id="mic-round-summary"></p><p id="mic-last-round" hidden></p><button id="mic-reset" type="button">Về đầu đoạn</button></details>
+  <details class="mic-device-options"><summary>Thiết lập micro</summary>
+    <button id="mic-toggle" type="button" aria-pressed="false">🎤 Bật micro</button>
+    <label>A4 <input id="mic-a4" type="number" min="415" max="466" step="0.1" value="440"> Hz</label>
+    <label>Ngưỡng âm <input id="mic-threshold" type="range" min="-75" max="-30" step="1" value="-66"><output id="mic-threshold-value">-66 dBFS</output></label>
+    <output id="mic-confidence" aria-label="Chỉ số tin cậy lần đánh gần nhất" aria-describedby="mic-confidence-help" aria-live="off" data-state="empty">Tin cậy —</output>
+    <p id="mic-last-detection" hidden></p><p id="mic-confidence-help">Tin cậy giữ theo lần đánh gần nhất, chưa phải xác suất nhận đúng. Họa âm hoặc nhiều nốt vẫn có thể cho chỉ số cao.</p>
+    <p id="mic-input-help">Đánh từng nốt hoặc hợp âm trong C2–C6, nhả pedal. Âm thanh được xử lý trên thiết bị. Hợp âm được so với đúng các phím cần đánh; bộ nghe còn có thể nhầm. Chưa chấm trường độ hoặc lực nhấn.</p>
+    <p><a href="calibrate.html">Hiệu chỉnh với đàn thật ↗</a> · đo ồn phòng, độ chuẩn dây và thử nhận nốt.</p>
+    <div class="score-model"><p id="score-model-status" role="status">Đang chấm theo bộ mẫu chung.</p><button id="score-model-learn" type="button" hidden>Thu phím cho bài này</button> <button id="eval-open" type="button">Đánh giá trên đàn thật</button></div>
+    <p id="mic-processing-warning" hidden>Thiết bị chưa xác nhận tắt các bộ xử lý âm tự động; độ chính xác có thể thay đổi.</p>
+    <details class="mic-diagnostics-options"><summary>Chẩn đoán micro</summary><p id="mic-device-settings"></p><p id="mic-diagnostics"></p><label><input id="mic-guard-toggle" type="checkbox"> Quan sát đa âm · thử nghiệm</label><p id="mic-guard-status" role="status"></p><p>Bộ thử chỉ hiển thị kết quả, chưa thay đổi việc chấm bài.</p></details>
+  </details>
+</details></div>
+<p id="practice-guidance" class="practice-guidance" role="status"></p>
+<div id="practice-recovery" class="practice-recovery" role="group" aria-label="Chọn cách tập phù hợp" tabindex="-1" hidden>
+  <button id="practice-recovery-rh" type="button" hidden>Tập tay phải với micro</button>
+  <button id="practice-recovery-lh" type="button" hidden>Tập tay trái với micro</button>
+  <button id="practice-recovery-listen" type="button">Nghe mẫu để tự tập</button>
+  <button id="practice-recovery-chords" type="button">Nghe hợp âm · không chấm</button>
+  <button id="practice-recovery-range" type="button">Đổi đoạn luyện</button>
+</div>
+<section id="mic-chord-panel" class="mic-chord-panel" aria-label="Hợp âm nghe được, thử nghiệm" hidden><div><span>HỢP ÂM NGHE ĐƯỢC · THỬ NGHIỆM</span><output id="mic-chord-name" aria-live="polite">—</output><p id="mic-chord-notes"></p></div><p id="mic-chord-state">Bấm bắt đầu để nghe hợp âm.</p><small>Bộ nghe có thể thiếu hoặc nhầm nốt. Chưa dùng kết quả này để chấm bài.</small></section><nav id="piece-phrases" class="piece-phrases" aria-label="Chọn câu nhạc trong tiểu phẩm" hidden></nav><div class="transport-main"><div class="mic-controls" id="mic-controls" hidden>
+  <output id="mic-note" aria-label="Nốt micro nhận diện">—</output>
+  <meter id="mic-level" min="0" max="1" value="0" aria-label="Mức âm lượng micro"></meter>
+  <span id="mic-step-target" aria-live="polite" hidden></span>
+  <span id="mic-timed-live" hidden></span><span id="mic-brief" aria-live="polite">Chưa nghe micro</span><button id="mic-self-check" type="button" hidden>Đã đánh · Tiếp</button>
+  <p id="mic-status" role="status">Micro đã tắt</p>
+</div><div class="playback-cluster"><button class="play-button" id="play-button" aria-label="Phát bài" title="Play / Pause · Space"><span id="play-icon">▶</span><span id="play-label">Nghe mẫu</span></button><button class="stop-button" id="stop-button" aria-label="Chơi lại đoạn" title="Replay · chơi lại đoạn">↺</button></div><div class="timer-group"><strong id="time-current">0:00</strong><span class="timer-separator">/</span><span id="time-total">0:16</span><span class="play-status" id="play-status">Sẵn sàng</span></div><div class="transport-options"><label class="tempo-control">Tốc độ <strong id="tempo-value">60</strong> BPM<input id="tempo" type="range" min="40" max="120" step="2" value="60" aria-label="Tốc độ BPM"></label><label class="option"><input type="checkbox" id="metronome" checked=""> Nhịp gõ</label><label class="option"><input type="checkbox" id="loop"> Lặp đoạn</label><label class="option" id="timed-mic-option" hidden><input type="checkbox" id="timed-mic"> Chấm bằng micro</label></div></div>
+
+
+
+
+
+
+
+
+
+        <details id="practice-options" class="practice-options"><summary>Đoạn tập &amp; tiếng đàn</summary><div class="practice-controls">
+
+            <div class="segment-control" role="group" aria-label="Chọn đoạn tập">
+              <span>Đoạn tập</span>
+              <label>Từ ô <select id="bar-start" aria-label="Ô bắt đầu"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
+              <label>đến ô <select id="bar-end" aria-label="Ô kết thúc"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4" selected="">4</option></select></label>
+              <button type="button" id="full-piece">Cả bài</button>
+            </div>
+          </div><p class="practice-hint" id="practice-hint">Nghe cả hai tay · Ô 1–4. Bật “Lặp đoạn” để tập nhiều lượt.</p><details id="sound-settings" class="sound-settings"><summary>Tiếng đàn &amp; thiết lập âm thanh</summary><div class="instrument-info"><span id="instrument-name">♪ Salamander Grand Piano</span><span id="audio-status" role="status">Sẵn sàng nạp âm thanh</span></div><div class="sound-controls">
+            <label>Bộ đàn <select id="piano-engine"><option value="full">Salamander · SFZ 16 lớp</option><option value="vcsl-model-b" disabled="">VCSL · S Model B (mở server)</option><option value="piano162-close" disabled="">Piano in 162 · Close (chưa cài)</option><option value="piano162-ambient" disabled="">Piano in 162 · Ambient (chưa cài)</option><option value="piano162-practice" disabled="">Piano in 162 · Luyện rõ nốt (mở server)</option><option value="piano162-expressive" disabled="">Piano in 162 · Biểu cảm (mở server)</option><option value="piano162-warm" disabled="">Piano in 162 · Ấm và rộng (mở server)</option><option value="piano162-intimate" disabled="">Piano in 162 · Mềm thân mật (mở server)</option><option value="web">Salamander web · 30 phím × 8 lớp</option><option value="compact" selected="">Salamander · MP3 3 lớp</option></select></label>
+            <span id="full-piano-options" hidden=""><label id="piano-tuning-control">Màu đàn <select id="piano-tuning"><option value="natural">Natural</option><option value="retuned">Retuned</option></select></label><label><input id="piano-pedal" type="checkbox"> Pedal ngân · nhấc mỗi ô</label><label>Lực nhấn <input id="piano-touch" type="range" min="20" max="150" step="1" value="100" aria-label="Lực nhấn piano"><output id="piano-touch-value" for="piano-touch">100%</output></label></span>
+            <a id="full-piano-link" href="http://127.0.0.1:8765/">Mở bản đầy đủ (giữ tiến độ) ↗</a>
+          </div><p class="practice-hint"><a href="compare-pianos.html" target="_blank" rel="noopener">So sánh bộ MP3 gọn · Salamander web · SFZ ↗</a></p><p id="piano162-install-note" class="practice-hint">Piano in 162 chưa có mẫu · <a href="https://www.ivyaudio.com/freebies" target="_blank" rel="noopener">Tải bản SFZ từ Ivy Audio ↗</a></p><p id="full-piano-hint" class="practice-hint">Bản đầy đủ: mở Open Full Piano.command trong thư mục ứng dụng.</p><label class="room-control">Độ vang <input id="room" type="range" min="0" max="100" step="5" value="40" aria-label="Độ vang tiếng đàn"><output id="room-value" for="room">40%</output><span>0%: tiếng đàn khô</span></label></details></details></section><dialog id="mic-timed-result" aria-labelledby="mic-timed-title"><h2 id="mic-timed-title">Kết quả lượt theo tempo</h2><p id="mic-timed-context"></p><strong id="mic-timed-score">—</strong><p id="mic-timed-breakdown"></p><p id="mic-timed-coverage"></p><p>Điểm luyện tập dựa trên nốt và thời điểm micro nhận được; chưa chấm trường độ, lực nhấn hoặc pedal.</p><div class="mic-timed-actions"><button id="mic-timed-retry" type="button">Tập lại lượt</button><button id="mic-timed-close" type="button">Về sheet</button></div></dialog><dialog id="eval-dialog" aria-labelledby="eval-title"><h2 id="eval-title">Đánh giá bộ nghe trên đàn thật</h2><p id="eval-context"></p><ol class="eval-steps"><li><span id="eval-model"></span> <button id="eval-learn" type="button" hidden>Thu phím</button></li><li>Lượt 1: chơi đúng cả đoạn theo nhịp, sau một ô đếm vào. <button id="eval-round1" type="button">Bắt đầu lượt 1</button> <span id="eval-round1-status" role="status"></span></li><li>Lượt 2: chơi lại; ở các nốt viền cam, đánh phím ngay bên phải (cao hơn nửa cung). <button id="eval-round2" type="button">Bắt đầu lượt 2</button> <span id="eval-round2-status" role="status"></span></li></ol><table id="eval-table" hidden><thead><tr><th>Cách chấm</th><th>Nốt đúng được nhận</th><th>Lỗi bị cho qua</th><th>Lệch nhịp</th></tr></thead><tbody></tbody></table><p id="eval-note"></p><p>Âm thanh chỉ xử lý trên máy này. Tải báo cáo và bản thu để gửi phân tích.</p><div class="mic-timed-actions"><button id="eval-download" type="button" disabled>Tải báo cáo (JSON)</button><button id="eval-download-audio" type="button" disabled>Tải bản thu (WAV)</button><button id="eval-close" type="button">Đóng</button></div></dialog><dialog id="take-dialog" aria-labelledby="take-title"><h2 id="take-title">Thu từng phím trên đàn của bạn</h2><p>Đánh mỗi phím một lần, lực vừa, rồi nhả phím và pedal. App kiểm tra cao độ trước khi lưu; phím đã thu dùng lại cho các bài khác.</p><strong id="take-key">—</strong><p id="take-progress"></p><p id="take-feedback" role="status"></p><div class="mic-timed-actions"><button id="take-skip" type="button">Bỏ qua phím này</button><button id="take-close" type="button">Đóng</button></div></dialog><section class="score-panel panel" aria-labelledby="score-title"><div class="section-top"><div><span class="eyebrow">SHEET NHẠC ĐỒNG BỘ</span><h2 id="score-title">Theo câu nhạc của bạn</h2></div><div class="legend"><span><i class="dot teal"></i> Tay phải</span><span><i class="dot coral"></i> Tay trái</span></div></div><div class="score-viewport"><div class="score-scroll" id="score-scroll"><div id="score" role="img" aria-label="Khuông nhạc hai tay, bốn ô nhịp"></div></div><div id="score-cursor" aria-hidden="true" hidden=""></div></div><div class="score-foot"><span id="focus-text"></span><span id="notation-tip" class="notation-tip">Khóa Sol: tay phải · Khóa Fa: tay trái</span></div><div class="progress-row" id="score-timeline"><span id="position-label">Ô 1 · phách 1</span><input type="range" id="progress" min="0" max="16" step="0.01" value="0" aria-label="Timeline đoạn luyện, kéo để chọn vị trí"><span id="count-label">1 &amp; 2 &amp; 3 &amp; 4 &amp;</span></div></section><details class="keyboard-details" open="" id="keyboard-view"><summary>Bàn phím minh họa · các nốt đang vang</summary><section class="keyboard-panel panel" aria-labelledby="keyboard-title"><div class="section-top keyboard-top"><div><span class="eyebrow">BÀN PHÍM TRỰC QUAN</span><h2 id="keyboard-title">Các phím đang vang</h2></div><strong id="active-notes">—</strong></div><div class="keyboard-scroll" id="keyboard-scroll"><div class="keyboard" id="keyboard" aria-label="Bàn phím piano từ C2 đến C6"></div></div><div class="keyboard-foot"><span class="small-dot teal"></span> Tay phải <span class="small-dot coral"></span> Tay trái <span class="tip">Kéo ngang để xem hết bàn phím</span></div></section></details><details class="preparation-details"><summary>Vị trí tay &amp; cách chạm phím</summary><section class="preparation panel" aria-label="Chuẩn bị trước khi tập">
+          <div><span class="eyebrow">CHUẨN BỊ</span><p id="start-notes"></p></div>
+          <p id="finger-guide" hidden=""></p>
+          <p id="touch-guide" hidden=""></p>
+        </section></details><section id="composer" class="composer panel" aria-labelledby="composer-title" hidden="">
+          <div class="section-top"><div><span class="eyebrow">XƯỞNG CÂU HÁT</span><h2 id="composer-title">Chọn câu nhạc của bạn</h2></div><button type="button" id="composer-shuffle">Gợi ý câu khác ↻</button></div>
+          <p>Chọn bốn nốt và một nhịp. Nghe câu mẫu, rồi thử chơi hoặc biến đổi câu ấy trên đàn; giữ phần đệm tay trái tiếp tục.</p>
+          <div class="composer-controls"><div id="composer-notes" class="composer-notes"></div><label>Nhịp câu <select id="composer-rhythm"></select></label></div>
+          <p id="composer-summary" class="composer-summary" role="status"></p>
+        </section><section id="lesson-practice" class="practice-panel panel extra-practice"><div><span class="eyebrow">MỤC TIÊU BÀI NÀY</span><h2 id="pass-rule"></h2></div><p id="variation"></p><button class="done-button" id="done-button" aria-pressed="false">✓ Đánh dấu đã tập</button></section></section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <footer class="credits">Âm thanh: <a href="https://github.com/sfzinstruments/SalamanderGrandPiano" target="_blank" rel="noopener">Salamander Grand Piano</a> · Alexander Holm · CC BY 3.0. VCSL Keys: <a href="https://versilian-studios.com/vcsl-keys/" target="_blank" rel="noopener">Versilian Studios</a> · CC0. Piano in 162: <a href="https://www.ivyaudio.com/freebies" target="_blank" rel="noopener">Ivy Audio</a>. Sheet: <a href="https://github.com/0xfe/vexflow" target="_blank" rel="noopener">VexFlow</a> · MIT.</footer>
+      </div>
+    </main>
+  </div>
+  <div class="mobile-backdrop" id="mobile-backdrop" hidden=""></div>
+
+
+
+
+
+
+</body></html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>So sánh bộ đàn</title>
+  <script src="assets/salamander-samples.js?v=1afbbe0-dirty" defer></script>
+  <script src="piano-audio.js?v=1afbbe0-dirty" defer></script>
+  <script src="web-piano-audio.js?v=1afbbe0-dirty" defer></script>
+  <style>
+    :root{--bg:#291251;--card:#35205b;--line:#ffffff22;--ink:#fff;--muted:#cdbde6;--accent:#9c58d8;--good:#79f0cf}
+    *{box-sizing:border-box}
+    html{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}
+    body{margin:0;background:radial-gradient(ellipse at 75% 0,#5430a0 0,transparent 60%),var(--bg);min-height:100vh}
+    main{max-width:720px;margin:0 auto;padding:24px 16px 64px}
+    a{color:var(--good)}
+    h1{font-size:26px;margin:4px 0 6px}
+    p{line-height:1.55}
+    .muted{color:var(--muted);font-size:14px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+    .card div{flex:1;min-width:220px}
+    .card strong{display:block;font-size:17px}
+    button{font:inherit;padding:10px 18px;border-radius:10px;border:1px solid #ffffff40;background:var(--accent);color:#fff;cursor:pointer;min-width:110px}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    button:focus-visible,a:focus-visible{outline:3px solid var(--good);outline-offset:2px}
+    #status{min-height:1.5em}
+  </style>
+</head>
+<body>
+<main>
+  <h1>So sánh bộ đàn</h1>
+  <p class="muted">Cùng một đoạn: thang âm nhẹ, hợp âm, giai điệu mạnh và một nốt trầm. Nên nghe bằng tai nghe. <a href="index.html">← Về app</a></p>
+  <section class="card"><div><strong>Bộ MP3 gọn</strong><span class="muted">13 phím × 3 lớp lực nhấn · 10 MB, nhúng sẵn, chạy cả khi mở file trực tiếp.</span></div><button type="button" data-bank="compact">Nghe</button></section>
+  <section class="card"><div><strong>Salamander web</strong><span class="muted">Đủ 30 phím thu thật × 8 lớp · 26,5 MB, tải theo bài · dùng trên GitHub Pages.</span></div><button type="button" data-bank="web">Nghe</button></section>
+  <section class="card"><div><strong>Salamander SFZ đầy đủ</strong><span class="muted">16 lớp, tiếng nhả phím, cộng hưởng · bản render sẵn từ sfizz; trong app cần server cục bộ.</span></div><button type="button" data-bank="sfz">Nghe</button></section>
+  <p id="status" class="muted" role="status"></p>
+</main>
+<script>
+(() => {
+  'use strict';
+  const status=text=>{document.getElementById('status').textContent=text;};
+  let context=null,pianos={},phrase=null,audio=null,stopTimer=0;
+  const buttons=[...document.querySelectorAll('[data-bank]')];
+  function stopAll(){audio?.pause();if(audio)audio.currentTime=0;clearTimeout(stopTimer);for(const piano of Object.values(pianos))piano.master.gain.setTargetAtTime(0,context.currentTime,.02);}
+  async function play(bank){
+    stopAll();buttons.forEach(b=>b.disabled=true);
+    try{
+      if(bank==='sfz'){audio??=new Audio('assets/salamander-web/compare-sfz.mp3');await audio.play();status('Đang phát SFZ đầy đủ (bản render sẵn).');return;}
+      phrase??=await fetch('assets/salamander-web/compare-phrase.json').then(r=>r.json());
+      context??=new AudioContext();await context.resume();
+      if(!pianos[bank]){pianos[bank]=bank==='web'?new WebSalamanderPiano(context):new SalamanderPiano(context);pianos[bank].setRoom(.4);}
+      const piano=pianos[bank];status('Đang nạp mẫu…');
+      await piano.load((done,total)=>status(`Đang nạp mẫu ${done}/${total}…`),phrase.notes.map(n=>n.midi));
+      piano.master.gain.cancelScheduledValues(context.currentTime);piano.master.gain.setValueAtTime(.8,context.currentTime);
+      const start=context.currentTime+.1;
+      for(const note of phrase.notes)piano.play(note.midi,start+note.at,note.duration,.11,null,note.velocity);
+      status(`Đang phát ${bank==='web'?'Salamander web':'bộ MP3 gọn'}.`);stopTimer=setTimeout(()=>status(''),phrase.duration*1000);
+    }catch(error){status('Không phát được: '+error.message+(location.protocol==='file:'?' (mở trang qua http để dùng bộ web)':''));}
+    finally{buttons.forEach(b=>b.disabled=false);}
+  }
+  for(const button of buttons)button.addEventListener('click',()=>play(button.dataset.bank));
+})();
+</script>
+</body>
+</html>
