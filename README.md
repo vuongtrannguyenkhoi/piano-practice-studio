@@ -20,7 +20,7 @@ For microphone practice, use a quiet room and headphones when listening to examp
 
 ## Install and practice offline
 
-Open **Luyện tập** (Practice) and find **Mang buổi tập theo bạn**. Use **Cài ứng dụng** to install, or choose Add to Home Screen in your browser menu. The installed app opens in its own window.
+Open **Luyện tập** (Practice) and find **Cài app & luyện offline**. Use **Cài ứng dụng** to install, or choose Add to Home Screen in your browser menu. The installed app opens in its own window.
 
 Wait for the offline-ready message before disconnecting. Lessons and the compact piano bank are saved automatically. Web piano samples are saved as you use them; choose **Tải âm để luyện offline** to download the complete web bank. Keep the app open while downloading. You can cancel and resume later. Browser storage may be cleared by the device, so check availability before practicing without a connection.
 

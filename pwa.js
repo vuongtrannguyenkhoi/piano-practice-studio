@@ -3,8 +3,8 @@
  if(document.documentElement.dataset.pwaBuild!=='true')return;
  const base=new URL('./',document.baseURI),prefix='piano-'+base.pathname.replace(/\W/g,'_')+'-',audioCache=prefix+'audio-v1';
  const section=document.createElement('section');section.className='pwa-card';section.setAttribute('aria-labelledby','pwa-title');
- section.innerHTML=`<h2 id="pwa-title">Mang buổi tập theo bạn</h2><p>Bài học và bộ đàn gọn dùng được offline sau lần nạp đầu. Tải thêm bộ đàn web để nghe đủ 8 lớp lực nhấn khi mất mạng.</p><div class="pwa-actions"><button id="pwa-install" type="button">Cài ứng dụng</button><button id="pwa-download" type="button" disabled>Tải âm để luyện offline</button><button id="pwa-cancel" type="button" hidden>Hủy tải</button><button id="pwa-update" type="button" hidden>Cập nhật ứng dụng</button></div><p id="pwa-status" role="status">Đang chuẩn bị chế độ offline…</p><progress id="pwa-progress" hidden max="1" value="0" aria-label="Tiến độ tải âm offline"></progress>`;
- document.getElementById('today-view').append(section);
+ section.innerHTML=`<h2 id="pwa-title">Cài app &amp; luyện offline</h2><p>Bài học và bộ đàn gọn dùng được offline sau lần nạp đầu. Tải thêm bộ đàn web để nghe đủ 8 lớp lực nhấn khi mất mạng.</p><div class="pwa-actions"><button id="pwa-install" type="button">Cài ứng dụng</button><button id="pwa-download" type="button" disabled>Tải âm để luyện offline</button><button id="pwa-cancel" type="button" hidden>Hủy tải</button><button id="pwa-update" type="button" hidden>Cập nhật ứng dụng</button></div><p id="pwa-status" role="status">Đang chuẩn bị chế độ offline…</p><progress id="pwa-progress" hidden max="1" value="0" aria-label="Tiến độ tải âm offline"></progress>`;
+ document.querySelector('#today-view .page-heading').after(section);
  const $=id=>document.getElementById(id);let registration,prompt,abort,reloadRequested=false,hadController=!!navigator.serviceWorker?.controller;
  const busy=()=>document.body.dataset.practicing==='true';
  const status=text=>{$('pwa-status').textContent=text;};
@@ -22,7 +22,7 @@
  async function download(){
   abort=new AbortController();const signal=abort.signal;$('pwa-download').disabled=true;$('pwa-cancel').hidden=false;$('pwa-progress').hidden=false;
   try{
-   const response=await fetch(new URL('offline-audio.json?v=0a7152c-336ed187f73b',base),{signal});if(!response.ok)throw Error('Không tải được danh sách âm');const bank=await response.json(),cache=await caches.open(audioCache);let done=0,next=0;
+   const response=await fetch(new URL('offline-audio.json?v=0a7152c-bcbfccb4548a',base),{signal});if(!response.ok)throw Error('Không tải được danh sách âm');const bank=await response.json(),cache=await caches.open(audioCache);let done=0,next=0;
    $('pwa-progress').max=bank.files.length;
    const worker=async()=>{while(next<bank.files.length){if(signal.aborted)throw new DOMException('Canceled','AbortError');const file=bank.files[next++],url=new URL(file,base).href;if(!await cache.match(url)){const sound=await fetch(url,{signal});if(!sound.ok||sound.status===206)throw Error('Thiếu mẫu âm');await cache.put(url,sound);}done++;$('pwa-progress').value=done;status(`Đang lưu bộ đàn offline · ${done}/${bank.files.length} mẫu`);}};
    await Promise.all(Array.from({length:4},worker));status(`Đã lưu đủ ${done} mẫu. Bộ đàn web sẵn sàng luyện offline trên thiết bị này.`);$('pwa-download').textContent='Kiểm tra / bổ sung âm offline';
