@@ -1,1 +1,0 @@
-Mở .musicxml trong MuseScore để đọc sheet và chỉnh tốc độ. MIDI both_hands là hai tay; right_hand và left_hand giữ nguyên thời gian toàn bài để tập riêng. MIDI chỉ là tham chiếu nốt và nhịp, không thể hiện đầy đủ legato, pedal, sắc thái hoặc ngân cuối như người biểu diễn. 18 tiểu phẩm nguyên tác, mỗi bài 16 ô nhịp.

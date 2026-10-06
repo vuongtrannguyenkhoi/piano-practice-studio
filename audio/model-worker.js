@@ -1,12 +1,12 @@
 /* Builds the per-exercise model off the main thread with the app's own capture Worklet class. */
 self.AudioWorkletProcessor=class{constructor(){this.port={};}};
 self.registerProcessor=(name,klass)=>{self.CaptureProcessor=klass;};
-importScripts('mic-worklet.js?v=6f05aa8','pitch-core.js?v=6f05aa8','polyphony-core.js?v=6f05aa8','chord-verify-core.js?v=6f05aa8','score-model-core.js?v=6f05aa8');
+importScripts('mic-worklet.js?v=0a7152c-dirty','pitch-core.js?v=0a7152c-dirty','polyphony-core.js?v=0a7152c-dirty','chord-verify-core.js?v=0a7152c-dirty','score-model-core.js?v=0a7152c-dirty');
 let verifier=null;
 onmessage=async({data})=>{
   if(data.type!=='build')return;
   try{
-    verifier??=await fetch('../assets/piano-polyphony-dictionary.json?v=6f05aa8').then(response=>{if(!response.ok)throw Error('Dictionary unavailable');return response.json();}).then(dictionary=>new PianoChordVerify.Verifier(new PianoPolyphony.Detector(dictionary)));
+    verifier??=await fetch('../assets/piano-polyphony-dictionary.json?v=0a7152c-dirty').then(response=>{if(!response.ok)throw Error('Dictionary unavailable');return response.json();}).then(dictionary=>new PianoChordVerify.Verifier(new PianoPolyphony.Detector(dictionary)));
     const started=performance.now();
     const model=PianoScoreModel.buildModel({id:data.id,notes:data.notes,targets:data.targets,takes:data.takes,verifier,Processor:self.CaptureProcessor,setClock:(rate,frame)=>{self.sampleRate=rate;self.currentFrame=frame;}});
     postMessage({request:data.request,model:{...model,buildMs:Math.round(performance.now()-started)}});

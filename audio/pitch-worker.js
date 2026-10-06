@@ -1,11 +1,11 @@
-importScripts('pitch-core.js?v=6f05aa8','polyphony-core.js?v=6f05aa8','chord-core.js?v=6f05aa8','chord-verify-core.js?v=6f05aa8');
+importScripts('pitch-core.js?v=0a7152c-dirty','polyphony-core.js?v=0a7152c-dirty','chord-core.js?v=0a7152c-dirty','chord-verify-core.js?v=0a7152c-dirty');
 let tracker=new PianoPitch.Tracker(),link,guard=null,guardMode='off',guardState='off';
 let detector=null,dictionaryLoading=null,expected=null,expectedOptions={},verifier=null,verifyState='off',lastOnsetId=null;
 const chordTracker=new PianoChords.Tracker(),verifyTracker=new PianoChordVerify.Tracker(2);
 // One spectral dictionary serves the free observer and the answer-aware chord verifier.
 function loadDictionary(){
   if(detector)return Promise.resolve(detector);
-  dictionaryLoading??=fetch('../assets/piano-polyphony-dictionary.json?v=6f05aa8')
+  dictionaryLoading??=fetch('../assets/piano-polyphony-dictionary.json?v=0a7152c-dirty')
     .then(response=>{if(!response.ok)throw Error('Dictionary unavailable');return response.json();})
     .then(dictionary=>detector=new PianoPolyphony.Detector(dictionary))
     .finally(()=>{dictionaryLoading=null;});
