@@ -82,7 +82,7 @@ Mở phần cài đặt âm thanh để chọn bộ đàn. Bản web dùng mẫu
 
 - Tiến độ, hiệu chỉnh và các phím đã thu chỉ lưu trong trình duyệt bạn đang dùng. Mỗi trình duyệt, mỗi thiết bị có tiến độ riêng; xóa dữ liệu trình duyệt có thể làm mất tiến độ. Người dùng khác nhau không ảnh hưởng đến nhau.
 - Âm thanh micro được xử lý ngay trên thiết bị, không gửi lên máy chủ nào.
-- Trang dùng **Google Analytics** để đếm lượt truy cập và trang được xem. Analytics không nhận âm thanh micro hay dữ liệu luyện tập. Khi không có mạng, Analytics không chạy và app vẫn hoạt động bình thường.
+- Trang có **thống kê ẩn danh** bằng Google Analytics, chỉ chạy khi bạn chọn **Đồng ý** ở lần mở đầu tiên; đổi lựa chọn bất cứ lúc nào ở cuối trang **Hôm nay**. Thống kê ghi bài được mở, chế độ luyện, lượt tập xong, sao đạt được và lỗi của app, để biết bài nào khó và chế độ nào hữu ích. Không gửi âm thanh micro, nốt bạn chơi hay thông tin cá nhân; tắt tín hiệu quảng cáo và Google Signals. Khi không có mạng, thống kê không chạy và app vẫn hoạt động bình thường.
 
 Hãy tự đánh giá thế bấm ngón, tư thế, cách nhấn phím và những kỹ thuật mà nhận diện âm thanh chưa đánh giá đáng tin được.
 
@@ -174,6 +174,6 @@ Open the sound settings to choose a piano. The web version uses Salamander Grand
 
 - Progress, calibration and recorded keys are stored only in the browser you are using. Each browser and device keeps its own progress; clearing browser data may remove it. Different learners do not affect each other.
 - Microphone audio is processed on your device and is never sent to a server.
-- The site uses **Google Analytics** to count visits and page views. Analytics receives no microphone audio or practice data. Offline, Analytics does not run and the app works as usual.
+- The site has **anonymous usage statistics** through Google Analytics, active only if you choose **Đồng ý** (Agree) on your first visit; change your choice at any time at the bottom of **Hôm nay** (Today). It records which lessons are opened, practice modes, completed rounds, stars earned and app errors, to learn which lessons are hard and which modes help. It never sends microphone audio, the notes you play or personal information; advertising signals and Google Signals are off. Offline, statistics do not run and the app works as usual.
 
 Use your own judgement for fingering, posture, touch and other techniques that audio recognition cannot yet assess reliably.

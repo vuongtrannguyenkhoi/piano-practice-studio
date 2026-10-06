@@ -50,7 +50,7 @@
     // Raw mono blocks for single-key takes, from the same microphone source as recognition.
     async startTakes(onBlock){
       if(!this.active||!this.context||!this.source)throw Error('Bật micro trước khi thu phím.');
-      if(!this.takeModule){await this.context.audioWorklet.addModule('audio/take-worklet.js?v=df55802-7ce77c1bfc5b');this.takeModule=true;}
+      if(!this.takeModule){await this.context.audioWorklet.addModule('audio/take-worklet.js?v=f9e32bb-7661dc6904bf');this.takeModule=true;}
       this.stopTakes();
       this.takeNode=new AudioWorkletNode(this.context,'piano-take',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
       this.takeNode.port.onmessage=({data})=>onBlock(data.block,this.context?.sampleRate,data.time);
@@ -81,9 +81,9 @@
         if(token!==this.generation){stream.getTracks().forEach(t=>t.stop());return;}
         this.stream=stream;
         this.context=new AudioContext({latencyHint:'interactive'});await this.context.resume();
-        await this.context.audioWorklet.addModule('audio/mic-worklet.js?v=df55802-7ce77c1bfc5b');
+        await this.context.audioWorklet.addModule('audio/mic-worklet.js?v=f9e32bb-7661dc6904bf');
         if(token!==this.generation)return;
-        this.worker=new Worker('audio/pitch-worker.js?v=df55802-7ce77c1bfc5b');
+        this.worker=new Worker('audio/pitch-worker.js?v=f9e32bb-7661dc6904bf');
         this.node=new AudioWorkletNode(this.context,'piano-capture',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
         this.node.onprocessorerror=()=>{if(token!==this.generation)return;this.stop();this.status('Bộ thu âm bị lỗi · bật micro để thử lại.');};
         const channel=new MessageChannel();this.worker.postMessage({port:channel.port1},[channel.port1]);this.node.port.postMessage({port:channel.port2},[channel.port2]);

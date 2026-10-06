@@ -22,6 +22,10 @@
   let micTempoSession=null,micTempoRaf=0,micTempoLast=null,timedMic=false;
   let micMode='relaxed',micRound={exact:0,near:0,retry:0,self:0},micLastRound=null,micRoundContext='',micRounds=0;
   let practiceMode='listen',practiceStarting=false,practiceStartToken=0;
+  // Usage analytics (analytics.js): no-op unless the public build enabled it and the learner agreed.
+  const track=(name,params)=>window.pianoAnalytics?.track(name,params);
+  const band=value=>value==null?'unknown':value<50?'<50':value<80?'50-79':value<95?'80-94':'95+';
+  const practiceContext=()=>({content:state.reading?'reading':state.song?'song':'lesson',lesson_id:state.reading||state.song?undefined:ex().id,mode:practiceMode,hand:state.hand,tempo_bpm:state.tempo,bars:state.barEnd-state.barStart+1});
   const transportRunning=()=>state.playing||state.loading||!!micTempoSession?.running;
   const transportTime=()=>state.timelineOnly?performance.now()/1000:state.ctx?.currentTime??0;
   try{micMode=micGrading.mode(localStorage.getItem('piano-mic-mode-v1'));timedMic=localStorage.getItem('piano-timed-mic-v1')==='1';}catch(_){}
@@ -722,7 +726,7 @@
       state.beat=currentBeat();
       $('play-status').textContent=state.timelineOnly?'Đang tập theo nhịp':'Đang phát';updateTime();
       if(!state.loop&&state.beat>=rangeEnd()){
-        stop(false,true);state.beat=rangeEnd();updateTime();$('play-status').textContent='Hoàn thành đoạn';return;
+        stop(false,true);state.beat=rangeEnd();updateTime();$('play-status').textContent='Hoàn thành đoạn';track('practice_complete',{...practiceContext(),result:'done'});return;
       }
     }
     state.raf=requestAnimationFrame(tick);
@@ -1113,6 +1117,7 @@
       cancelPracticeStart();stop(false);if(practiceMode!=='listen')microphone.stop();updatePracticeUX();return;
     }
     if(practiceMode!=='listen'&&!practiceSupported()){beginPractice(true);return;}
+    track('practice_start',{...practiceContext(),mic:practiceMode==='step'||practiceMode==='chords'||(practiceMode==='timed'&&timedMic),engine:$('piano-engine')?.value});
     if(practiceMode!=='listen')enterPracticeFocus();
     start(true);if(!document.body.classList.contains('practice-focus'))document.querySelector('.score-panel').scrollIntoView?.({behavior:'smooth',block:'start'});
   }
@@ -1143,7 +1148,7 @@
     cancelAnimationFrame(micTempoRaf);lockMicTempoControls(false);microphone.stop();
     $('play-icon').textContent='▶';$('play-button').setAttribute('aria-label','Bắt đầu luyện theo tempo');$('play-status').textContent='Hoàn thành lượt';
     $('mic-timed-live').textContent='Đã có điểm tổng';$('mic-brief').textContent='Hoàn thành lượt theo tempo';delete $('mic-brief').dataset.result;
-    const r=micTempoLast;$('mic-timed-score').textContent=r.score===null?'—':`${r.score}/100`;
+    const r=micTempoLast;track('practice_complete',{...practiceContext(),result:'scored',score_band:band(r.score)});$('mic-timed-score').textContent=r.score===null?'—':`${r.score}/100`;
     $('mic-timed-breakdown').textContent=`Cao độ: ${r.noteScore??'—'}/100 · Nhịp: ${r.timingScore??'—'}/100. ${r.exact} đúng · ${r.near} lệch quãng tám · ${r.wrong} khác nốt · ${r.missed} chưa ghi nhận. ${r.early} sớm · ${r.late} muộn · ${r.extra} lần đánh thêm.${r.skipped?` ${r.skipped} mục có phím trùng tên khác quãng tám không được chấm.`:''}`;
     $('mic-timed-coverage').textContent=`Đánh giá ${r.evaluated}/${r.total-r.skipped} nốt; ${r.unreadable} nốt chưa rõ được loại khỏi điểm. ${r.coverage<75?'Bộ nghe chưa rõ nhiều nốt; hãy kiểm tra micro và tập lại.':'Điểm dựa trên những gì micro ghi nhận; bộ nghe vẫn có thể nhầm.'}`;
     $('mic-timed-context').textContent=`${ex().title} · ${state.hand==='rh'?'Tay phải':state.hand==='lh'?'Tay trái':'Hai tay'} · Ô ${state.barStart}–${state.barEnd} · ${state.tempo} BPM`;
@@ -1212,7 +1217,7 @@
     const missing=inputs.keys.filter(midi=>!takes[midi]);
     if(missing.length){scoreModel={key,status:'missing',missing,have:inputs.keys.length-missing.length,model:null,background:[]};renderScoreModel();return;}
     scoreModel={key,status:'building',missing:[],model:null,background:[]};renderScoreModel();
-    modelWorker??=new Worker('audio/model-worker.js?v=df55802-7ce77c1bfc5b');
+    modelWorker??=new Worker('audio/model-worker.js?v=f9e32bb-7661dc6904bf');
     const result=await new Promise(resolve=>{
       modelWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};modelWorker.onerror=event=>resolve({request,error:event.message||'lỗi Worker'});
       modelWorker.postMessage({type:'build',request,id:key,notes:inputs.notes,targets:inputs.targets,takes:Object.fromEntries(Object.entries(takes).map(([midi,take])=>[midi,{pcm:take.pcm,rate:take.rate}]))});
@@ -1313,7 +1318,7 @@
     if(!run.params||!run.samples){textIfChanged(status,'Không thu được âm thanh · thử lại.');renderEval();return;}
     const pcm=new Float32Array(run.samples);let at=0;for(const block of run.blocks){pcm.set(block,at);at+=block.length;}
     textIfChanged(status,'Đang phân tích bằng cả hai cách chấm…');renderEval();
-    evalWorker??=new Worker('audio/eval-worker.js?v=df55802-7ce77c1bfc5b');const request=++evalRequest;
+    evalWorker??=new Worker('audio/eval-worker.js?v=f9e32bb-7661dc6904bf');const request=++evalRequest;
     const result=await new Promise(resolve=>{
       evalWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};evalWorker.onerror=event=>resolve({error:event.message||'lỗi Worker'});
       evalWorker.postMessage({type:'evaluate',request,pcm,rate:run.rate,...run.params,startTime:run.params.startTime-run.firstTime});
@@ -1369,6 +1374,7 @@
     micTargetIndex++;
     if(micTargetIndex===micTargets.length){
       micLastRound={...micRound,acceptedNear:micMode==='relaxed'?micRound.near:0};micRounds++;
+      const graded=micRound.exact+micRound.near+micRound.retry;track('practice_complete',{...practiceContext(),result:micRound.near?'near':'correct',accuracy_band:graded?band(micRound.exact/graded*100):'unknown'});
       if(state.loop){micTargetIndex=0;micRound={exact:0,near:0,retry:0,self:0};$('mic-feedback').textContent+=' · lượt tiếp theo';}
       else{updateMicSummary();microphone.stop();$('mic-target').textContent='Đã hết đoạn luyện.';$('mic-feedback').textContent+=` · Hoàn thành lượt luyện, micro đã tắt.`;$('mic-brief').textContent=micLastRound.acceptedNear?'≈ Hoàn thành · còn nốt cần chỉnh':'✓ Hoàn thành';$('mic-brief').dataset.result=micLastRound.acceptedNear?'near':'correct';return;}
     }

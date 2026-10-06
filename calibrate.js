@@ -41,8 +41,8 @@
       if(!navigator.mediaDevices?.getUserMedia||!window.AudioWorkletNode||!window.Worker)throw Error('Trình duyệt này chưa hỗ trợ thu âm AudioWorklet.');
       stream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false});
       context=new AudioContext({latencyHint:'interactive'});await context.resume();
-      await context.audioWorklet.addModule('audio/mic-worklet.js?v=df55802-7ce77c1bfc5b');
-      worker=new Worker('audio/pitch-worker.js?v=df55802-7ce77c1bfc5b');
+      await context.audioWorklet.addModule('audio/mic-worklet.js?v=f9e32bb-7661dc6904bf');
+      worker=new Worker('audio/pitch-worker.js?v=f9e32bb-7661dc6904bf');
       const node=new AudioWorkletNode(context,'piano-capture',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
       const channel=new MessageChannel();worker.postMessage({port:channel.port1},[channel.port1]);node.port.postMessage({port:channel.port2},[channel.port2]);
       const source=context.createMediaStreamSource(stream);source.connect(node);node.connect(context.destination);

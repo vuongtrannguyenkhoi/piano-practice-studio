@@ -164,6 +164,7 @@
       }
       api.stop();const r=record(lesson.id);r.stars++;delete r.settings;r.lastTempo=settings.tempo;
       if(r.stars===3){r.bestTempo=Math.max(r.bestTempo||0,settings.tempo);api.completeLesson(lesson.id);}
+      window.pianoAnalytics?.track('star_earned',{lesson_id:lesson.id,collection:lesson.book?.id||'core',stars:r.stars,tempo_bpm:settings.tempo});
       active=false;attempt=null;$('quest-confirm').checked=false;persist();renderMap();renderQuest();api.refreshLessons();
       const labels=lesson.mission?.labels;
       $('quest-feedback').textContent=r.stars===3?(lesson.book?'★ Đã hoàn thành bài ngắn. Buổi sau hãy tự kiểm tra lại trước khi nghe mẫu.':lesson.id===api.data.exercises.at(-1).id?'★ Bạn đã hoàn thành toàn bộ hành trình! Chọn một màn yêu thích để chơi lại.':lesson.id%5===0?'★ Đã qua cửa thử sức! Vùng tiếp theo đang chờ bạn.':'★ Đã qua màn! Bạn có thể sang màn tiếp hoặc chơi lại.'):labels?`★ Đã ghi nhận. Tiếp theo: ${labels[r.stars]}.`:r.stars===1?'★ Đã có nhịp riêng. Tiếp theo, ghép hai đường.':'★ Hai tay đã gặp nhau. Khi sẵn sàng, thử chơi trọn màn.';
