@@ -63,7 +63,7 @@ Khi luyện có micro chấm (**Tập từng nốt**, hoặc **Chơi theo nhịp
 ### Nốt vàng và phần thưởng
 
 - **Nốt vàng 🪙:** mỗi lượt có micro chấm cho 1 nốt vàng mỗi 100 điểm, thêm 20 khi đạt hạng S và 10 khi đạt A.
-- **Cửa hàng** (trang **Tiến độ** → **Nốt vàng & phần thưởng**): đổi nốt vàng lấy giao diện bàn phím (Gỗ ấm, Đêm xanh, Kem sữa, Neon), màu nốt trên sheet (Đại dương, Quả mọng, Mực) và tiếng nhịp gõ (Mõ gỗ, Nhẹ nhàng, Chuông; bấm ▶ để nghe thử). Màu chấm đúng, sai và nốt cần đánh không đổi.
+- **Cửa hàng** (trang **Tiến độ** → **Nốt vàng & phần thưởng**): đổi nốt vàng lấy giao diện bàn phím (Gỗ ấm, Đêm xanh, Kem sữa, Neon), màu nốt trên sheet (Đại dương, Quả mọng, Mực), hiệu ứng phím (Mưa sao, Tuyết, Cánh hoa, Pháo hoa combo: hạt sáng rơi xuống phím đang vang, dày hơn khi combo cao; tự tắt khi máy bật giảm chuyển động) và tiếng nhịp gõ (Mõ gỗ, Nhẹ nhàng, Chuông; bấm ▶ để nghe thử). Màu chấm đúng, sai và nốt cần đánh không đổi.
 - **Rương tuần:** mỗi tuần đạt mục tiêu mở được một rương, chứa một món chưa có hoặc nốt vàng.
 - **Danh hiệu:** Chuỗi 32, Thợ săn hạng S, Nhịp chuẩn, Tay trái vững, Kiên trì 4 tuần, Người đọc nhạc, 100 lượt có điểm. Danh hiệu đã chọn hiện ở trang Tiến độ và trên ảnh chia sẻ.
 - Mọi bài học luôn mở; phần thưởng chỉ để trang trí.
@@ -189,7 +189,7 @@ When the microphone grades a round (**Tập từng nốt** / Note by note, or **
 ### Gold notes and rewards
 
 - **Gold notes 🪙:** every microphone-graded round gives 1 gold note per 100 points, plus 20 for grade S and 10 for grade A.
-- **Shop** (**Tiến độ** / Progress → **Nốt vàng & phần thưởng** / Gold notes & rewards): spend gold notes on keyboard skins (Warm wood, Blue night, Cream, Neon), note colours on the sheet (Ocean, Berry, Ink) and metronome sounds (Woodblock, Soft, Bell; press ▶ to preview). The grading colours and the note-to-play colour never change.
+- **Shop** (**Tiến độ** / Progress → **Nốt vàng & phần thưởng** / Gold notes & rewards): spend gold notes on keyboard skins (Warm wood, Blue night, Cream, Neon), note colours on the sheet (Ocean, Berry, Ink), key effects (Star rain, Snow, Petals, Combo fireworks: particles falling onto the keys that sound, richer at higher combos; off with reduced motion) and metronome sounds (Woodblock, Soft, Bell; press ▶ to preview). The grading colours and the note-to-play colour never change.
 - **Weekly chest:** each week you meet your goal opens a chest with an item you don't have yet, or gold notes.
 - **Titles:** Run of 32, S-grade hunter, Steady timing, Strong left hand, Four steady weeks, Music reader, 100 scored rounds. Your chosen title shows on the Progress screen and on the share image.
 - Every lesson is always open; rewards are cosmetic only.
