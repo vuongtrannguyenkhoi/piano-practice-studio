@@ -13,6 +13,15 @@ Luyện piano với sheet nhạc tương tác, bài tập có hướng dẫn, đ
 
 Khi đang tập, mục bạn mở bài từ đó vẫn sáng trên thanh điều hướng, và nút quay lại ở đầu trang đưa bạn về đúng mục đó.
 
+## Mục tiêu tuần và buổi tập nhanh
+
+Trang **Hôm nay** có thẻ **Mục tiêu tuần**:
+
+- **Đặt mục tiêu:** chọn số ngày mỗi tuần (3, 4, 5 hoặc 7) và số phút mỗi ngày (5, 10, 15 hoặc 20). Một ngày nghỉ không làm mất gì; chỉ cần đủ số ngày trong tuần.
+- **Theo dõi tiến độ:** bảy ô ngày trong tuần đổi màu khi ngày đó đủ số phút; thanh "Hôm nay" cho biết bạn đã tập bao lâu. App chỉ tính thời gian khi bạn ở màn luyện tập và đang chơi, nghe mẫu hoặc vừa thao tác.
+- **Tập nhanh:** **▶ Tập 10 phút ngay** xếp sẵn một buổi ngắn: ôn một bài đến hạn, tập bài đang dở, rồi một bài Đọc nhạc. Thanh màu vàng ở đầu màn luyện tập cho biết bước hiện tại, thời gian, và nút **Bước tiếp**.
+- **Ôn bài:** mỗi bài hoàn thành được nhắc ôn sau 1, 3, 7, 21 và 60 ngày, trong mục **Cần ôn hôm nay**.
+
 ## Chế độ luyện
 
 - **Nghe mẫu:** nghe đàn mẫu và nhìn sheet được tô theo vị trí đang phát.
@@ -106,6 +115,15 @@ The app is available in English: press **EN** at the top right, or open it with 
 4. Adjust the tempo and practice range to a comfortable level.
 
 While you practise, the section you opened the lesson from stays highlighted in the navigation, and the back button at the top returns you there.
+
+## Weekly goal and quick sessions
+
+The **Hôm nay** (Today) screen has a **Mục tiêu tuần** (Weekly goal) card:
+
+- **Set a goal:** choose days per week (3, 4, 5 or 7) and minutes per day (5, 10, 15 or 20). A day off costs nothing; just reach the number of days in the week.
+- **Track progress:** the seven day circles change colour when a day reaches its minutes, and the "Today" bar shows how long you've practised. Time counts only on the practice screen while you play, listen or have just used the page.
+- **Quick session:** **▶ Tập 10 phút ngay** (Practise 10 minutes now) lines up a short session: one review that is due, your current lesson, then one Daily Reading exercise. A yellow bar at the top of the practice screen shows the step, the time and a **Bước tiếp** (Next step) button.
+- **Reviews:** each completed lesson comes back for review after 1, 3, 7, 21 and 60 days, under **Cần ôn hôm nay** (Due for review today).
 
 ## Practice modes
 
