@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+  const _t=globalThis.I18N?.t||((text,args)=>args?text.replace(/\{(\d+)\}/g,(m,i)=>args[i]):text);
   const KEY='piano-phrases-v1';
   window.createPianoComposer=function(api){
     const $=id=>document.getElementById(id);
@@ -34,7 +35,7 @@
     }
     function summarize(){
       const selected=choice();
-      $('composer-summary').textContent=`Câu bạn chọn: ${selected.notes.join(' · ')} · ${lesson.creative.rhythms[selected.rhythm][0]}. Phần đệm được giữ nguyên.`;
+      $('composer-summary').textContent=_t("Câu bạn chọn: {0} · {1}. Phần đệm được giữ nguyên.",[selected.notes.join(' · '),lesson.creative.rhythms[selected.rhythm][0]]);
     }
     function change(){
       try{localStorage.setItem(KEY,JSON.stringify(saved));}catch(_){}
@@ -53,8 +54,8 @@
         if(!lesson.creative)return lesson;
         const selected=choice();$('composer-notes').replaceChildren();
         for(let i=0;i<4;i++){
-          const label=document.createElement('label');label.textContent=`Nốt ${i+1}`;
-          const select=document.createElement('select');select.setAttribute('aria-label',`Nốt ${i+1} của câu nhạc`);select.dataset.phraseNote=i;
+          const label=document.createElement('label');label.textContent=_t("Nốt {0}",[i+1]);
+          const select=document.createElement('select');select.setAttribute('aria-label',_t("Nốt {0} của câu nhạc",[i+1]));select.dataset.phraseNote=i;
           lesson.creative.notes.forEach(note=>{const option=document.createElement('option');option.value=note;option.textContent=note;select.append(option);});
           select.value=selected.notes[i];select.addEventListener('change',()=>{choice().notes[i]=select.value;change();});label.append(select);$('composer-notes').append(label);
         }

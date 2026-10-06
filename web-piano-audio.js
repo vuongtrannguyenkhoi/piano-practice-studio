@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+  const _t=globalThis.I18N?.t||((text,args)=>args?text.replace(/\{(\d+)\}/g,(m,i)=>args[i]):text);
   // Salamander web bank (scripts/build-salamander-web.py): all 30 recorded keys x 8 velocity layers,
   // fetched per piece (http/https only; file:// keeps the embedded compact bank).
   class WebSalamanderPiano extends window.SalamanderPiano {
@@ -8,7 +9,7 @@
       this.info={instrument:'Salamander web',velocityLayers:8};
     }
     async loadManifest(){
-      this.manifest??=await fetch(this.base+'manifest.json?v=c6e43d0-cd65f9a2f2cd').then(response=>{if(!response.ok)throw new Error('Không tải được bộ mẫu Salamander web');return response.json();});
+      this.manifest??=await fetch(this.base+'manifest.json?v=9be74ce-1627866aaad1').then(response=>{if(!response.ok)throw new Error(_t('Không tải được bộ mẫu Salamander web'));return response.json();});
       return this.manifest;
     }
     region(midi){
@@ -45,7 +46,7 @@
         const response=await fetch(url);if(!response.ok)throw new Error(`HTTP ${response.status}`);
         return await context.decodeAudioData(await response.arrayBuffer());
       }catch(error){
-        if(attempt>=attempts)throw new Error(`Không tải được ${url}: ${error.message}`);
+        if(attempt>=attempts)throw new Error(_t("Không tải được {0}: {1}",[url,error.message]));
         await new Promise(resolve=>setTimeout(resolve,300*attempt));
       }
     }

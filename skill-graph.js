@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+  const _t=globalThis.I18N?.t||((text,args)=>args?text.replace(/\{(\d+)\}/g,(m,i)=>args[i]):text);
   const starsOf=value=>Number.isInteger(value)?Math.max(0,Math.min(3,value)):0;
   function validate(graph,data,songs=[]){
     const ids=new Set(graph.nodes.map(n=>n.id)),groups=new Set(graph.groups.map(g=>g.id));
@@ -71,11 +72,11 @@
     try{const saved=JSON.parse(localStorage.getItem('piano-skill-view-v1'));if(graph.nodes.some(n=>n.id===saved?.selected))selected=saved.selected;}catch(_){}
     const read=key=>{try{return JSON.parse(localStorage.getItem(key)||'null')}catch(_){return null}};
     const progress=()=>{const saved=read('piano-journey-v1');return saved?.lessons&&typeof saved.lessons==='object'&&!Array.isArray(saved.lessons)?saved.lessons:{}};
-    const statusLabels={practiced:'Đã luyện',learning:'Đang luyện',ready:'Có thể bắt đầu',foundation:'Ôn nền trước'};
-    const sources={all:'Tất cả bộ bài',legacy:'Độc lập hai tay','adult-beginner':'Người lớn · Tập 1','adult-volume-2':'Người lớn · Tập 2','chords-24':'24 bài hợp âm','pieces-18':'18 tiểu phẩm'};
+    const statusLabels={practiced:_t('Đã luyện'),learning:_t('Đang luyện'),ready:_t('Có thể bắt đầu'),foundation:_t('Ôn nền trước')};
+    const sources={all:_t('Tất cả bộ bài'),legacy:_t('Độc lập hai tay'),'adult-beginner':_t('Người lớn · Tập 1'),'adult-volume-2':_t('Người lớn · Tập 2'),'chords-24':_t('24 bài hợp âm'),'pieces-18':_t('18 tiểu phẩm')};
     // Actual source identifier in Volume 1 is read from the catalog.
     const firstBook=api.data.exercises.find(e=>e.id===51)?.book.id;
-    delete sources['adult-beginner'];sources[firstBook]='Người lớn · Tập 1';
+    delete sources['adult-beginner'];sources[firstBook]=_t('Người lớn · Tập 1');
     const el=(tag,text,className)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(className)node.className=className;return node};
     function button(text,action,className){const b=el('button',text,className);b.type='button';b.addEventListener('click',action);return b;}
     function select(id,route=true){
@@ -88,7 +89,7 @@
       const node=graph.nodes.find(n=>n.id===id),value=state[id];
       const b=button('',()=>select(id),'skill-node '+value.status);
       b.dataset.skill=id;b.setAttribute('aria-pressed',String(id===selected));
-      b.append(el('strong',node.label),el('span',statusLabels[value.status],'skill-status'),el('small',`${value.completed}/${value.lessons.length} bài đã hoàn thành`));
+      b.append(el('strong',node.label),el('span',statusLabels[value.status],'skill-status'),el('small',_t("{0}/{1} bài đã hoàn thành",[value.completed,value.lessons.length])));
       return b;
     }
     function drawConnections(){
@@ -114,9 +115,9 @@
     function render(){
       const records=progress(),state=core.snapshot(graph,api.data,records,Array.isArray(read('piano-independence-done'))?read('piano-independence-done'):[]);
       const current=graph.nodes.find(n=>n.id===selected),value=state[selected];
-      $('skills-summary').textContent=`${graph.nodes.length} kỹ năng · ${graph.nodes.filter(n=>state[n.id].practiced).length} đã luyện · ${api.data.exercises.length} bài + ${window.PIANO_SONGS.length} bài hát`;
+      $('skills-summary').textContent=_t("{0} kỹ năng · {1} đã luyện · {2} bài + {3} bài hát",[graph.nodes.length,graph.nodes.filter(n=>state[n.id].practiced).length,api.data.exercises.length,window.PIANO_SONGS.length]);
       $('skill-groups').replaceChildren();
-      for(const g of [{id:'all',label:'Tất cả'},...graph.groups]){
+      for(const g of [{id:'all',label:_t('Tất cả')},...graph.groups]){
         const b=button(g.label,()=>{group=g.id;render();});b.setAttribute('aria-pressed',String(group===g.id));$('skill-groups').append(b);
       }
       const map=$('skill-map');map.replaceChildren();
@@ -127,17 +128,17 @@
         section.append(nodes);map.append(section);
       }
       const suggestion=core.recommend(graph,state,records,selected);
-      $('skill-next-title').textContent=suggestion.foundation?`Ôn nền: ${suggestion.skill.label}`:suggestion.review?`Ôn lại ${current.label}`:`Tiếp tục: ${current.label}`;
-      $('skill-next-reason').textContent=suggestion.foundation?`Để luyện “${current.label}”, hãy có một bài nền hoàn thành ở “${suggestion.skill.label}”. Bạn vẫn có thể mở mọi bài.`:value.practiced?'Thử thêm bài khác để đưa kỹ năng vào âm nhạc.':'Một bài ngắn để luyện trực tiếp kỹ năng đang chọn.';
-      $('skill-next-button').textContent=`${suggestion.review?'Ôn':'Luyện'} bài ${suggestion.lesson.id} · ${suggestion.lesson.title}`;
+      $('skill-next-title').textContent=suggestion.foundation?_t("Ôn nền: {0}",[suggestion.skill.label]):suggestion.review?_t("Ôn lại {0}",[current.label]):_t("Tiếp tục: {0}",[current.label]);
+      $('skill-next-reason').textContent=suggestion.foundation?_t("Để luyện “{0}”, hãy có một bài nền hoàn thành ở “{1}”. Bạn vẫn có thể mở mọi bài.",[current.label,suggestion.skill.label]):value.practiced?_t('Thử thêm bài khác để đưa kỹ năng vào âm nhạc.'):_t('Một bài ngắn để luyện trực tiếp kỹ năng đang chọn.');
+      $('skill-next-button').textContent=_t("{0} bài {1} · {2}",[suggestion.review?_t('Ôn'):_t('Luyện'),suggestion.lesson.id,suggestion.lesson.title]);
       $('skill-next-button').onclick=()=>api.openLesson(suggestion.lesson.id);
       $('skill-detail-title').textContent=current.label;$('skill-detail-description').textContent=current.description;
-      $('skill-detail-progress').textContent=`${statusLabels[value.status]} · ${value.completed}/${value.lessons.length} bài trực tiếp hoàn thành · ${value.steps} bước tự xác nhận${value.marked?` · ${value.marked} bài đã đánh dấu tập`:''}`;
+      $('skill-detail-progress').textContent=_t("{0} · {1}/{2} bài trực tiếp hoàn thành · {3} bước tự xác nhận{4}",[statusLabels[value.status],value.completed,value.lessons.length,value.steps,value.marked?_t(" · {0} bài đã đánh dấu tập",[value.marked]):'']);
       const relation=$('skill-relations');relation.replaceChildren();
       const children=graph.nodes.filter(n=>n.requires.includes(selected));
-      for(const [title,ids] of [['Nền nên có',current.requires],['Bạn đang luyện',[selected]],['Dẫn tới',children.map(n=>n.id)]]){
+      for(const [title,ids] of [[_t('Nền nên có'),current.requires],[_t('Bạn đang luyện'),[selected]],[_t('Dẫn tới'),children.map(n=>n.id)]]){
         const column=el('div',undefined,'skill-relation-column');column.append(el('h3',title));
-        if(!ids.length)column.append(el('p',title==='Nền nên có'?'Bắt đầu từ đây.':'Đưa vào bài nhạc bạn thích.','skill-relation-empty'));
+        if(!ids.length)column.append(el('p',title===_t('Nền nên có')?_t('Bắt đầu từ đây.'):_t('Đưa vào bài nhạc bạn thích.'),'skill-relation-empty'));
         for(const id of ids)column.append(skillButton(id,state));relation.append(column);
       }
       const list=$('skill-lessons');list.replaceChildren();
@@ -149,15 +150,15 @@
         if(filter==='direct'&&!direct||filter==='unfinished'&&stars===3)continue;
         const b=button('',()=>api.openLesson(lesson.id),'skill-lesson');
         b.dataset.lesson=lesson.id;
-        b.append(el('span',`Bài ${lesson.id} · ${lesson.title}`),el('small',`${direct?'Luyện trực tiếp':'Có vận dụng'} · ${sources[lesson.book?.id||'legacy']} · ${'★'.repeat(stars)}${'☆'.repeat(3-stars)}`));list.append(b);shown++;
+        b.append(el('span',_t("Bài {0} · {1}",[lesson.id,lesson.title])),el('small',`${direct?_t('Luyện trực tiếp'):_t('Có vận dụng')} · ${sources[lesson.book?.id||'legacy']} · ${'★'.repeat(stars)}${'☆'.repeat(3-stars)}`));list.append(b);shown++;
       }
-      if(!shown)list.append(el('p','Chưa có bài phù hợp với bộ lọc này.','skill-empty'));
-      $('skill-lesson-count').textContent=`${shown} bài phù hợp`;
+      if(!shown)list.append(el('p',_t('Chưa có bài phù hợp với bộ lọc này.'),'skill-empty'));
+      $('skill-lesson-count').textContent=_t("{0} bài phù hợp",[shown]);
       $('skill-songs').replaceChildren();
       for(const song of window.PIANO_SONGS){
         const binding=graph.songs[song.id];if(![...binding.primary,...binding.context].includes(selected))continue;
         const card=el('article',undefined,'skill-song');const missing=binding.requires.filter(id=>!state[id].hasFoundation);
-        card.append(el('h3',song.title),el('p',`${core.songProgress(read('piano-songs-v1'))}/50 bước tự xác nhận · 47 ô nhịp`),el('p',missing.length?'Nền gợi ý: '+missing.map(id=>graph.nodes.find(n=>n.id===id).label).join(', '):'Đưa các kỹ năng vào một bài nhạc dài.'),button('Luyện bài hát →',()=>api.openSong(song.id)));$('skill-songs').append(card);
+        card.append(el('h3',song.title),el('p',_t("{0}/50 bước tự xác nhận · 47 ô nhịp",[core.songProgress(read('piano-songs-v1'))])),el('p',missing.length?_t('Nền gợi ý: ')+missing.map(id=>graph.nodes.find(n=>n.id===id).label).join(', '):_t('Đưa các kỹ năng vào một bài nhạc dài.')),button(_t('Luyện bài hát →'),()=>api.openSong(song.id)));$('skill-songs').append(card);
       }
       drawConnections();
     }

@@ -2,7 +2,7 @@
 
 **Tiếng Việt** · [English](#english)
 
-Luyện piano với sheet nhạc tương tác, bài tập có hướng dẫn, đọc nhạc mỗi ngày và chấm điểm bằng micro. Chạy ngay trên trình duyệt, cài được như ứng dụng và luyện được khi không có mạng.
+Luyện piano với sheet nhạc tương tác, bài tập có hướng dẫn, đọc nhạc mỗi ngày và chấm điểm bằng micro. Chạy ngay trên trình duyệt, cài được như ứng dụng và luyện được khi không có mạng. Giao diện và nội dung bài có tiếng Việt và tiếng Anh: bấm **EN** / **VI** ở góc trên bên phải để đổi.
 
 ## Bắt đầu
 
@@ -94,7 +94,9 @@ Hãy tự đánh giá thế bấm ngón, tư thế, cách nhấn phím và nhữ
 
 [Tiếng Việt](#piano-practice-studio) · **English**
 
-Practise piano with interactive sheet music, guided exercises, daily reading sessions and microphone-assisted feedback. It runs in the browser, installs as an app and works offline. The interface is in Vietnamese; the names in bold below are the on-screen labels.
+Practise piano with interactive sheet music, guided exercises, daily reading sessions and microphone-assisted feedback. It runs in the browser, installs as an app and works offline.
+
+The app is available in English: press **EN** at the top right, or open it with `?lang=en` at the end of the address (for example `…/piano-practice-studio/?lang=en`). The choice is remembered in your browser. The Vietnamese names in bold below are the labels of the Vietnamese interface; in English they appear as the names in brackets.
 
 ## Get started
 

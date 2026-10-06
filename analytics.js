@@ -4,6 +4,7 @@
 // Only whitelisted events with short, enumerated values are sent: never audio, played notes or free text.
 (()=>{
   'use strict';
+  const _t=globalThis.I18N?.t||((text,args)=>args?text.replace(/\{(\d+)\}/g,(m,i)=>args[i]):text);
   const id=document.querySelector('meta[name="ga-id"]')?.content||'';
   const CONSENT='piano-analytics-consent',OFFLINE='piano-analytics-offline';
   const version=(document.currentScript?.src.match(/[?&]v=([^&]+)/)||[])[1]||'dev';
@@ -48,7 +49,7 @@
     gtag('js',new Date());
     // ?ga_debug=1 shows this browser's events live in GA4 DebugView.
     gtag('config',id,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,app_version:version,...(/[?&]ga_debug=1\b/.test(location.search)?{debug_mode:true}:{})});
-    gtag('set','user_properties',{display_mode:matchMedia('(display-mode: standalone)').matches?'installed':'browser',app_version:version});
+    gtag('set','user_properties',{display_mode:matchMedia('(display-mode: standalone)').matches?'installed':'browser',app_version:version,language:window.I18N?.lang||'vi'});
     const script=document.createElement('script');script.async=true;script.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(id);
     document.head.append(script);
   }
@@ -101,8 +102,8 @@
   }
   function prompt(){
     if(document.querySelector('.analytics-consent'))return;
-    const box=document.createElement('section');box.className='analytics-consent';box.setAttribute('aria-label','Thống kê sử dụng');
-    box.innerHTML='<p><strong>Cho phép thống kê ẩn danh?</strong> Giúp biết bài nào khó, chế độ nào hữu ích để cải thiện app. Dùng Google Analytics; không gửi âm thanh micro, nốt bạn chơi hay thông tin cá nhân.</p><div><button type="button" data-choice="granted">Đồng ý</button><button type="button" data-choice="denied">Không</button></div>';
+    const box=document.createElement('section');box.className='analytics-consent';box.setAttribute('aria-label',_t('Thống kê sử dụng'));
+    box.innerHTML=_t('<p><strong>Cho phép thống kê ẩn danh?</strong> Giúp biết bài nào khó, chế độ nào hữu ích để cải thiện app. Dùng Google Analytics; không gửi âm thanh micro, nốt bạn chơi hay thông tin cá nhân.</p><div><button type="button" data-choice="granted">Đồng ý</button><button type="button" data-choice="denied">Không</button></div>');
     box.addEventListener('click',event=>{const choice=event.target.closest('[data-choice]')?.dataset.choice;if(choice)choose(choice);});
     document.body.append(box);
   }
@@ -111,8 +112,8 @@
     let line=host.querySelector('.analytics-choice');
     if(!line){line=document.createElement('p');line.className='analytics-choice';host.append(line);}
     const on=consent==='granted';
-    line.replaceChildren(`Thống kê ẩn danh: ${on?'đang bật':'đang tắt'} · `);
-    const button=document.createElement('button');button.type='button';button.textContent=on?'Tắt':'Bật';
+    line.replaceChildren(_t("Thống kê ẩn danh: {0} · ",[on?_t('đang bật'):_t('đang tắt')]));
+    const button=document.createElement('button');button.type='button';button.textContent=on?_t('Tắt'):_t('Bật');
     button.addEventListener('click',()=>choose(on?'denied':'granted'));line.append(button);
   }
   function flushOffline(){

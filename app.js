@@ -1,5 +1,7 @@
 (() => {
   'use strict';
+  // Interface text goes through _t (i18n.js); without it, the Vietnamese source text is shown.
+  const _t=window.I18N?.t||((text,args)=>args?text.replace(/\{(\d+)\}/g,(m,i)=>args[i]):text);
   const DATA = window.PIANO_DATA;
   if (!DATA || !Array.isArray(DATA.exercises)) return;
   const $ = id => document.getElementById(id);
@@ -36,9 +38,9 @@
   function refreshToday(){
     const readingSession=reading?.diagnostics().saved.session;
     if(state.reading&&readingSession&&!readingSession.finished){
-      $('today-lesson').textContent='Đọc nhạc mỗi ngày · '+state.reading.title;
+      $('today-lesson').textContent=_t('Đọc nhạc mỗi ngày · ')+state.reading.title;
       $('today-goal').textContent=state.reading.goal;
-      $('today-progress').textContent=`Buổi ${readingSession.number} · bài ${readingSession.cursor+1}/${readingSession.items.length}`;return;
+      $('today-progress').textContent=_t("Buổi {0} · bài {1}/{2}",[readingSession.number,readingSession.cursor+1,readingSession.items.length]);return;
     }
     if(state.song){
       $('today-lesson').textContent=state.song.title;
@@ -47,14 +49,14 @@
       return;
     }
     const lesson=DATA.exercises[(journey?.resumeLesson()||state.index+1)-1];
-    $('today-lesson').textContent=`Bài ${num(lesson.id)} · ${lesson.title}`;
+    $('today-lesson').textContent=_t("Bài {0} · {1}",[num(lesson.id),lesson.title]);
     $('today-goal').textContent=lesson.goal;
     $('today-progress').textContent=$('journey-progress').textContent;
   }
   let exitFocusForNavigation=()=>{},enterPracticeFocus=()=>{};
   // Practice has no tab of its own: it belongs to the section it was opened from (or, on a direct link,
   // to the courses, songs or reading section of what is open). That tab stays lit and "back" returns there.
-  const hubNames={today:'Hôm nay',journey:'Khóa học',songs:'Bài hát',skills:'Kỹ năng',reading:'Đọc nhạc'};
+  const hubNames={today:_t('Hôm nay'),journey:_t('Khóa học'),songs:_t('Bài hát'),skills:_t('Kỹ năng'),reading:_t('Đọc nhạc')};
   let lastHub=null;
   const practiceHub=()=>state.reading?'reading':lastHub&&lastHub!=='reading'?lastHub:state.song?'songs':'journey';
   function showView(view,route=true){
@@ -71,7 +73,7 @@
       if(button.dataset.view===(view==='practice'?practiceHub():view))button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
     });
     $('practice-exit').hidden=view!=='practice';$('practice-exit').textContent='← '+hubNames[practiceHub()];$('topbar-count').hidden=view!=='practice';
-    $('view-label').textContent=({today:'LUYỆN TẬP HÔM NAY',journey:'KHÓA HỌC',songs:'BÀI HÁT',practice:'LUYỆN ĐÀN',skills:'BẢN ĐỒ KỸ NĂNG',reading:'ĐỌC NHẠC MỖI NGÀY'})[view];
+    $('view-label').textContent=({today:_t('LUYỆN TẬP HÔM NAY'),journey:_t('KHÓA HỌC'),songs:_t('BÀI HÁT'),practice:_t('LUYỆN ĐÀN'),skills:_t('BẢN ĐỒ KỸ NĂNG'),reading:_t('ĐỌC NHẠC MỖI NGÀY')})[view];
     closeMenu();
     if(route)try{history.replaceState(null,'',view==='practice'?(state.reading?'#doc-nhac/tap':state.song?`#nhac-${state.song.id}`:`#bai-${ex().id}`):({today:'#hom-nay',journey:'#hanh-trinh',songs:'#bai-nhac',skills:'#ky-nang',reading:'#doc-nhac'})[view]);}catch(_){}
     window.scrollTo?.({top:0,behavior:'instant'});
@@ -124,7 +126,7 @@
     const nav=$('lesson-list');nav.innerHTML='';
     DATA.stages.forEach(([name],stageIdx)=>{
       const group=document.createElement('section');group.className='stage-nav';
-      const h=document.createElement('h3');h.textContent=`Chặng ${num(stageIdx+1)} · ${name}`;group.append(h);
+      const h=document.createElement('h3');h.textContent=_t("Chặng {0} · {1}",[num(stageIdx+1),name]);group.append(h);
       DATA.exercises.forEach((item,i)=>{
         if(item.stage!==stageIdx+1)return;
         const b=document.createElement('button');b.type='button';b.className='lesson-item'+(!state.song&&i===state.index?' current':'')+(state.done.has(item.id)?' done':'');b.setAttribute('aria-current',!state.song&&i===state.index?'true':'false');
@@ -303,7 +305,7 @@
         notes.forEach((note,i)=>{
           const ev=events[i],group=context.openGroup();
           group.setAttribute('id',`ev-${ev.key}`);group.setAttribute('class',`event ${hand}${ev.pitches.length?'':' rest-event'}`);
-          const title=svgNode('title',{});title.textContent=`${ev.pitches.length?ev.pitches.join(' + '):'Nghỉ'} · ${ev.dur} phách`;group.append(title);
+          const title=svgNode('title',{});title.textContent=_t("{0} · {1} phách",[ev.pitches.length?ev.pitches.join(' + '):_t('Nghỉ'),ev.dur]);group.append(title);
           note.setContext(context).draw();context.closeGroup();positions.set(ev.beat,note.getAbsoluteX());
         });
         beams.forEach(beam=>beam.setContext(context).draw());
@@ -374,7 +376,7 @@
     const currentTile=Math.max(1,Math.ceil(viewport*.28/width)),tiles=currentTile+Math.ceil(viewport/width)+2;
     const key=`${state.barStart}:${state.barEnd}:${state.hand}:${tiles}:${currentTile}`;
     if(state.loopStripKey===key)return;
-    strip.setAttribute('aria-label',`Khuông nhạc hai tay, ô ${state.barStart}–${state.barEnd}, nối tiếp khi lặp`);
+    strip.setAttribute('aria-label',_t("Khuông nhạc hai tay, ô {0}–{1}, nối tiếp khi lặp",[state.barStart,state.barEnd]));
     state.loopStripKey=key;state.scoreGeometry=null;state.visualSignature=null;state.loopActiveSignature=null;
     strip.replaceChildren();strip.style.width=`${width*tiles*SCORE_SCALE}px`;
     const svg=svgNode('svg',{width:width*tiles,height:state.readingBounds?state.readingBounds.top+state.readingBounds.height:SCORE_HEIGHT,viewBox:`0 0 ${width*tiles} ${SCORE_HEIGHT}`});
@@ -437,8 +439,8 @@
     document.querySelectorAll('[data-hand]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.hand===state.hand)));
     document.querySelectorAll('#piece-phrases button').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.from)===state.barStart&&Number(button.dataset.to)===state.barEnd)));
     $('bar-start').value=state.barStart;$('bar-end').value=state.barEnd;
-    const name=state.hand==='both'?'cả hai tay':state.hand==='rh'?'tay phải':'tay trái';
-    $('practice-hint').textContent=`Nghe ${name} · Ô ${state.barStart}–${state.barEnd}. ${state.hand==='both'?'':'Tay còn lại vẫn hiện trên sheet để bạn tự chơi. '}Bật “Lặp đoạn” để tập nhiều lượt.`;
+    const name=state.hand==='both'?_t('cả hai tay'):state.hand==='rh'?_t('tay phải'):_t('tay trái');
+    $('practice-hint').textContent=_t("Nghe {0} · Ô {1}–{2}. {3}Bật “Lặp đoạn” để tập nhiều lượt.",[name,state.barStart,state.barEnd,state.hand==='both'?'':_t('Tay còn lại vẫn hiện trên sheet để bạn tự chơi. ')]);
     scoreEl.querySelectorAll('.event,.vf-tuplet,.vf-study-slur,.vf-study-tie').forEach(node=>{
       node.classList.toggle('muted-hand',!handEnabled(node.classList.contains('rh')?'rh':'lh'));
     });
@@ -448,10 +450,10 @@
     state.events.forEach(ev=>$(`ev-${ev.key}`)?.classList.toggle('outside-segment',ev.bar<state.barStart-1||ev.bar>=state.barEnd));
     const starts=['rh','lh'].map(hand=>{
       const event=state.events.find(v=>v.hand===hand&&v.pitches.length&&v.start>=rangeStart()&&v.start<rangeEnd());
-      return `${hand==='rh'?'P':'T'}: ${event?event.pitches.join(' + '):'nghỉ'}`;
+      return `${hand==='rh'?_t('P'):_t('T')}: ${event?event.pitches.join(' + '):_t('nghỉ')}`;
     });
     songs?.refreshCheck();
-    $('start-notes').textContent=`Nốt đầu đoạn — ${starts.join(' · ')}. Tìm phím trước khi phát.`;
+    $('start-notes').textContent=_t("Nốt đầu đoạn — {0}. Tìm phím trước khi phát.",[starts.join(' · ')]);
   }
   function setActive(beat){
     const active=state.events.filter(v=>handEnabled(v.hand)&&v.pitches.length&&v.start<rangeEnd()&&v.start+v.dur>rangeStart()&&beat>=v.start-.002&&beat<v.start+v.dur-.002);
@@ -463,7 +465,7 @@
     scoreEl.querySelectorAll('.event.active').forEach(el=>el.classList.remove('active'));
     scoreEl.querySelectorAll('.bar-current').forEach(el=>el.setAttribute('opacity','0'));
     const ready=!moving&&Math.abs(beat-rangeStart())<.002;
-    $('keyboard-title').textContent=ready?'Phím bắt đầu đoạn':state.playing?'Các phím đang vang':'Phím tại vị trí đã chọn';
+    $('keyboard-title').textContent=ready?_t('Phím bắt đầu đoạn'):state.playing?_t('Các phím đang vang'):_t('Phím tại vị trí đã chọn');
     const activeMap=new Map();
     for(const ev of active){
       const node=$(`ev-${ev.key}`);if(node)node.classList.add('active');
@@ -526,9 +528,9 @@
     const bar=Math.min(barCount(),Math.floor(b/ex().meter)+1),within=b%ex().meter;
     const whole=Math.floor(within/pulseSize())+1;
     const rhythm=ex().rhythm;
-    const subdivision=rhythm==='triplet'?` · nốt ${Math.min(3,Math.floor((within%1)*3+1e-8)+1)}/3`:rhythm==='swing'?` · ${within%1>=2/3?'ngắn':'dài'}`:rhythm==='mixed'?'':within%1>=.45?' và':'';
-    $('position-label').textContent=b>=rangeEnd()?'Kết thúc đoạn':`Ô ${ex().barNumbers?.[bar-1]||bar}${ex().unfolded&&bar>45&&bar<77?" · lượt 2":""} · phách ${whole}${ex().timeSignature==='6/8'?` · móc đơn ${Math.floor(within/.5)+1}/6`:subdivision}`;
-    const count=ex().timeSignature==='6/8'?'MỘT hai ba · HAI hai ba (♩. = BPM)':rhythm==='sixteenth'?'1 e và a · 2 e và a · 3 e và a · 4 e và a':rhythm==='swing'?`${Array.from({length:ex().meter},(_,i)=>i+1).join(' ')} · dài–ngắn`:rhythm==='mixed'?'Giữ phách · nhìn nhóm nốt':Array.from({length:ex().meter},(_,i)=>rhythm==='triplet'?`${i+1}-la-li`:i+1+' &').join('  ');$('count-label').textContent=count;
+    const subdivision=rhythm==='triplet'?_t(" · nốt {0}/3",[Math.min(3,Math.floor((within%1)*3+1e-8)+1)]):rhythm==='swing'?` · ${within%1>=2/3?_t('ngắn'):_t('dài')}`:rhythm==='mixed'?'':within%1>=.45?_t(' và'):'';
+    $('position-label').textContent=b>=rangeEnd()?_t('Kết thúc đoạn'):_t("Ô {0}{1} · phách {2}{3}",[ex().barNumbers?.[bar-1]||bar,ex().unfolded&&bar>45&&bar<77?_t(" · lượt 2"):"",whole,ex().timeSignature==='6/8'?_t(" · móc đơn {0}/6",[Math.floor(within/.5)+1]):subdivision]);
+    const count=ex().timeSignature==='6/8'?_t('MỘT hai ba · HAI hai ba (♩. = BPM)'):rhythm==='sixteenth'?_t('1 e và a · 2 e và a · 3 e và a · 4 e và a'):rhythm==='swing'?_t("{0} · dài–ngắn",[Array.from({length:ex().meter},(_,i)=>i+1).join(' ')]):rhythm==='mixed'?_t('Giữ phách · nhìn nhóm nốt'):Array.from({length:ex().meter},(_,i)=>rhythm==='triplet'?`${i+1}-la-li`:i+1+' &').join('  ');$('count-label').textContent=count;
     setActive(b);
   }
   function loadLesson(index){
@@ -537,15 +539,15 @@
     stop(true);reading?.leave();state.reading=null;clearReadingDisplay();state.song=null;songs?.deactivate();
     $('quest').hidden=false;$('lesson-practice').hidden=false;$('song-practice').hidden=true;
     state.index=Math.max(0,Math.min(DATA.exercises.length-1,index));const e=ex();state.barStart=1;state.barEnd=e.rh.length;state.events=flatten(composer?.prepare(e)||e);state.tempo=e.bpm;state.beat=0;state.lastScrollBar=-1;$('score-scroll').scrollLeft=0;
-    setBarOptions();$('full-piece').textContent='Cả bài';
-    $('lesson-title').textContent=`Bài ${num(e.id)} · ${e.title}`;
+    setBarOptions();$('full-piece').textContent=_t('Cả bài');
+    $('lesson-title').textContent=_t("Bài {0} · {1}",[num(e.id),e.title]);
     $('lesson-goal').textContent=e.goal;
     skillGraph?.showLesson(e);
-    $('stage-line').textContent=`${e.book?(e.book.label|| (e.book.volume===2?'Giáo trình · Tập 2':'Giáo trình · Tập 1')):'Chặng '+num(e.stage)} / ${DATA.stages[e.stage-1][0]}`;
+    $('stage-line').textContent=`${e.book?(e.book.label|| (e.book.volume===2?_t('Giáo trình · Tập 2'):_t('Giáo trình · Tập 1'))):_t('Chặng ')+num(e.stage)} / ${DATA.stages[e.stage-1][0]}`;
     $('book-lesson-guide').hidden=!e.book;$('book-lesson-guide').open=false;
     if(e.book){
-      const kind=({transcribed:'Dòng nhạc trong sách',excerpt:'Trích đoạn',adapted:'Bài chuyển soạn hoặc vận dụng'})[e.book.kind];
-      $('book-lesson-reference').textContent=`Chương ${e.book.chapter} · ${e.book.reference} · PDF trang ${e.book.pages.join(', ')} · ${kind}.`;
+      const kind=({transcribed:_t('Dòng nhạc trong sách'),excerpt:_t('Trích đoạn'),adapted:_t('Bài chuyển soạn hoặc vận dụng')})[e.book.kind];
+      $('book-lesson-reference').textContent=_t("Chương {0} · {1} · PDF trang {2} · {3}.",[e.book.chapter,e.book.reference,e.book.pages.join(', '),kind]);
       $('book-practice-steps').replaceChildren(...e.book.steps.map(step=>{const li=document.createElement('li');li.textContent=step;return li;}));
       $('book-repair').textContent=e.book.repair;$('book-review').textContent=e.book.review;
       const curriculum=(DATA.bookCurricula||[DATA.bookCurriculum]).find(c=>c.id===e.book.id);
@@ -557,11 +559,11 @@
     if(sourceDownloads&&e.book?.musicxml)$('book-musicxml-link').href=e.book.musicxml;
     $('book-downloads').replaceChildren();
     for(const [hand,url] of Object.entries(sourceDownloads?(e.book?.midi||{}):{})){
-      const a=document.createElement('a');a.href=url;a.download='';a.textContent=({both:'MIDI hai tay',right:'MIDI tay phải',left:'MIDI tay trái'})[hand];$('book-downloads').append(a);
+      const a=document.createElement('a');a.href=url;a.download='';a.textContent=({both:'MIDI hai tay',right:_t('MIDI tay phải'),left:_t('MIDI tay trái')})[hand];$('book-downloads').append(a);
     }
     $('book-repair-links').replaceChildren();
     for(const id of e.book?.repairLessons||[]){
-      const a=document.createElement('a');a.href=`#bai-${id}`;a.textContent=`Ôn kỹ thuật ${num(id-130)} · ${DATA.exercises[id-1].title}`;$('book-repair-links').append(a);
+      const a=document.createElement('a');a.href=`#bai-${id}`;a.textContent=_t("Ôn kỹ thuật {0} · {1}",[num(id-130),DATA.exercises[id-1].title]);$('book-repair-links').append(a);
     }
     $('piece-phrases').replaceChildren();$('piece-phrases').hidden=!e.phrases;
     for(const phrase of e.phrases||[]){
@@ -570,15 +572,15 @@
     }
     $('topbar-count').textContent=`${num(e.id)} / ${DATA.exercises.length}`;
     $('tempo').value=e.bpm;$('tempo-value').textContent=e.bpm;
-    $('focus-text').textContent=`Tập trung: ${e.focus}`;
-    $('notation-tip').textContent=e.timeSignature==='6/8'?'6/8 · Hai nhóm ba · BPM tính theo nốt đen chấm dôi':e.rhythm==='swing'?'Swing 2:1 · Nốt dài gấp đôi nốt ngắn':e.rhythm==='triplet'?'Nhóm 3 · Ba nốt trong một phách':e.rhythm==='mixed'?'Nhóm 3 = liên ba · Hai gạch = móc kép':'Khóa Sol: tay phải · Khóa Fa: tay trái';
+    $('focus-text').textContent=_t("Tập trung: {0}",[e.focus]);
+    $('notation-tip').textContent=e.timeSignature==='6/8'?_t('6/8 · Hai nhóm ba · BPM tính theo nốt đen chấm dôi'):e.rhythm==='swing'?_t('Swing 2:1 · Nốt dài gấp đôi nốt ngắn'):e.rhythm==='triplet'?_t('Nhóm 3 · Ba nốt trong một phách'):e.rhythm==='mixed'?_t('Nhóm 3 = liên ba · Hai gạch = móc kép'):_t('Khóa Sol: tay phải · Khóa Fa: tay trái');
     $('pass-rule').textContent=e.pass_rule;
-    $('variation').textContent=`Biến thể: ${e.variation}`;
-    $('finger-guide').hidden=!e.fingers;$('finger-guide').textContent=e.fingers?`Ngón tay: ${e.fingers}`:'';
-    $('touch-guide').hidden=!e.touch;$('touch-guide').textContent=e.touch?`Cách chạm: ${e.touch}`:'';
+    $('variation').textContent=_t("Biến thể: {0}",[e.variation]);
+    $('finger-guide').hidden=!e.fingers;$('finger-guide').textContent=e.fingers?_t("Ngón tay: {0}",[e.fingers]):'';
+    $('touch-guide').hidden=!e.touch;$('touch-guide').textContent=e.touch?_t("Cách chạm: {0}",[e.touch]):'';
     $('prev-lesson').disabled=index===0;$('next-lesson').disabled=index===DATA.exercises.length-1;
     $('done-button').setAttribute('aria-pressed',state.done.has(e.id)?'true':'false');
-    $('done-button').textContent=state.done.has(e.id)?'✓ Đã tập':'✓ Đánh dấu đã tập';
+    $('done-button').textContent=state.done.has(e.id)?_t('✓ Đã tập'):_t('✓ Đánh dấu đã tập');
     renderLessons();drawScore();updatePractice();updateTime();journey?.showLesson(e);
     showView('practice',false);refreshToday();
     try{history.replaceState(null,'',`#bai-${e.id}`);}catch(_){}
@@ -587,10 +589,10 @@
     for(const id of ['bar-start','bar-end']){
       $(id).replaceChildren();
       for(let i=1;i<=barCount();i++){
-        const option=document.createElement('option');option.value=i;option.textContent=ex().unfolded?`${i} · ô ${ex().barNumbers[i-1]}`:i;$(id).append(option);
+        const option=document.createElement('option');option.value=i;option.textContent=ex().unfolded?_t("{0} · ô {1}",[i,ex().barNumbers[i-1]]):i;$(id).append(option);
       }
     }
-    scoreEl.setAttribute('aria-label',`${ex().readingHands?.length===1?'Khuông nhạc khóa '+(ex().readingClefs[ex().readingHands[0]]==='bass'?'Fa':'Sol'):'Khuông nhạc hai tay'}, ${barCount()} ô nhịp`);
+    scoreEl.setAttribute('aria-label',_t("{0}, {1} ô nhịp",[ex().readingHands?.length===1?(ex().readingClefs[ex().readingHands[0]]==='bass'?_t('Khuông nhạc khóa Fa'):_t('Khuông nhạc khóa Sol')):_t('Khuông nhạc hai tay'),barCount()]));
   }
   function loadSong(song){
     cancelPracticeStart();
@@ -602,11 +604,11 @@
     $('piece-phrases').hidden=true;
     $('lesson-title').textContent=song.title;$('lesson-goal').textContent=song.goal;
     skillGraph?.showLesson(song);
-    $('stage-line').textContent=`Chơi một bài nhạc / ${song.tempoLabel}`;
-    $('topbar-count').textContent=song.unfolded?'Toàn bài · có lặp':`${song.availableBars} ô nhịp`;$('full-piece').textContent=song.unfolded?'Toàn bài · có lặp':'Chọn cả 47 ô';
-    $('song-practice-title').textContent=`${song.title} · 47 ô nhịp${song.unfolded?' · theo dấu lặp':''}`;
+    $('stage-line').textContent=_t("Chơi một bài nhạc / {0}",[song.tempoLabel]);
+    $('topbar-count').textContent=song.unfolded?_t('Toàn bài · có lặp'):_t("{0} ô nhịp",[song.availableBars]);$('full-piece').textContent=song.unfolded?_t('Toàn bài · có lặp'):_t('Chọn cả 47 ô');
+    $('song-practice-title').textContent=_t("{0} · 47 ô nhịp{1}",[song.title,song.unfolded?_t(' · theo dấu lặp'):'']);
     $('tempo').value=song.bpm;$('tempo-value').textContent=song.bpm;
-    $('focus-text').textContent=song.focus;$('notation-tip').textContent='Nhịp 3/4 · Đếm 1–2–3 · Chưa dùng pedal khi ghép tay';
+    $('focus-text').textContent=song.focus;$('notation-tip').textContent=_t('Nhịp 3/4 · Đếm 1–2–3 · Chưa dùng pedal khi ghép tay');
     $('finger-guide').hidden=true;$('touch-guide').hidden=false;$('touch-guide').textContent=song.touch;
     $('prev-lesson').disabled=true;$('next-lesson').disabled=true;
     renderLessons();drawScore();updatePractice();updateTime();
@@ -626,8 +628,8 @@
     state.piano.setRoom(Number($('room').value)/100);
     // Keys of the whole piece, so the web bank fetches only what this lesson or song uses.
     const keys=[...new Set(playbackEvents().flatMap(ev=>ev.pitches.map(midiOf)))];
-    await state.piano.load((loaded,total)=>{$('audio-status').textContent=`Đang nạp mẫu đàn ${loaded}/${total}`;},keys);
-    $('audio-status').textContent=full||engine==='web'?`${state.piano.info.instrument||state.piano.info.name} · ${state.piano.info.velocityLayers} lớp lực nhấn`:'Đã nạp · Dùng offline';
+    await state.piano.load((loaded,total)=>{$('audio-status').textContent=_t("Đang nạp mẫu đàn {0}/{1}",[loaded,total]);},keys);
+    $('audio-status').textContent=full||engine==='web'?_t("{0} · {1} lớp lực nhấn",[state.piano.info.instrument||state.piano.info.name,state.piano.info.velocityLayers]):_t('Đã nạp · Dùng offline');
   }
   function fullSpec(from,until){
     const spb=beatSeconds(),notes=[];
@@ -641,7 +643,7 @@
   }
   async function prepareFullSegments(request){
     if(!(state.piano instanceof window.FullSalamanderPiano))return;
-    $('play-status').textContent='Đang chuẩn bị tiếng đàn SFZ…';
+    $('play-status').textContent=_t('Đang chuẩn bị tiếng đàn SFZ…');
     const piano=state.piano,from=state.beat,until=rangeEnd(),begin=rangeStart(),loop=state.loop;
     const firstSpec=fullSpec(from,until),loopSpec=loop&&from!==begin?fullSpec(begin,until):null;
     const first=await piano.prepare(firstSpec);
@@ -721,12 +723,12 @@
     const spb=beatSeconds(),now=transportTime();
     if(now<state.musicStart){
       const remaining=Math.ceil((state.musicStart-now)/(spb*pulseSize()));
-      $('play-status').textContent=`Đếm vào: ${Math.max(1,remaining)}`;
+      $('play-status').textContent=_t("Đếm vào: {0}",[Math.max(1,remaining)]);
     }else{
       state.beat=currentBeat();
-      $('play-status').textContent=state.timelineOnly?'Đang tập theo nhịp':'Đang phát';updateTime();
+      $('play-status').textContent=state.timelineOnly?_t('Đang tập theo nhịp'):_t('Đang phát');updateTime();
       if(!state.loop&&state.beat>=rangeEnd()){
-        stop(false,true);state.beat=rangeEnd();updateTime();$('play-status').textContent='Hoàn thành đoạn';track('practice_complete',{...practiceContext(),result:'done'});return;
+        stop(false,true);state.beat=rangeEnd();updateTime();$('play-status').textContent=_t('Hoàn thành đoạn');track('practice_complete',{...practiceContext(),result:'done'});return;
       }
     }
     state.raf=requestAnimationFrame(tick);
@@ -737,16 +739,16 @@
     if(state.reading&&!reading.beforeStart('listen',state.beat<=rangeStart()||state.beat>=rangeEnd()))return;
     const request=++state.startRequest;
     if(state.beat<rangeStart()||state.beat>=rangeEnd())state.beat=rangeStart();
-    state.loading=true;$('play-status').textContent='Đang nạp đàn…';
+    state.loading=true;$('play-status').textContent=_t('Đang nạp đàn…');
     updatePracticeUX();
-    $('play-icon').textContent='Ⅱ';$('play-button').setAttribute('aria-label','Hủy phát');
+    $('play-icon').textContent='Ⅱ';$('play-button').setAttribute('aria-label',_t('Hủy phát'));
     try{await ensureAudio();if(request!==state.startRequest)return;await prepareFullSegments(request);}catch(error){
       console.error(error);
-      if(request===state.startRequest){stop(false);$('play-status').textContent='Không nạp được âm thanh';$('audio-status').textContent=$('piano-engine').value==='web'?'Không tải được bộ Salamander web · kiểm tra kết nối tới trang, rồi bấm phát lại':$('piano-engine').value!=='compact'?'Bản SFZ cần dịch vụ và mẫu đàn đã cài · Open Full Piano.command':'Nạp thất bại · Bấm phát để thử lại';}
+      if(request===state.startRequest){stop(false);$('play-status').textContent=_t('Không nạp được âm thanh');$('audio-status').textContent=$('piano-engine').value==='web'?_t('Không tải được bộ Salamander web · kiểm tra kết nối tới trang, rồi bấm phát lại'):$('piano-engine').value!=='compact'?_t('Bản SFZ cần dịch vụ và mẫu đàn đã cài · Open Full Piano.command'):_t('Nạp thất bại · Bấm phát để thử lại');}
       return;
     }
     if(request!==state.startRequest)return;
-    state.loading=false;state.playing=true;$('play-button').setAttribute('aria-label','Tạm dừng');
+    state.loading=false;state.playing=true;$('play-button').setAttribute('aria-label',_t('Tạm dừng'));
     updatePracticeUX();
     syncLoopStrip();
     if($('follow-score').checked)followScore(state.beat);
@@ -774,14 +776,14 @@
       state.nodes.clear();
     }
     if(reset)state.beat=rangeStart();
-    $('play-icon').textContent='▶';$('play-button').setAttribute('aria-label','Phát bài');$('play-status').textContent=reset?'Sẵn sàng':'Tạm dừng';
+    $('play-icon').textContent='▶';$('play-button').setAttribute('aria-label',_t('Phát bài'));$('play-status').textContent=reset?_t('Sẵn sàng'):_t('Tạm dừng');
     if(state.events.length)updateTime();
     updatePracticeUX();
   }
   function changePractice(change){
     cancelPracticeStart();
     const was=state.playing||state.loading;stop(false);change();state.beat=rangeStart();state.lastScrollBar=-1;
-    updatePractice();updateTime();scrollToRange();$('play-status').textContent='Sẵn sàng';if(was)start(true);
+    updatePractice();updateTime();scrollToRange();$('play-status').textContent=_t('Sẵn sàng');if(was)start(true);
   }
   function scrollToRange(){
     const scale=scoreEl.querySelector('svg').clientWidth/scoreWidth||1;
@@ -809,7 +811,7 @@
     const practiceView=$('practice-view');
     const controlsToggle=document.createElement('button');controlsToggle.id='focus-controls-toggle';controlsToggle.type='button';controlsToggle.className='focus-controls-toggle';controlsToggle.setAttribute('aria-controls','focus-transport');document.querySelector('.transport').id='focus-transport';practiceView.append(controlsToggle);
     let ownFullscreen=false,orientationRequested=false,focusRequest=0;
-    const orientationHint=document.createElement('p');orientationHint.id='focus-orientation-hint';orientationHint.hidden=true;orientationHint.setAttribute('role','status');orientationHint.textContent='Xoay điện thoại ngang để xem sheet và bàn phím rộng hơn.';transportMain.append(orientationHint);
+    const orientationHint=document.createElement('p');orientationHint.id='focus-orientation-hint';orientationHint.hidden=true;orientationHint.setAttribute('role','status');orientationHint.textContent=_t('Xoay điện thoại ngang để xem sheet và bàn phím rộng hơn.');transportMain.append(orientationHint);
     const mobileFocus=()=>!!window.matchMedia?.('(max-width:850px)')?.matches;
     function updateOrientationHint(){orientationHint.hidden=!(viewSettings.focus&&mobileFocus()&&innerHeight>innerWidth);}
     function unlockFocusOrientation(){
@@ -837,12 +839,12 @@
     function applyViewSettings(){
       document.body.classList.toggle('practice-focus',viewSettings.focus);
       document.body.classList.toggle('focus-controls-hidden',!viewSettings.landscapeControls);
-      controlsToggle.textContent=viewSettings.landscapeControls?'Ẩn điều khiển':'☰ Hiện điều khiển';controlsToggle.setAttribute('aria-expanded',String(viewSettings.landscapeControls));
+      controlsToggle.textContent=viewSettings.landscapeControls?_t('Ẩn điều khiển'):_t('☰ Hiện điều khiển');controlsToggle.setAttribute('aria-expanded',String(viewSettings.landscapeControls));
       if(viewSettings.focus){if(lessonNav.parentElement!==playbackCluster)playbackCluster.append(lessonNav);if(viewTools.parentElement!==transportMain)transportMain.append(viewTools);}
       else{if(lessonNav.parentElement!==lessonHeading)lessonHeading.append(lessonNav);if(viewTools.parentElement!==practiceView)lessonHeading.after(viewTools);unlockFocusOrientation();if((document.fullscreenElement||document.webkitFullscreenElement)&&ownFullscreen){try{const exit=(document.exitFullscreen||document.webkitExitFullscreen)?.call(document);exit?.catch?.(()=>{});}catch(_){}}}
       updateOrientationHint();
       state.scoreGeometry=null;
-      $('focus-mode').setAttribute('aria-pressed',String(viewSettings.focus));$('focus-mode').textContent=viewSettings.focus?'⛶ Thoát tập trung':'⛶ Tập trung';
+      $('focus-mode').setAttribute('aria-pressed',String(viewSettings.focus));$('focus-mode').textContent=viewSettings.focus?_t('⛶ Thoát tập trung'):_t('⛶ Tập trung');
       $('keyboard-view').hidden=!viewSettings.keyboard;
       document.querySelector('.tempo-control').hidden=!viewSettings.tempo;
       $('play-button').hidden=!viewSettings.play;$('stop-button').hidden=!viewSettings.replay;
@@ -881,7 +883,7 @@
       if(state.song||ex().id===id)showView('practice');else loadLesson(id-1);
     });
     $('practice-exit').addEventListener('click',()=>showView(practiceHub()));
-    const showExpression=()=>{$('song-expression-note').textContent=$('song-expression').value==='expressive'?'Giai điệu có hướng đi, phần đệm nhẹ, cuối câu dịu xuống. Nhịp vẫn giữ đều.':'Lực nhấn ổn định để dễ ghép hai tay.';};
+    const showExpression=()=>{$('song-expression-note').textContent=$('song-expression').value==='expressive'?_t('Giai điệu có hướng đi, phần đệm nhẹ, cuối câu dịu xuống. Nhịp vẫn giữ đều.'):_t('Lực nhấn ổn định để dễ ghép hai tay.');};
     $('song-expression').addEventListener('change',()=>{
       const was=state.playing||state.loading;stop(false);showExpression();songs?.refreshCheck();if(was)start(false);
     });
@@ -890,7 +892,7 @@
     const fileMode=location.protocol==='file:';
     for(const option of $('piano-engine').options){
       if(option.value==='web')option.disabled=fileMode;
-      else if(option.value!=='compact'&&!localServer){option.disabled=true;if(!option.textContent.includes('cần server'))option.textContent=option.textContent.replace(/ \((mở server|chưa cài)\)$/,'')+' (cần server)';}
+      else if(option.value!=='compact'&&!localServer){option.disabled=true;{const needs=_t(' (cần server)');if(!option.textContent.endsWith(needs))option.textContent=option.textContent.replace(/ \([^)]*\)$/,'')+needs;}}
     }
     $('piano-engine').value=localServer?'full':fileMode?'compact':'web';
     const instrumentDetails=new Map();
@@ -901,7 +903,7 @@
       $('piano-tuning-control').hidden=ivy||vcsl;
       $('full-piano-options').hidden=!full;
       $('full-piano-link').hidden=location.protocol!=='file:';
-      $('full-piano-hint').textContent=vcsl?'Grand piano S Model B · VCSL Keys · SFZ gốc, có mẫu pedal và nhả phím.':ivy?'Piano in 162 · '+(engine.endsWith('ambient')?'Ambient · âm phòng thu':'Close · thu gần')+(converted?' · bản chuyển từ Korg, 5 mức lực nhấn dựng lại'+(engine.endsWith('ambient')?' · không có mẫu pedal-on riêng':' · có mẫu pedal-on/off'):' · SFZ gốc · 5 lớp lực nhấn.'):full?'SFZ gốc · 16 lớp lực nhấn · tiếng nhả phím, cộng hưởng và pedal.':engine==='web'?'Salamander web · đủ 30 phím thu thật × 8 lớp lực nhấn · tải theo bài, không cần server.':localServer?'Đang dùng bộ MP3 gọn. Chọn “Salamander · SFZ” để nghe bộ mẫu gốc.':'Bản đầy đủ: mở Open Full Piano.command, rồi bấm liên kết phía trên để giữ tiến độ.';
+      $('full-piano-hint').textContent=vcsl?_t('Grand piano S Model B · VCSL Keys · SFZ gốc, có mẫu pedal và nhả phím.'):ivy?'Piano in 162 · '+(engine.endsWith('ambient')?_t('Ambient · âm phòng thu'):_t('Close · thu gần'))+(converted?_t(' · bản chuyển từ Korg, 5 mức lực nhấn dựng lại')+(engine.endsWith('ambient')?_t(' · không có mẫu pedal-on riêng'):_t(' · có mẫu pedal-on/off')):_t(' · SFZ gốc · 5 lớp lực nhấn.')):full?_t('SFZ gốc · 16 lớp lực nhấn · tiếng nhả phím, cộng hưởng và pedal.'):engine==='web'?_t('Salamander web · đủ 30 phím thu thật × 8 lớp lực nhấn · tải theo bài, không cần server.'):localServer?_t('Đang dùng bộ MP3 gọn. Chọn “Salamander · SFZ” để nghe bộ mẫu gốc.'):_t('Bản đầy đủ: mở Open Full Piano.command, rồi bấm liên kết phía trên để giữ tiến độ.');
       if(instrumentDetails.get(engine)?.description)$('full-piano-hint').textContent=instrumentDetails.get(engine).description;
     };
     showEngine();
@@ -910,7 +912,7 @@
       for(const item of info.instruments||[]){
         instrumentDetails.set(item.id,item);
         const option=[...$('piano-engine').options].find(option=>option.value===item.id);
-        if(option){option.disabled=!item.available;option.textContent=item.name+(item.available?'':' (chưa cài)');}
+        if(option){option.disabled=!item.available;option.textContent=item.name+(item.available?'':_t(' (chưa cài)'));}
       }
       showEngine();
     }).catch(()=>{});
@@ -939,7 +941,7 @@
       if(keepListening){
         microphone.needsQuiet=true;microphone.quietFrames=0;microphone.clearNote();
         state.beat=micTargets[0]?.beat??rangeStart();updateTime();followScore(state.beat);
-        $('mic-brief').textContent='Nhả phím rồi tập '+(state.hand==='rh'?'tay phải':'tay trái');
+        $('mic-brief').textContent=_t('Nhả phím rồi tập ')+(state.hand==='rh'?_t('tay phải'):_t('tay trái'));
       }
     }));
     $('bar-start').addEventListener('change',e=>changePractice(()=>{state.barStart=Number(e.target.value);state.barEnd=Math.max(state.barStart,state.barEnd);}));
@@ -960,7 +962,7 @@
       state.beat=Math.max(rangeStart(),Math.min(rangeEnd(),chosen));updateTime();followScore(state.beat);
     });
     $('progress').addEventListener('change',e=>{const chosen=Number(e.target.value),was=state.playing||state.loading||state.resumeAfterSeek;state.resumeAfterSeek=false;if(state.playing||state.loading)stop(false);state.beat=Math.max(rangeStart(),Math.min(rangeEnd(),chosen));updateTime();followScore(state.beat);if(was)start(false);});
-    $('done-button').addEventListener('click',()=>{if(state.song||state.reading)return;const id=ex().id;if(state.done.has(id))state.done.delete(id);else state.done.add(id);try{localStorage.setItem('piano-independence-done',JSON.stringify([...state.done]));}catch(_){}$('done-button').setAttribute('aria-pressed',state.done.has(id)?'true':'false');$('done-button').textContent=state.done.has(id)?'✓ Đã tập':'✓ Đánh dấu đã tập';renderLessons();});
+    $('done-button').addEventListener('click',()=>{if(state.song||state.reading)return;const id=ex().id;if(state.done.has(id))state.done.delete(id);else state.done.add(id);try{localStorage.setItem('piano-independence-done',JSON.stringify([...state.done]));}catch(_){}$('done-button').setAttribute('aria-pressed',state.done.has(id)?'true':'false');$('done-button').textContent=state.done.has(id)?_t('✓ Đã tập'):_t('✓ Đánh dấu đã tập');renderLessons();});
     $('menu-button').addEventListener('click',()=>toggleMenu(!$('sidebar').classList.contains('open')));
     $('mobile-backdrop').addEventListener('click',closeMenu);
     document.addEventListener('keydown',e=>{if(e.code==='Space'&&!$('practice-view').hidden&&!e.target.closest?.('button,input,select,summary,a,textarea')){e.preventDefault();runPracticeAction();}if(e.key==='Escape')closeMenu();});
@@ -997,26 +999,26 @@
     // After micTargets is rebuilt: a changed piece, hand, range or tempo needs its own model.
     if(scoreModel.key!==modelKey()&&!learning)refreshScoreModel();
   }
-  function micRoundText(round){return `${round.exact} đúng quãng tám · ${round.near} lệch quãng tám · ${round.retry} lần thử lại${round.self?` · ${round.self} tự kiểm`:''}`;}
+  function micRoundText(round){return _t("{0} đúng quãng tám · {1} lệch quãng tám · {2} lần thử lại{3}",[round.exact,round.near,round.retry,round.self?_t(" · {0} tự kiểm",[round.self]):'']);}
   function updateMicSummary(){
-    $('mic-round-summary').textContent=`Đã qua ${micTargetIndex}/${micTargets.length} vị trí · ${micRoundText(micRound)}`;
-    $('mic-last-round').textContent=micLastRound?`Lượt ${micRounds} đã hoàn thành: ${micRoundText(micLastRound)}. ${micLastRound.acceptedNear?'Có nốt gần đúng được đi tiếp; hãy luyện lại đúng quãng tám.':'Tất cả vị trí đã được đánh đúng nốt và quãng tám.'}`:'';
+    $('mic-round-summary').textContent=_t("Đã qua {0}/{1} vị trí · {2}",[micTargetIndex,micTargets.length,micRoundText(micRound)]);
+    $('mic-last-round').textContent=micLastRound?_t("Lượt {0} đã hoàn thành: {1}. {2}",[micRounds,micRoundText(micLastRound),micLastRound.acceptedNear?_t('Có nốt gần đúng được đi tiếp; hãy luyện lại đúng quãng tám.'):_t('Tất cả vị trí đã được đánh đúng nốt và quãng tám.')]):'';
     $('mic-last-round').hidden=!micLastRound;
     updateStepTarget();expectMicTarget();
   }
   function updateStepTarget(){
-    const target=micTargets[micTargetIndex],hand=state.hand==='rh'?'Tay phải':state.hand==='lh'?'Tay trái':'Hai tay';
-    textIfChanged('mic-step-target',target?`${hand} · Cần ${target.pitches.map(noteName).join(' + ')}${selfCheckTarget(target)?' · tự kiểm':''} · ${micTargetIndex+1}/${micTargets.length}`:micLastRound?`${hand} · Hoàn thành ${micTargets.length} nốt`:`${hand} · Chọn đoạn luyện`);
+    const target=micTargets[micTargetIndex],hand=state.hand==='rh'?_t('Tay phải'):state.hand==='lh'?_t('Tay trái'):'Hai tay';
+    textIfChanged('mic-step-target',target?_t("{0} · Cần {1}{2} · {3}/{4}",[hand,target.pitches.map(noteName).join(' + '),selfCheckTarget(target)?_t(' · tự kiểm'):'',micTargetIndex+1,micTargets.length]):micLastRound?_t("{0} · Hoàn thành {1} nốt",[hand,micTargets.length]):_t("{0} · Chọn đoạn luyện",[hand]));
   }
   function updateMicMode(){
     $('mic-grading-mode').value=micMode;
-    $('mic-mode-hint').textContent=practiceMode==='timed'?(micMode==='relaxed'?'Đúng nốt nhận trọn điểm cao độ; cùng tên nốt lệch quãng tám nhận nửa điểm. Nhịp có khoảng dung sai rộng hơn.':'Đúng nốt và quãng tám mới có điểm cao độ. Nhịp có khoảng dung sai hẹp hơn.'):micMode==='relaxed'?'Đúng tên nốt nhưng lệch quãng tám: đi tiếp, ghi gần đúng màu vàng. Nốt khác: thử lại.':'Đúng nốt và quãng tám mới đi tiếp. Lệch quãng tám: hướng dẫn chỉnh và thử lại.';
+    $('mic-mode-hint').textContent=practiceMode==='timed'?(micMode==='relaxed'?_t('Đúng nốt nhận trọn điểm cao độ; cùng tên nốt lệch quãng tám nhận nửa điểm. Nhịp có khoảng dung sai rộng hơn.'):_t('Đúng nốt và quãng tám mới có điểm cao độ. Nhịp có khoảng dung sai hẹp hơn.')):micMode==='relaxed'?_t('Đúng tên nốt nhưng lệch quãng tám: đi tiếp, ghi gần đúng màu vàng. Nốt khác: thử lại.'):_t('Đúng nốt và quãng tám mới đi tiếp. Lệch quãng tám: hướng dẫn chỉnh và thử lại.');
   }
   function updateMicFlow(){
     updateMicMode();
-    $('mic-flow-hint').textContent=practiceMode==='timed'?'Sheet chạy sau một ô đếm vào. Điểm: 70% cao độ + 30% nhịp. Nốt chưa rõ được ghi riêng.':'Sheet chờ bạn đánh từng nốt. Chưa chấm nhịp; âm chưa rõ không tính sai.';
+    $('mic-flow-hint').textContent=practiceMode==='timed'?_t('Sheet chạy sau một ô đếm vào. Điểm: 70% cao độ + 30% nhịp. Nốt chưa rõ được ghi riêng.'):_t('Sheet chờ bạn đánh từng nốt. Chưa chấm nhịp; âm chưa rõ không tính sai.');
     $('loop').disabled=false;
-    if(!transportRunning())$('play-button').setAttribute('aria-label','Phát bài');
+    if(!transportRunning())$('play-button').setAttribute('aria-label',_t('Phát bài'));
     updatePracticeUX();
   }
   const textIfChanged=(id,text)=>{if($(id).textContent!==text)$(id).textContent=text;};
@@ -1027,9 +1029,9 @@
   const timedTargetsSupported=()=>canGradeTargets(micTargets);
   function practiceSupported(){return practiceMode==='timed'?!timedMic||timedTargetsSupported():practiceMode==='chords'||canGradeTargets(micTargets);}
   function practiceUnavailableReason(){
-    if(ex().book?.freePlay)return 'Ứng tác tự do: nghe nền tay trái rồi tự chơi trên đàn; bài này không có đáp án để chấm bằng micro.';
-    if(!micTargets.length)return 'Tay và đoạn đang chọn không có nốt để chấm. Đổi tay hoặc đoạn luyện.';
-    return 'Đoạn này có nốt ngoài C2–C6, vượt dải chấm của micro. Đổi tay, đoạn luyện hoặc nghe mẫu để tự tập.';
+    if(ex().book?.freePlay)return _t('Ứng tác tự do: nghe nền tay trái rồi tự chơi trên đàn; bài này không có đáp án để chấm bằng micro.');
+    if(!micTargets.length)return _t('Tay và đoạn đang chọn không có nốt để chấm. Đổi tay hoặc đoạn luyện.');
+    return _t('Đoạn này có nốt ngoài C2–C6, vượt dải chấm của micro. Đổi tay, đoạn luyện hoặc nghe mẫu để tự tập.');
   }
   function updatePracticeUX(){
     const listening=practiceMode==='listen',timeline=practiceMode==='timed',scored=timeline&&timedMic,stepping=practiceMode==='step',observing=practiceMode==='chords',busy=practiceStarting||!!microphone?.pending;
@@ -1048,31 +1050,31 @@
     for(const id of ['mic-mode-hint','mic-flow-hint','mic-grading-mode'])propertyIfChanged($(id).tagName==='SELECT'?$(id).closest('label'):$(id),'hidden',observing);
     propertyIfChanged(document.querySelector('.practice-feedback-detail'),'hidden',observing);
     propertyIfChanged($('mic-guard-toggle').closest('label'),'hidden',observing);
-    textIfChanged('mic-input-help',observing?'Đánh đủ hợp âm và nhả pedal; ưu tiên C3–C6. Âm thanh được xử lý trên thiết bị. Tên và quãng tám nghe được có thể sai; chưa dùng để chấm bài.':'Đánh từng nốt hoặc hợp âm trong C2–C6, nhả pedal. Âm thanh được xử lý trên thiết bị. Hợp âm được so với đúng các phím cần đánh; bộ nghe còn có thể nhầm. Chưa chấm trường độ hoặc lực nhấn.');
+    textIfChanged('mic-input-help',observing?_t('Đánh đủ hợp âm và nhả pedal; ưu tiên C3–C6. Âm thanh được xử lý trên thiết bị. Tên và quãng tám nghe được có thể sai; chưa dùng để chấm bài.'):_t('Đánh từng nốt hoặc hợp âm trong C2–C6, nhả pedal. Âm thanh được xử lý trên thiết bị. Hợp âm được so với đúng các phím cần đánh; bộ nghe còn có thể nhầm. Chưa chấm trường độ hoặc lực nhấn.'));
     const unavailable=!listening&&!(timeline&&!scored)&&!observing&&!busy&&!running&&!practiceSupported();
     propertyIfChanged($('play-button'),'disabled',false);
     propertyIfChanged($('practice-recovery'),'hidden',!unavailable);
     for(const hand of ['rh','lh'])propertyIfChanged($('practice-recovery-'+hand),'hidden',!micHandEligibility[hand]||hand===state.hand);
     propertyIfChanged($('practice-recovery-chords'),'hidden',!!ex().book?.freePlay);
     attrIfChanged($('play-button'),'aria-describedby',unavailable?'practice-guidance practice-recovery':'practice-guidance');
-    const label=busy?'Hủy mở micro':timeline?(running?'Tạm dừng':'Bắt đầu tập'):observing?(running?'Dừng nghe':'Bắt đầu nghe'):listening?(state.loading?'Hủy tải':state.playing?'Tạm dừng':'Nghe mẫu'):running?'Kết thúc tập':unavailable?'Chọn cách tập':'Bắt đầu tập';
+    const label=busy?_t('Hủy mở micro'):timeline?(running?_t('Tạm dừng'):_t('Bắt đầu tập')):observing?(running?_t('Dừng nghe'):_t('Bắt đầu nghe')):listening?(state.loading?_t('Hủy tải'):state.playing?_t('Tạm dừng'):_t('Nghe mẫu')):running?_t('Kết thúc tập'):unavailable?_t('Chọn cách tập'):_t('Bắt đầu tập');
     textIfChanged('play-label',label);attrIfChanged($('play-button'),'aria-label',label);propertyIfChanged($('play-button'),'title',label+' · Space');
     textIfChanged('play-icon',running||busy?'Ⅱ':'▶');
-    if(!listening&&practiceMode==='step')textIfChanged('play-status',busy?'Đang chuẩn bị…':running?'Tập từng nốt':micLastRound?'Hoàn thành lượt':'Sẵn sàng');
-    if(observing)textIfChanged('play-status',busy?'Đang chuẩn bị…':running?'Nghe hợp âm':'Sẵn sàng');
+    if(!listening&&practiceMode==='step')textIfChanged('play-status',busy?_t('Đang chuẩn bị…'):running?_t('Tập từng nốt'):micLastRound?_t('Hoàn thành lượt'):_t('Sẵn sàng'));
+    if(observing)textIfChanged('play-status',busy?_t('Đang chuẩn bị…'):running?_t('Nghe hợp âm'):_t('Sẵn sàng'));
     propertyIfChanged($('metronome').closest('label'),'hidden',!listening);
     propertyIfChanged($('loop').closest('label'),'hidden',false);
-    textIfChanged('practice-segment',`Ô ${state.barStart}–${state.barEnd} ▾`);
+    textIfChanged('practice-segment',_t("Ô {0}–{1} ▾",[state.barStart,state.barEnd]));
     propertyIfChanged($('practice-segment'),'disabled',!!micTempoSession?.running||busy);
     document.querySelectorAll('[data-hand]').forEach(button=>{
       propertyIfChanged(button,'disabled',!!micTempoSession?.running||busy);
       propertyIfChanged(button,'title','');
     });
-    let guidance=scored&&practiceSupported()?'Sheet chạy theo tempo sau một ô đếm vào; micro chấm cao độ (70%) và nhịp (30%) từng nốt và hợp âm, tổng kết cuối lượt.':timeline&&!scored?'Sheet chạy theo tốc độ đã chọn để bạn tự chơi trên đàn. Không cần micro, không chấm điểm.':observing?'Bấm bắt đầu, rồi đánh đủ hợp âm trên đàn. Ưu tiên C3–C6; nhả pedal để các nốt rõ hơn. Chưa chấm hoặc chạy sheet.':listening?'Chọn tay và tempo rồi nghe câu mẫu.':!practiceSupported()?practiceUnavailableReason():`Chọn tay, bấm Bắt đầu tập rồi đánh nốt trên đàn. Micro nghe ${state.hand==='rh'?'tay phải':state.hand==='lh'?'tay trái':'hai tay'}; đúng nốt thì sheet đi tiếp.`;
+    let guidance=scored&&practiceSupported()?_t('Sheet chạy theo tempo sau một ô đếm vào; micro chấm cao độ (70%) và nhịp (30%) từng nốt và hợp âm, tổng kết cuối lượt.'):timeline&&!scored?_t('Sheet chạy theo tốc độ đã chọn để bạn tự chơi trên đàn. Không cần micro, không chấm điểm.'):observing?_t('Bấm bắt đầu, rồi đánh đủ hợp âm trên đàn. Ưu tiên C3–C6; nhả pedal để các nốt rõ hơn. Chưa chấm hoặc chạy sheet.'):listening?_t('Chọn tay và tempo rồi nghe câu mẫu.'):!practiceSupported()?practiceUnavailableReason():_t("Chọn tay, bấm Bắt đầu tập rồi đánh nốt trên đàn. Micro nghe {0}; đúng nốt thì sheet đi tiếp.",[state.hand==='rh'?_t('tay phải'):state.hand==='lh'?_t('tay trái'):'hai tay']);
     if(!listening&&!(timeline&&!scored)&&microphone?.lastError&&!microphone.active&&!busy)guidance=microphone.lastError;
-    if(busy)guidance=microphone?.pending?'Cho phép micro trong trình duyệt để bắt đầu.':'Nhả phím và chờ tiếng mẫu tắt…';
-    if(evalRun?.round===2)guidance=`Lượt 2 · đánh giá: ở ${evalRun.slips.length} nốt viền cam, đánh phím ngay bên phải (cao hơn nửa cung); các nốt khác chơi đúng.`;
-    else if(evalRun)guidance='Lượt 1 · đánh giá: chơi đúng cả đoạn theo nhịp; app đang thu để so các cách chấm.';
+    if(busy)guidance=microphone?.pending?_t('Cho phép micro trong trình duyệt để bắt đầu.'):_t('Nhả phím và chờ tiếng mẫu tắt…');
+    if(evalRun?.round===2)guidance=_t("Lượt 2 · đánh giá: ở {0} nốt viền cam, đánh phím ngay bên phải (cao hơn nửa cung); các nốt khác chơi đúng.",[evalRun.slips.length]);
+    else if(evalRun)guidance=_t('Lượt 1 · đánh giá: chơi đúng cả đoạn theo nhịp; app đang thu để so các cách chấm.');
     textIfChanged('practice-guidance',guidance);
   }
   function cancelPracticeStart(){
@@ -1104,7 +1106,7 @@
         await new Promise(resolve=>setTimeout(resolve,50));if(token!==practiceStartToken||mode!==practiceMode)return;
       }
       if(!microphone.active||token!==practiceStartToken)return;
-      if(microphone.needsQuiet||performance.now()<micMuteUntil){microphone.stop();microphone.lastError='Âm chưa tắt. Nhả phím và pedal rồi bấm bắt đầu lại.';return;}
+      if(microphone.needsQuiet||performance.now()<micMuteUntil){microphone.stop();microphone.lastError=_t('Âm chưa tắt. Nhả phím và pedal rồi bấm bắt đầu lại.');return;}
       await modelBuild;if(token!==practiceStartToken||mode!==practiceMode||!microphone.active)return;
       practiceStarting=false;
       if(mode==='timed')startMicTempo(countIn);
@@ -1128,11 +1130,11 @@
   function closeMicTempoResult(){const dialog=$('mic-timed-result');if(dialog.open){if(dialog.close)dialog.close();else dialog.open=false;}}
   function cancelMicTempo(){
     if(!micTempoSession?.running)return;
-    if(evalRun){textIfChanged(`eval-round${evalRun.round}-status`,'Lượt đã dừng · chưa đánh giá.');evalRun=null;markSlips([]);microphone?.stopTakes();}
+    if(evalRun){textIfChanged(`eval-round${evalRun.round}-status`,_t('Lượt đã dừng · chưa đánh giá.'));evalRun=null;markSlips([]);microphone?.stopTakes();}
     micTempoSession.running=false;cancelAnimationFrame(micTempoRaf);lockMicTempoControls(false);
-    $('play-icon').textContent='▶';$('play-button').setAttribute('aria-label','Bắt đầu luyện theo tempo');$('play-status').textContent='Lượt đã dừng';
-    $('mic-timed-live').textContent='Lượt đã dừng · chưa có điểm tổng';
-    $('mic-feedback').textContent='Lượt đã dừng. Bấm Bắt đầu lượt để tập lại.';
+    $('play-icon').textContent='▶';$('play-button').setAttribute('aria-label',_t('Bắt đầu luyện theo tempo'));$('play-status').textContent=_t('Lượt đã dừng');
+    $('mic-timed-live').textContent=_t('Lượt đã dừng · chưa có điểm tổng');
+    $('mic-feedback').textContent=_t('Lượt đã dừng. Bấm Bắt đầu lượt để tập lại.');
     updatePracticeUX();
   }
   function markMicTempo(target){
@@ -1140,18 +1142,18 @@
   }
   function updateMicTempoSummary(){
     const summary=micTempoSession.summary();
-    $('mic-round-summary').textContent=`Đã xử lý ${summary.resolved}/${summary.total-summary.skipped} nốt${summary.skipped?` (${summary.skipped} mục trùng quãng tám không chấm)`:''} · ${summary.exact} đúng · ${summary.near} lệch quãng tám · ${summary.wrong} khác nốt · ${summary.missed} chưa ghi nhận · ${summary.unreadable} chưa rõ`;
-    $('mic-timed-live').textContent=`Theo tempo · ${summary.resolved}/${summary.total-summary.skipped} nốt`;
+    $('mic-round-summary').textContent=_t("Đã xử lý {0}/{1} nốt{2} · {3} đúng · {4} lệch quãng tám · {5} khác nốt · {6} chưa ghi nhận · {7} chưa rõ",[summary.resolved,summary.total-summary.skipped,summary.skipped?_t(" ({0} mục trùng quãng tám không chấm)",[summary.skipped]):'',summary.exact,summary.near,summary.wrong,summary.missed,summary.unreadable]);
+    $('mic-timed-live').textContent=_t("Theo tempo · {0}/{1} nốt",[summary.resolved,summary.total-summary.skipped]);
   }
   function finishMicTempo(){
     const session=micTempoSession,evalDone=evalRun;micTempoLast={...session.summary(),tempo:state.tempo,mode:micMode,hand:state.hand,barStart:state.barStart,barEnd:state.barEnd};
     cancelAnimationFrame(micTempoRaf);lockMicTempoControls(false);microphone.stop();
-    $('play-icon').textContent='▶';$('play-button').setAttribute('aria-label','Bắt đầu luyện theo tempo');$('play-status').textContent='Hoàn thành lượt';
-    $('mic-timed-live').textContent='Đã có điểm tổng';$('mic-brief').textContent='Hoàn thành lượt theo tempo';delete $('mic-brief').dataset.result;
+    $('play-icon').textContent='▶';$('play-button').setAttribute('aria-label',_t('Bắt đầu luyện theo tempo'));$('play-status').textContent=_t('Hoàn thành lượt');
+    $('mic-timed-live').textContent=_t('Đã có điểm tổng');$('mic-brief').textContent=_t('Hoàn thành lượt theo tempo');delete $('mic-brief').dataset.result;
     const r=micTempoLast;track('practice_complete',{...practiceContext(),result:'scored',score_band:band(r.score)});$('mic-timed-score').textContent=r.score===null?'—':`${r.score}/100`;
-    $('mic-timed-breakdown').textContent=`Cao độ: ${r.noteScore??'—'}/100 · Nhịp: ${r.timingScore??'—'}/100. ${r.exact} đúng · ${r.near} lệch quãng tám · ${r.wrong} khác nốt · ${r.missed} chưa ghi nhận. ${r.early} sớm · ${r.late} muộn · ${r.extra} lần đánh thêm.${r.skipped?` ${r.skipped} mục có phím trùng tên khác quãng tám không được chấm.`:''}`;
-    $('mic-timed-coverage').textContent=`Đánh giá ${r.evaluated}/${r.total-r.skipped} nốt; ${r.unreadable} nốt chưa rõ được loại khỏi điểm. ${r.coverage<75?'Bộ nghe chưa rõ nhiều nốt; hãy kiểm tra micro và tập lại.':'Điểm dựa trên những gì micro ghi nhận; bộ nghe vẫn có thể nhầm.'}`;
-    $('mic-timed-context').textContent=`${ex().title} · ${state.hand==='rh'?'Tay phải':state.hand==='lh'?'Tay trái':'Hai tay'} · Ô ${state.barStart}–${state.barEnd} · ${state.tempo} BPM`;
+    $('mic-timed-breakdown').textContent=_t("Cao độ: {0}/100 · Nhịp: {1}/100. {2} đúng · {3} lệch quãng tám · {4} khác nốt · {5} chưa ghi nhận. {6} sớm · {7} muộn · {8} lần đánh thêm.{9}",[r.noteScore??'—',r.timingScore??'—',r.exact,r.near,r.wrong,r.missed,r.early,r.late,r.extra,r.skipped?_t(" {0} mục có phím trùng tên khác quãng tám không được chấm.",[r.skipped]):'']);
+    $('mic-timed-coverage').textContent=_t("Đánh giá {0}/{1} nốt; {2} nốt chưa rõ được loại khỏi điểm. {3}",[r.evaluated,r.total-r.skipped,r.unreadable,r.coverage<75?_t('Bộ nghe chưa rõ nhiều nốt; hãy kiểm tra micro và tập lại.'):_t('Điểm dựa trên những gì micro ghi nhận; bộ nghe vẫn có thể nhầm.')]);
+    $('mic-timed-context').textContent=_t("{0} · {1} · Ô {2}–{3} · {4} BPM",[ex().title,state.hand==='rh'?_t('Tay phải'):state.hand==='lh'?_t('Tay trái'):'Hai tay',state.barStart,state.barEnd,state.tempo]);
     const dialog=$('mic-timed-result');if(dialog.showModal)dialog.showModal();else dialog.open=true;
     updatePracticeUX();
     if(evalDone)finishEvalRound(evalDone);
@@ -1165,33 +1167,33 @@
     microphone.expect(options?due.pitches:due?.chord&&due.status!=='skipped'?due.pitches:null,options||{});
     state.beat=session.beatAt(now);updateTime();
     if(now<session.startTime){
-      const remaining=Math.ceil((session.startTime-now)/(session.spb*pulseSize()));$('play-status').textContent=`Đếm vào: ${Math.min(pulseCount(),remaining)}`;
-    }else{$('play-status').textContent=state.beat>=rangeEnd()?'Chờ phản hồi nốt cuối…':`Tập · phách ${Math.floor((state.beat%ex().meter)/pulseSize())+1}`;}
+      const remaining=Math.ceil((session.startTime-now)/(session.spb*pulseSize()));$('play-status').textContent=_t("Đếm vào: {0}",[Math.min(pulseCount(),remaining)]);
+    }else{$('play-status').textContent=state.beat>=rangeEnd()?_t('Chờ phản hồi nốt cuối…'):_t("Tập · phách {0}",[Math.floor((state.beat%ex().meter)/pulseSize())+1]);}
     if(!session.running){finishMicTempo();return;}
     micTempoRaf=requestAnimationFrame(tickMicTempo);
   }
   function startMicTempo(countIn=true){
-    if(!microphone?.active){$('mic-feedback').textContent='Bấm Bắt đầu lượt để mở micro và luyện theo nhịp.';updatePracticeUX();return;}
-    if(microphone.needsQuiet||performance.now()<micMuteUntil){$('mic-feedback').textContent='Nhả phím, chờ tiếng mẫu tắt trước khi bắt đầu lượt theo tempo.';return;}
+    if(!microphone?.active){$('mic-feedback').textContent=_t('Bấm Bắt đầu lượt để mở micro và luyện theo nhịp.');updatePracticeUX();return;}
+    if(microphone.needsQuiet||performance.now()<micMuteUntil){$('mic-feedback').textContent=_t('Nhả phím, chờ tiếng mẫu tắt trước khi bắt đầu lượt theo tempo.');return;}
     stop(false);resetMicPractice();
     if(!timedTargetsSupported()){
-      $('mic-feedback').textContent='Đoạn này chưa chấm được theo nhịp: chọn tay hoặc đoạn có nốt trong C2–C6.';$('practice-options').open=true;return;
+      $('mic-feedback').textContent=_t('Đoạn này chưa chấm được theo nhịp: chọn tay hoặc đoạn có nốt trong C2–C6.');$('practice-options').open=true;return;
     }
     state.loop=false;$('loop').checked=false;syncLoopStrip();state.beat=rangeStart();
     micTempoSession=new window.PianoMicTempo.Session({targets:micTargets.map(t=>({...t,skip:selfCheckTarget(t)})),tempo:state.tempo*(ex().tempoBeat||1),startTime:microphone.context.currentTime+.1+(countIn?ex().meter*beatSeconds():0),fromBeat:rangeStart(),endBeat:rangeEnd(),mode:micMode});
     // With a model every target (single notes too) is graded through verification.
     if(modelReady())for(const t of micTempoSession.targets)if(t.status!=='skipped')t.chord=true;
     recordEvalRound();
-    lockMicTempoControls(true);$('mic-settings').open=false;$('mic-target').textContent=`Luyện theo tempo · ô ${state.barStart}–${state.barEnd}`;
-    $('mic-feedback').textContent='Theo nhịp đếm trên màn hình; sheet tiếp tục chạy khi bạn đánh sai.';
-    $('play-icon').textContent='Ⅱ';$('play-button').setAttribute('aria-label','Dừng lượt luyện');updateMicTempoSummary();updatePracticeUX();tickMicTempo();
+    lockMicTempoControls(true);$('mic-settings').open=false;$('mic-target').textContent=_t("Luyện theo tempo · ô {0}–{1}",[state.barStart,state.barEnd]);
+    $('mic-feedback').textContent=_t('Theo nhịp đếm trên màn hình; sheet tiếp tục chạy khi bạn đánh sai.');
+    $('play-icon').textContent='Ⅱ';$('play-button').setAttribute('aria-label',_t('Dừng lượt luyện'));updateMicTempoSummary();updatePracticeUX();tickMicTempo();
   }
   const noteName=midi=>['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'][midi%12]+(Math.floor(midi/12)-1);
   function showMicTarget(){
     delete $('mic-brief').dataset.result;
     const target=micTargets[micTargetIndex];
-    $('mic-target').textContent=target?`Cần: ${target.pitches.map(noteName).join(' + ')} · ô ${Math.floor(target.beat/ex().meter)+1}`:'Đã hết đoạn luyện.';
-    $('mic-brief').textContent=microphone?.active?(target?`Cần ${target.pitches.map(noteName).join(' + ')}`:'Hoàn thành đoạn'):'Chưa nghe micro';
+    $('mic-target').textContent=target?_t("Cần: {0} · ô {1}",[target.pitches.map(noteName).join(' + '),Math.floor(target.beat/ex().meter)+1]):_t('Đã hết đoạn luyện.');
+    $('mic-brief').textContent=microphone?.active?(target?_t("Cần {0}",[target.pitches.map(noteName).join(' + ')]):_t('Hoàn thành đoạn')):_t('Chưa nghe micro');
   }
   // Chord targets (several keys at one onset, either hand) are verified against the expected
   // notes in the Worker; single notes keep the answer-blind YIN grading below.
@@ -1212,14 +1214,14 @@
     const key=modelKey(),request=++modelRequest;
     if(!window.PianoKeyTakes||!window.indexedDB||!window.Worker||!micTargets.length||ex().book?.freePlay){scoreModel={key,status:'none',missing:[],model:null,background:[]};renderScoreModel();return;}
     const inputs=modelInputs();let takes;
-    try{takes=await window.PianoKeyTakes.load(inputs.keys);}catch(_){scoreModel={key,status:'error',error:'trình duyệt không cho lưu phím đã thu',missing:[],model:null,background:[]};renderScoreModel();return;}
+    try{takes=await window.PianoKeyTakes.load(inputs.keys);}catch(_){scoreModel={key,status:'error',error:_t('trình duyệt không cho lưu phím đã thu'),missing:[],model:null,background:[]};renderScoreModel();return;}
     if(request!==modelRequest)return;
     const missing=inputs.keys.filter(midi=>!takes[midi]);
     if(missing.length){scoreModel={key,status:'missing',missing,have:inputs.keys.length-missing.length,model:null,background:[]};renderScoreModel();return;}
     scoreModel={key,status:'building',missing:[],model:null,background:[]};renderScoreModel();
-    modelWorker??=new Worker('audio/model-worker.js?v=c6e43d0-cd65f9a2f2cd');
+    modelWorker??=new Worker('audio/model-worker.js?v=9be74ce-1627866aaad1');
     const result=await new Promise(resolve=>{
-      modelWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};modelWorker.onerror=event=>resolve({request,error:event.message||'lỗi Worker'});
+      modelWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};modelWorker.onerror=event=>resolve({request,error:event.message||_t('lỗi Worker')});
       modelWorker.postMessage({type:'build',request,id:key,notes:inputs.notes,targets:inputs.targets,takes:Object.fromEntries(Object.entries(takes).map(([midi,take])=>[midi,{pcm:take.pcm,rate:take.rate}]))});
     });
     if(request!==modelRequest)return;
@@ -1229,7 +1231,7 @@
   const modelReady=()=>scoreModel.status==='ready'&&scoreModel.key===modelKey()&&scoreModel.model.targets.length===micTargets.length;
   const modelOptions=index=>modelReady()&&scoreModel.model.targets[index]?{reference:scoreModel.model.targets[index].reference,background:scoreModel.background[index]}:null;
   function renderScoreModel(){
-    const m=scoreModel,text=m.key!==modelKey()?'Đang kiểm tra phím đã thu…':m.status==='ready'?`Chấm theo tiếng đàn của bạn cho đoạn này · ${m.model.targets.length} mục tiêu.`:m.status==='building'?'Đang dựng mô hình từ các phím đã thu…':m.status==='missing'?`Thu ${m.missing.length} phím (${m.missing.map(noteName).join(', ')}) để chấm theo tiếng đàn của bạn; đã có ${m.have}.`:m.status==='error'?`Không dựng được mô hình: ${m.error}.`:'Đang chấm theo bộ mẫu chung.';
+    const m=scoreModel,text=m.key!==modelKey()?_t('Đang kiểm tra phím đã thu…'):m.status==='ready'?_t("Chấm theo tiếng đàn của bạn cho đoạn này · {0} mục tiêu.",[m.model.targets.length]):m.status==='building'?_t('Đang dựng mô hình từ các phím đã thu…'):m.status==='missing'?_t("Thu {0} phím ({1}) để chấm theo tiếng đàn của bạn; đã có {2}.",[m.missing.length,m.missing.map(noteName).join(', '),m.have]):m.status==='error'?_t("Không dựng được mô hình: {0}.",[m.error]):_t('Đang chấm theo bộ mẫu chung.');
     textIfChanged('score-model-status',text);propertyIfChanged($('score-model-learn'),'hidden',m.status!=='missing'||m.key!==modelKey());
     if($('eval-dialog').open)renderEval();
   }
@@ -1237,31 +1239,31 @@
   async function learnKeys(){
     if(scoreModel.status!=='missing'||learning)return;
     const keys=scoreModel.missing.slice(),dialog=$('take-dialog'),wasActive=!!microphone?.active;let index=0;
-    const show=()=>{textIfChanged('take-key',keys[index]!==undefined?noteName(keys[index]):'✓');textIfChanged('take-progress',`${Math.min(index,keys.length)}/${keys.length} phím`);
+    const show=()=>{textIfChanged('take-key',keys[index]!==undefined?noteName(keys[index]):'✓');textIfChanged('take-progress',_t("{0}/{1} phím",[Math.min(index,keys.length),keys.length]));
       document.querySelectorAll('#keyboard .take-target').forEach(key=>key.classList.remove('take-target'));document.querySelector(`#keyboard [data-midi="${keys[index]}"]`)?.classList.add('take-target');};
-    learning={cancel:null};if(dialog.showModal)dialog.showModal();else dialog.open=true;textIfChanged('take-feedback','Đang mở micro…');show();
+    learning={cancel:null};if(dialog.showModal)dialog.showModal();else dialog.open=true;textIfChanged('take-feedback',_t('Đang mở micro…'));show();
     try{
       stop(false);if(!microphone.active)await microphone.start();
-      if(!microphone.active)throw Error(microphone.lastError||'Không mở được micro.');
+      if(!microphone.active)throw Error(microphone.lastError||_t('Không mở được micro.'));
       const rate=microphone.context.sampleRate,collector=new window.PianoKeyTakes.TakeCollector({rate,minRms:Math.max(.002,(microphone.config?.minRms||0)*4)});
-      textIfChanged('take-feedback',`Đánh ${noteName(keys[0])} một lần, lực vừa, rồi nhả phím.`);
+      textIfChanged('take-feedback',_t("Đánh {0} một lần, lực vừa, rồi nhả phím.",[noteName(keys[0])]));
       await new Promise((resolve,reject)=>{
-        learning.cancel=resolve;learning.skip=()=>{index++;if(index>=keys.length)resolve();else{show();textIfChanged('take-feedback',`Đã bỏ qua. Đánh ${noteName(keys[index])}.`);}};
+        learning.cancel=resolve;learning.skip=()=>{index++;if(index>=keys.length)resolve();else{show();textIfChanged('take-feedback',_t("Đã bỏ qua. Đánh {0}.",[noteName(keys[index])]));}};
         microphone.startTakes(async block=>{
           const pcm=collector.push(block);if(!pcm||index>=keys.length)return;
           const midi=keys[index],check=window.PianoKeyTakes.checkPitch(window.PianoPitch,pcm,rate,midi,microphone.config?.a4||440);
-          if(!check.ok){textIfChanged('take-feedback',`Nghe ra ${noteName(check.heard)}, cần ${noteName(midi)} · đánh lại.`);return;}
+          if(!check.ok){textIfChanged('take-feedback',_t("Nghe ra {0}, cần {1} · đánh lại.",[noteName(check.heard),noteName(midi)]));return;}
           await window.PianoKeyTakes.save({midi,rate,pcm});index++;show();
-          if(index>=keys.length)resolve();else textIfChanged('take-feedback',`Đã thu ${noteName(midi)}. Tiếp: ${noteName(keys[index])}.`);
+          if(index>=keys.length)resolve();else textIfChanged('take-feedback',_t("Đã thu {0}. Tiếp: {1}.",[noteName(midi),noteName(keys[index])]));
         }).catch(reject);
       });
-      textIfChanged('take-feedback',index>=keys.length?'Đã thu xong. Đang dựng mô hình…':'Đã dừng thu.');
-    }catch(error){textIfChanged('take-feedback',error.message||'Không thu được.');}
+      textIfChanged('take-feedback',index>=keys.length?_t('Đã thu xong. Đang dựng mô hình…'):_t('Đã dừng thu.'));
+    }catch(error){textIfChanged('take-feedback',error.message||_t('Không thu được.'));}
     finally{
       // Leave the microphone as it was, so the primary button still means "start practice".
       microphone?.stopTakes();if(!wasActive)microphone?.stop();learning=null;document.querySelectorAll('#keyboard .take-target').forEach(key=>key.classList.remove('take-target'));
       scoreModel.key=null;await refreshScoreModel();
-      if(scoreModel.status==='ready')textIfChanged('take-feedback','Mô hình đã sẵn sàng · lượt tập sau chấm theo tiếng đàn của bạn.');
+      if(scoreModel.status==='ready')textIfChanged('take-feedback',_t('Mô hình đã sẵn sàng · lượt tập sau chấm theo tiếng đàn của bạn.'));
     }
   }
   // Real-piano evaluation: two scored tempo rounds (clean, then with marked slips) are recorded raw from the
@@ -1279,20 +1281,20 @@
   }
   function renderEval(){
     const ready=modelReady(),busy=!!evalRun,m=scoreModel;
-    textIfChanged('eval-context',`${state.song?state.song.title:ex().title} · ${state.hand==='rh'?'Tay phải':state.hand==='lh'?'Tay trái':'Hai tay'} · Ô ${state.barStart}–${state.barEnd} · ${state.tempo} BPM. Đổi bài, tay, đoạn hoặc tempo ở màn luyện trước khi mở hộp này.`);
-    textIfChanged('eval-model',ready?`Mô hình theo tiếng đàn của bạn: sẵn sàng (${m.model.targets.length} mục tiêu).`:m.status==='missing'?`Cần thu ${m.missing.length} phím trước: ${m.missing.map(noteName).join(', ')}.`:m.status==='building'?'Đang dựng mô hình…':'Chưa có mô hình cho đoạn này.');
+    textIfChanged('eval-context',_t("{0} · {1} · Ô {2}–{3} · {4} BPM. Đổi bài, tay, đoạn hoặc tempo ở màn luyện trước khi mở hộp này.",[state.song?state.song.title:ex().title,state.hand==='rh'?_t('Tay phải'):state.hand==='lh'?_t('Tay trái'):'Hai tay',state.barStart,state.barEnd,state.tempo]));
+    textIfChanged('eval-model',ready?_t("Mô hình theo tiếng đàn của bạn: sẵn sàng ({0} mục tiêu).",[m.model.targets.length]):m.status==='missing'?_t("Cần thu {0} phím trước: {1}.",[m.missing.length,m.missing.map(noteName).join(', ')]):m.status==='building'?_t('Đang dựng mô hình…'):_t('Chưa có mô hình cho đoạn này.'));
     propertyIfChanged($('eval-learn'),'hidden',m.status!=='missing');
     const slipCount=chooseSlips().length;
     propertyIfChanged($('eval-round1'),'disabled',!ready||busy);propertyIfChanged($('eval-round2'),'disabled',!ready||busy||!slipCount);
-    if(!slipCount&&!evalRounds[2])textIfChanged('eval-round2-status','Chọn đoạn dài hơn (từ 5 nốt) để lượt 2 có nốt lỗi.');
+    if(!slipCount&&!evalRounds[2])textIfChanged('eval-round2-status',_t('Chọn đoạn dài hơn (từ 5 nốt) để lượt 2 có nốt lỗi.'));
     const rounds=Object.values(evalRounds),table=$('eval-table');table.hidden=!rounds.length;
     $('eval-download').disabled=$('eval-download-audio').disabled=!rounds.length;
     if(!rounds.length)return;
     const comparison=window.PianoEvaluation.compare(rounds),pct=(a,b)=>b?`${a}/${b} (${Math.round(100*a/b)}%)`:'—';
-    table.tBodies[0].replaceChildren(...[['generic','Bộ mẫu chung'],['model','Theo tiếng đàn của bạn']].filter(([k])=>comparison[k]).map(([k,label])=>{
+    table.tBodies[0].replaceChildren(...[['generic',_t('Bộ mẫu chung')],['model',_t('Theo tiếng đàn của bạn')]].filter(([k])=>comparison[k]).map(([k,label])=>{
       const c=comparison[k],row=document.createElement('tr');
-      for(const text of [label,pct(c.accepted,c.correct),c.slips?pct(c.slipsAccepted,c.slips):'chưa có lượt 2',c.medianTimingMs===null?'—':`${c.medianTimingMs} ms`])row.insertCell().textContent=text;return row;}));
-    textIfChanged('eval-note','“Nốt đúng được nhận”: các nốt bạn chơi đúng mà bộ nghe chấm đúng. “Lỗi bị cho qua”: nốt viền cam (lượt 2) mà bộ nghe vẫn chấm đúng — càng thấp càng tốt. Nếu lượt 1 lỡ chơi sai, hãy thu lại lượt đó.');
+      for(const text of [label,pct(c.accepted,c.correct),c.slips?pct(c.slipsAccepted,c.slips):_t('chưa có lượt 2'),c.medianTimingMs===null?'—':`${c.medianTimingMs} ms`])row.insertCell().textContent=text;return row;}));
+    textIfChanged('eval-note',_t('“Nốt đúng được nhận”: các nốt bạn chơi đúng mà bộ nghe chấm đúng. “Lỗi bị cho qua”: nốt viền cam (lượt 2) mà bộ nghe vẫn chấm đúng — càng thấp càng tốt. Nếu lượt 1 lỡ chơi sai, hãy thu lại lượt đó.'));
   }
   async function startEvalRound(round){
     if(!modelReady()||evalRun)return;
@@ -1303,7 +1305,7 @@
     evalRun={round,slips,blocks:[],samples:0,firstTime:null,rate:null,params:null};
     markSlips(slips);
     await beginPractice(true);
-    if(evalRun&&!evalRun.params){evalRun=null;markSlips([]);textIfChanged(`eval-round${round}-status`,'Chưa bắt đầu được lượt.');openDialog('eval-dialog');renderEval();}
+    if(evalRun&&!evalRun.params){evalRun=null;markSlips([]);textIfChanged(`eval-round${round}-status`,_t('Chưa bắt đầu được lượt.'));openDialog('eval-dialog');renderEval();}
   }
   function recordEvalRound(){
     if(!evalRun||evalRun.params)return;
@@ -1315,17 +1317,17 @@
   async function finishEvalRound(run){
     evalRun=null;markSlips([]);microphone?.stopTakes();closeMicTempoResult();openDialog('eval-dialog');
     const status=`eval-round${run.round}-status`;
-    if(!run.params||!run.samples){textIfChanged(status,'Không thu được âm thanh · thử lại.');renderEval();return;}
+    if(!run.params||!run.samples){textIfChanged(status,_t('Không thu được âm thanh · thử lại.'));renderEval();return;}
     const pcm=new Float32Array(run.samples);let at=0;for(const block of run.blocks){pcm.set(block,at);at+=block.length;}
-    textIfChanged(status,'Đang phân tích bằng cả hai cách chấm…');renderEval();
-    evalWorker??=new Worker('audio/eval-worker.js?v=c6e43d0-cd65f9a2f2cd');const request=++evalRequest;
+    textIfChanged(status,_t('Đang phân tích bằng cả hai cách chấm…'));renderEval();
+    evalWorker??=new Worker('audio/eval-worker.js?v=9be74ce-1627866aaad1');const request=++evalRequest;
     const result=await new Promise(resolve=>{
-      evalWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};evalWorker.onerror=event=>resolve({error:event.message||'lỗi Worker'});
+      evalWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};evalWorker.onerror=event=>resolve({error:event.message||_t('lỗi Worker')});
       evalWorker.postMessage({type:'evaluate',request,pcm,rate:run.rate,...run.params,startTime:run.params.startTime-run.firstTime});
     });
-    if(result.error){textIfChanged(status,`Không phân tích được: ${result.error}`);renderEval();return;}
+    if(result.error){textIfChanged(status,_t("Không phân tích được: {0}",[result.error]));renderEval();return;}
     evalRounds[run.round]={slips:run.params.targets.map((_,i)=>run.slips.includes(i)),results:result.results,live:micTempoLast?{...micTempoLast}:null,params:{...run.params,model:!!run.params.model},audio:{pcm,rate:run.rate}};
-    textIfChanged(status,`Đã thu và phân tích ${run.params.targets.length} mục tiêu.`);renderEval();
+    textIfChanged(status,_t("Đã thu và phân tích {0} mục tiêu.",[run.params.targets.length]));renderEval();
   }
   function evalReport(){
     return {version:1,date:new Date().toISOString(),userAgent:navigator.userAgent,device:microphone.settings??null,
@@ -1348,26 +1350,26 @@
   function syncSelfCheck(){propertyIfChanged($('mic-self-check'),'hidden',!(practiceMode==='step'&&microphone?.active&&selfCheckTarget(micTargets[micTargetIndex])));}
   function confirmSelfCheck(){
     const target=micTargets[micTargetIndex];if(!microphone?.active||practiceMode!=='step'||!selfCheckTarget(target))return;
-    micRound.self++;const brief=`Tự kiểm ${target.pitches.slice().sort((a,b)=>a-b).map(noteName).join(' + ')}`;
-    $('mic-feedback').textContent=`${brief}: micro chưa phân biệt được các phím trùng tên khác quãng tám.`;$('mic-brief').textContent=brief;delete $('mic-brief').dataset.result;
+    micRound.self++;const brief=_t("Tự kiểm {0}",[target.pitches.slice().sort((a,b)=>a-b).map(noteName).join(' + ')]);
+    $('mic-feedback').textContent=_t("{0}: micro chưa phân biệt được các phím trùng tên khác quãng tám.",[brief]);$('mic-brief').textContent=brief;delete $('mic-brief').dataset.result;
     advanceMicTarget(brief);syncSelfCheck();
   }
   function gradeChord(result,target){
     const verify=result.verify,keys=target.pitches.slice().sort((a,b)=>a-b);
     if(!verify||verify.expected?.join()!==keys.join())return;
-    if(verify.status==='loading'){$('mic-brief').textContent='Đang nạp bộ nghe hợp âm…';return;}
-    if(verify.status==='error'){$('mic-feedback').textContent='Không nạp được bộ nghe hợp âm. Tắt rồi bật lại micro.';return;}
+    if(verify.status==='loading'){$('mic-brief').textContent=_t('Đang nạp bộ nghe hợp âm…');return;}
+    if(verify.status==='error'){$('mic-feedback').textContent=_t('Không nạp được bộ nghe hợp âm. Tắt rồi bật lại micro.');return;}
     if(!verify.fresh)return;
-    if(verify.decision==='missing'){$('mic-brief').textContent=`Chưa nghe ${verify.missing.map(noteName).join(' + ')} · đánh đủ hợp âm`;delete $('mic-brief').dataset.result;return;}
+    if(verify.decision==='missing'){$('mic-brief').textContent=_t("Chưa nghe {0} · đánh đủ hợp âm",[verify.missing.map(noteName).join(' + ')]);delete $('mic-brief').dataset.result;return;}
     if(verify.decision==='wrong'){
       micRound.retry++;
-      $('mic-feedback').textContent=`Có phím ${verify.intruders.map(noteName).join(' + ')} không cần đánh · cần ${keys.map(noteName).join(' + ')}. Thử lại nhé.`;
-      $('mic-brief').textContent=`Phím lạ ${verify.intruders.map(noteName).join(' + ')} · thử lại`;$('mic-brief').dataset.result='wrong';updateMicSummary();return;
+      $('mic-feedback').textContent=_t("Có phím {0} không cần đánh · cần {1}. Thử lại nhé.",[verify.intruders.map(noteName).join(' + '),keys.map(noteName).join(' + ')]);
+      $('mic-brief').textContent=_t("Phím lạ {0} · thử lại",[verify.intruders.map(noteName).join(' + ')]);$('mic-brief').dataset.result='wrong';updateMicSummary();return;
     }
     if(verify.decision!=='match')return;
     micRound.exact++;
     const brief=`✓ ${keys.map(noteName).join(' + ')}`;
-    $('mic-feedback').textContent=`Đúng: ${keys.map(noteName).join(' + ')}`;$('mic-brief').textContent=brief;$('mic-brief').dataset.result='correct';
+    $('mic-feedback').textContent=_t("Đúng: {0}",[keys.map(noteName).join(' + ')]);$('mic-brief').textContent=brief;$('mic-brief').dataset.result='correct';
     advanceMicTarget(brief);
   }
   function advanceMicTarget(brief){
@@ -1375,13 +1377,13 @@
     if(micTargetIndex===micTargets.length){
       micLastRound={...micRound,acceptedNear:micMode==='relaxed'?micRound.near:0};micRounds++;
       const graded=micRound.exact+micRound.near+micRound.retry;track('practice_complete',{...practiceContext(),result:micRound.near?'near':'correct',accuracy_band:graded?band(micRound.exact/graded*100):'unknown'});
-      if(state.loop){micTargetIndex=0;micRound={exact:0,near:0,retry:0,self:0};$('mic-feedback').textContent+=' · lượt tiếp theo';}
-      else{updateMicSummary();microphone.stop();$('mic-target').textContent='Đã hết đoạn luyện.';$('mic-feedback').textContent+=` · Hoàn thành lượt luyện, micro đã tắt.`;$('mic-brief').textContent=micLastRound.acceptedNear?'≈ Hoàn thành · còn nốt cần chỉnh':'✓ Hoàn thành';$('mic-brief').dataset.result=micLastRound.acceptedNear?'near':'correct';return;}
+      if(state.loop){micTargetIndex=0;micRound={exact:0,near:0,retry:0,self:0};$('mic-feedback').textContent+=_t(' · lượt tiếp theo');}
+      else{updateMicSummary();microphone.stop();$('mic-target').textContent=_t('Đã hết đoạn luyện.');$('mic-feedback').textContent+=_t(" · Hoàn thành lượt luyện, micro đã tắt.");$('mic-brief').textContent=micLastRound.acceptedNear?_t('≈ Hoàn thành · còn nốt cần chỉnh'):_t('✓ Hoàn thành');$('mic-brief').dataset.result=micLastRound.acceptedNear?'near':'correct';return;}
     }
     const next=micTargets[micTargetIndex];state.beat=next.beat;updateTime();followScore(state.beat);
-    $('mic-brief').textContent=`${brief} · tiếp: ${next.pitches.map(noteName).join(' + ')}`;
-    $('mic-target').textContent=`Cần: ${next.pitches.map(noteName).join(' + ')} · ô ${Math.floor(next.beat/ex().meter)+1}`;
-    if(!micTargetIndex)$('mic-brief').textContent+=' · lượt mới';
+    $('mic-brief').textContent=_t("{0} · tiếp: {1}",[brief,next.pitches.map(noteName).join(' + ')]);
+    $('mic-target').textContent=_t("Cần: {0} · ô {1}",[next.pitches.map(noteName).join(' + '),Math.floor(next.beat/ex().meter)+1]);
+    if(!micTargetIndex)$('mic-brief').textContent+=_t(' · lượt mới');
     updateMicSummary();
   }
   function receiveMic(result){
@@ -1391,28 +1393,28 @@
       const target=micTempoSession.observe(result);if(!target)return;
       if(target.status==='pending'){
         // Chord verdict not final yet: missing/extra keys can still resolve within this attack.
-        const v=target.provisional;$('mic-brief').textContent=v.decision==='wrong'?`Phím lạ ${v.intruders.map(noteName).join(' + ')}`:`Chưa nghe ${v.missing.map(noteName).join(' + ')}`;delete $('mic-brief').dataset.result;return;
+        const v=target.provisional;$('mic-brief').textContent=v.decision==='wrong'?_t("Phím lạ {0}",[v.intruders.map(noteName).join(' + ')]):_t("Chưa nghe {0}",[v.missing.map(noteName).join(' + ')]);delete $('mic-brief').dataset.result;return;
       }
       markMicTempo(target);updateMicTempoSummary();
-      const pitch=target.status==='exact'?'✓ Đúng':target.status==='near'?'≈ Lệch quãng tám':'Khác nốt';
-      const timing=target.timing==='on-time'?'đúng nhịp':`${target.timing==='early'?'sớm':'muộn'} ${Math.round(Math.abs(target.deltaMs))} ms`;
+      const pitch=target.status==='exact'?_t('✓ Đúng'):target.status==='near'?_t('≈ Lệch quãng tám'):_t('Khác nốt');
+      const timing=target.timing==='on-time'?_t('đúng nhịp'):`${target.timing==='early'?_t('sớm'):_t('muộn')} ${Math.round(Math.abs(target.deltaMs))} ms`;
       const keys=target.pitches.map(noteName).join(' + '),heard=target.chord?keys:noteName(result.midi);
       $('mic-brief').textContent=`${pitch} ${heard} · ${timing}`;$('mic-brief').dataset.result=target.status==='exact'?'correct':target.status==='near'?'near':'wrong';
-      $('mic-feedback').textContent=`${pitch}: nghe ${heard}, cần ${keys} · ${timing}`;return;
+      $('mic-feedback').textContent=_t("{0}: nghe {1}, cần {2} · {3}",[pitch,heard,keys,timing]);return;
     }
     if(practiceMode!=='step')return;
     const target=micTargets[micTargetIndex];if(!target)return;
-    if(selfCheckTarget(target)){textIfChanged('mic-brief','Tự kiểm · đánh rồi bấm Tiếp');return;}
+    if(selfCheckTarget(target)){textIfChanged('mic-brief',_t('Tự kiểm · đánh rồi bấm Tiếp'));return;}
     if(target.pitches.length>1||modelOptions(micTargetIndex)){gradeChord(result,target);return;}
-    if(result.status!=='note'){delete $('mic-brief').dataset.result;$('mic-brief').textContent=result.status==='quiet'?'Âm quá nhỏ · không tính sai':result.status==='clipping'?'Âm quá lớn · không tính sai':'Chưa chắc chắn · không tính sai';if(!$('mic-feedback').textContent)$('mic-feedback').textContent='Chưa nghe rõ · thử lại, không tính sai.';return;}
+    if(result.status!=='note'){delete $('mic-brief').dataset.result;$('mic-brief').textContent=result.status==='quiet'?_t('Âm quá nhỏ · không tính sai'):result.status==='clipping'?_t('Âm quá lớn · không tính sai'):_t('Chưa chắc chắn · không tính sai');if(!$('mic-feedback').textContent)$('mic-feedback').textContent=_t('Chưa nghe rõ · thử lại, không tính sai.');return;}
     if(!result.attack)return;
-    if(target.pitches[0]<36||target.pitches[0]>84){$('mic-feedback').textContent='Nốt yêu cầu ngoài C2–C6; chọn đoạn trong dải hỗ trợ.';return;}
+    if(target.pitches[0]<36||target.pitches[0]>84){$('mic-feedback').textContent=_t('Nốt yêu cầu ngoài C2–C6; chọn đoạn trong dải hỗ trợ.');return;}
     const grade=micGrading.grade(result,target.pitches[0],micMode);if(grade.kind==='ungraded')return;
     micRound[grade.kind]++;
     const near=grade.kind==='near',correct=grade.kind==='exact';
-    const octaveHint=near?`chỉnh ${grade.octaves>0?'lên':'xuống'} ${Math.abs(grade.octaves)} quãng tám`:'';
-    $('mic-feedback').textContent=correct?`Đúng: ${noteName(result.midi)}`:near?`Gần đúng: ${noteName(result.midi)} · cần ${noteName(target.pitches[0])}, ${octaveHint}. ${grade.advance?'Được đi tiếp; lượt sau thử đúng quãng tám.':'Thử lại nốt này.'}`:`Bạn đánh ${noteName(result.midi)} · cần ${noteName(target.pitches[0])}. Thử lại nhé.`;
-    const brief=correct?`✓ ${noteName(result.midi)}`:near?`≈ ${noteName(result.midi)} · ${octaveHint}`:`${noteName(result.midi)} · thử lại ${noteName(target.pitches[0])}`;
+    const octaveHint=near?_t("chỉnh {0} {1} quãng tám",[grade.octaves>0?_t('lên'):_t('xuống'),Math.abs(grade.octaves)]):'';
+    $('mic-feedback').textContent=correct?_t("Đúng: {0}",[noteName(result.midi)]):near?_t("Gần đúng: {0} · cần {1}, {2}. {3}",[noteName(result.midi),noteName(target.pitches[0]),octaveHint,grade.advance?_t('Được đi tiếp; lượt sau thử đúng quãng tám.'):_t('Thử lại nốt này.')]):_t("Bạn đánh {0} · cần {1}. Thử lại nhé.",[noteName(result.midi),noteName(target.pitches[0])]);
+    const brief=correct?`✓ ${noteName(result.midi)}`:near?`≈ ${noteName(result.midi)} · ${octaveHint}`:_t("{0} · thử lại {1}",[noteName(result.midi),noteName(target.pitches[0])]);
     $('mic-brief').textContent=brief;
     $('mic-brief').dataset.result=correct?'correct':near?'near':'wrong';
     if(grade.advance){advanceMicTarget(brief);return;}
@@ -1423,16 +1425,16 @@
   microphone=new window.PianoMicrophone({
     observationOnly:()=>practiceMode==='chords',
     onStart(){stop(false);if(practiceMode==='chords')return;resetMicPractice();state.beat=micTargets[0]?.beat??rangeStart();updateTime();followScore(state.beat);},
-    onResult:receiveMic,onStop(){cancelMicTempo();$('mic-brief').textContent='Micro đã tắt';delete $('mic-brief').dataset.result;syncSelfCheck();},
+    onResult:receiveMic,onStop(){cancelMicTempo();$('mic-brief').textContent=_t('Micro đã tắt');delete $('mic-brief').dataset.result;syncSelfCheck();},
     onStateChange:updatePracticeUX,
-    isBlocked(){if(state.playing||state.loading||state.nodes.size)return 'Đang nghe mẫu · micro tạm ngưng chấm';if(performance.now()<micMuteUntil)return 'Chờ tiếng mẫu tắt…';return false;}
+    isBlocked(){if(state.playing||state.loading||state.nodes.size)return _t('Đang nghe mẫu · micro tạm ngưng chấm');if(performance.now()<micMuteUntil)return _t('Chờ tiếng mẫu tắt…');return false;}
   });
   window.pianoEvalReport=()=>evalReport();
   window.pianoMicDiagnostics=()=>({practiceMode,starting:practiceStarting,active:microphone.active,captureTime:microphone.context?.currentTime??null,settings:microphone.settings,gradingMode:micMode,timedMic,evaluation:{running:!!evalRun,recordedSamples:evalRun?.samples??0,rounds:Object.keys(evalRounds),comparison:Object.keys(evalRounds).length&&window.PianoEvaluation?window.PianoEvaluation.compare(Object.values(evalRounds)):null},scoreModel:{status:scoreModel.status,current:scoreModel.key===modelKey(),missing:scoreModel.missing.slice(),ready:modelReady(),buildMs:scoreModel.model?.buildMs??null},timed:{running:!!micTempoSession?.running,startTime:micTempoSession?.startTime??null,summary:micTempoSession?.summary()??null,lastResult:micTempoLast?{...micTempoLast}:null},practice:{targetIndex:micTargetIndex,targetCount:micTargets.length,expected:microphone.expected??null,round:{...micRound},lastRound:micLastRound?{...micLastRound}:null,completedRounds:micRounds},guardMode:microphone.guardEnabled?'observe':'off',guard:microphone.lastGuard,chord:microphone.lastChord,attacks:microphone.metrics.map(item=>({...item}))});
   $('mic-grading-mode').addEventListener('change',()=>{
     micMode=micGrading.mode($('mic-grading-mode').value);try{localStorage.setItem('piano-mic-mode-v1',micMode);}catch(_){}
     updateMicMode();stop(false);resetMicPractice();state.beat=micTargets[0]?.beat??rangeStart();updateTime();followScore(state.beat);
-    $('mic-feedback').textContent='Đã đổi chế độ · bắt đầu lại đoạn luyện.';
+    $('mic-feedback').textContent=_t('Đã đổi chế độ · bắt đầu lại đoạn luyện.');
   });
   $('mic-self-check').addEventListener('click',confirmSelfCheck);
   $('eval-open').addEventListener('click',()=>{if(scoreModel.key!==modelKey())refreshScoreModel().then(renderEval);renderEval();openDialog('eval-dialog');});
@@ -1460,13 +1462,13 @@
       stop(false);state.hand=settings.hand;state.barStart=settings.barStart;state.barEnd=settings.barEnd;
       state.tempo=settings.tempo;state.loop=settings.loop;state.beat=rangeStart();state.lastScrollBar=-1;
       $('tempo').value=state.tempo;$('tempo-value').textContent=state.tempo;$('loop').checked=state.loop;
-      updatePractice();updateTime();$('play-status').textContent='Sẵn sàng';
+      updatePractice();updateTime();$('play-status').textContent=_t('Sẵn sàng');
     },
     openLesson:id=>{loadLesson(DATA.exercises.findIndex(e=>e.id===id));closeMenu();$('quest-title').scrollIntoView?.({behavior:'smooth',block:'center'});},
     stop:()=>stop(false),
     completeLesson(id){
       state.done.add(id);try{localStorage.setItem('piano-independence-done',JSON.stringify([...state.done]));}catch(_){}
-      $('done-button').setAttribute('aria-pressed','true');$('done-button').textContent='✓ Đã tập';
+      $('done-button').setAttribute('aria-pressed','true');$('done-button').textContent=_t('✓ Đã tập');
     },
     refreshLessons:renderLessons
   });
@@ -1483,7 +1485,7 @@
       $('tempo').value=state.tempo;$('tempo-value').textContent=state.tempo;$('loop').checked=state.loop;
       $('piano-pedal').checked=settings.pedal===true;
       $('song-expression').value=settings.expression==='expressive'?'expressive':'practice';
-      $('song-expression-note').textContent=settings.expression==='expressive'?'Giai điệu có hướng đi, phần đệm nhẹ, cuối câu dịu xuống. Nhịp vẫn giữ đều.':'Lực nhấn ổn định để dễ ghép hai tay.';
+      $('song-expression-note').textContent=settings.expression==='expressive'?_t('Giai điệu có hướng đi, phần đệm nhẹ, cuối câu dịu xuống. Nhịp vẫn giữ đều.'):_t('Lực nhấn ổn định để dễ ghép hai tay.');
       if(typeof settings.metronome==='boolean')$('metronome').checked=settings.metronome;
       updatePractice();updateTime();scrollToRange();
     },
@@ -1502,7 +1504,7 @@
   });
   function concealReading(mode){
     document.body.dataset.readingConceal=mode||'';
-    document.querySelectorAll('[data-practice-mode=step],[data-practice-mode=chords]').forEach(button=>{button.disabled=!!mode;button.title=mode?'Mở sheet kiểm tra trước khi dùng micro':'';});
+    document.querySelectorAll('[data-practice-mode=step],[data-practice-mode=chords]').forEach(button=>{button.disabled=!!mode;button.title=mode?_t('Mở sheet kiểm tra trước khi dùng micro'):'';});
     for(const id of ['score','loop-score','active-notes','keyboard']){
       const hidden=mode==='all'||(mode==='notation'&&(id==='score'||id==='loop-score'));
       if($(id)){$(id).setAttribute('aria-hidden',String(hidden));$(id).inert=hidden;}
@@ -1520,8 +1522,8 @@
     $('quest').hidden=true;$('song-practice').hidden=true;$('lesson-practice').hidden=true;$('reading-practice').hidden=false;
     $('book-lesson-guide').hidden=true;$('piece-phrases').hidden=true;document.body.classList.add('reading-active');
     $('lesson-title').textContent=lesson.title;$('lesson-goal').textContent=lesson.goal;$('lesson-skills').replaceChildren();
-    $('stage-line').textContent='Đọc nhạc mỗi ngày';$('topbar-count').textContent=lesson.id;$('full-piece').textContent='Cả bài';
-    $('focus-text').textContent=lesson.focus;$('notation-tip').textContent=lesson.lookAhead?'Vạch tím: vị trí nên nhìn trước tay.':'Quan sát trước · giữ nhịp · tự kiểm tra';
+    $('stage-line').textContent=_t('Đọc nhạc mỗi ngày');$('topbar-count').textContent=lesson.id;$('full-piece').textContent=_t('Cả bài');
+    $('focus-text').textContent=lesson.focus;$('notation-tip').textContent=lesson.lookAhead?_t('Vạch tím: vị trí nên nhìn trước tay.'):_t('Quan sát trước · giữ nhịp · tự kiểm tra');
     $('finger-guide').hidden=true;$('touch-guide').hidden=true;$('tempo').value=state.tempo;$('tempo-value').textContent=state.tempo;
     $('loop').checked=false;$('loop').disabled=lesson.isSightReading;
     setBarOptions();drawScore();selectPracticeMode(lesson.conceal?lesson.defaultMode:settings?.mode||lesson.defaultMode);updatePractice();updateTime();

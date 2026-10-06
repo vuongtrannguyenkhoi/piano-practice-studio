@@ -4,9 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>So sánh bộ đàn</title>
-  <script src="assets/salamander-samples.js?v=c6e43d0-cd65f9a2f2cd" defer></script>
-  <script src="piano-audio.js?v=c6e43d0-cd65f9a2f2cd" defer></script>
-  <script src="web-piano-audio.js?v=c6e43d0-cd65f9a2f2cd" defer></script>
+  <script src="i18n/en-ui.js?v=9be74ce-1627866aaad1" defer></script>
+  <script src="i18n/en-features.js?v=9be74ce-1627866aaad1" defer></script>
+  <script src="i18n.js?v=9be74ce-1627866aaad1" defer></script>
+  <script src="assets/salamander-samples.js?v=9be74ce-1627866aaad1" defer></script>
+  <script src="piano-audio.js?v=9be74ce-1627866aaad1" defer></script>
+  <script src="web-piano-audio.js?v=9be74ce-1627866aaad1" defer></script>
   <style>
     :root{--bg:#291251;--card:#35205b;--line:#ffffff22;--ink:#fff;--muted:#cdbde6;--accent:#9c58d8;--good:#79f0cf}
     *{box-sizing:border-box}
@@ -38,6 +41,7 @@
 <script>
 (() => {
   'use strict';
+  const _t=window.I18N?.t||((text,args)=>args?text.replace(/\{(\d+)\}/g,(m,i)=>args[i]):text);
   const status=text=>{document.getElementById('status').textContent=text;};
   let context=null,pianos={},phrase=null,audio=null,stopTimer=0;
   const buttons=[...document.querySelectorAll('[data-bank]')];
@@ -45,17 +49,17 @@
   async function play(bank){
     stopAll();buttons.forEach(b=>b.disabled=true);
     try{
-      if(bank==='sfz'){audio??=new Audio('assets/salamander-web/compare-sfz.mp3');await audio.play();status('Đang phát SFZ đầy đủ (bản render sẵn).');return;}
+      if(bank==='sfz'){audio??=new Audio('assets/salamander-web/compare-sfz.mp3');await audio.play();status(_t('Đang phát SFZ đầy đủ (bản render sẵn).'));return;}
       phrase??=await fetch('assets/salamander-web/compare-phrase.json').then(r=>r.json());
       context??=new AudioContext();await context.resume();
       if(!pianos[bank]){pianos[bank]=bank==='web'?new WebSalamanderPiano(context):new SalamanderPiano(context);pianos[bank].setRoom(.4);}
-      const piano=pianos[bank];status('Đang nạp mẫu…');
-      await piano.load((done,total)=>status(`Đang nạp mẫu ${done}/${total}…`),phrase.notes.map(n=>n.midi));
+      const piano=pianos[bank];status(_t('Đang nạp mẫu…'));
+      await piano.load((done,total)=>status(_t('Đang nạp mẫu {0}/{1}…',[done,total])),phrase.notes.map(n=>n.midi));
       piano.master.gain.cancelScheduledValues(context.currentTime);piano.master.gain.setValueAtTime(.8,context.currentTime);
       const start=context.currentTime+.1;
       for(const note of phrase.notes)piano.play(note.midi,start+note.at,note.duration,.11,null,note.velocity);
-      status(`Đang phát ${bank==='web'?'Salamander web':'bộ MP3 gọn'}.`);stopTimer=setTimeout(()=>status(''),phrase.duration*1000);
-    }catch(error){status('Không phát được: '+error.message+(location.protocol==='file:'?' (mở trang qua http để dùng bộ web)':''));}
+      status(_t('Đang phát {0}.',[bank==='web'?'Salamander web':_t('bộ MP3 gọn')]));stopTimer=setTimeout(()=>status(''),phrase.duration*1000);
+    }catch(error){status(_t('Không phát được: ')+error.message+(location.protocol==='file:'?_t(' (mở trang qua http để dùng bộ web)'):''));}
     finally{buttons.forEach(b=>b.disabled=false);}
   }
   for(const button of buttons)button.addEventListener('click',()=>play(button.dataset.bank));

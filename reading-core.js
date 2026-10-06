@@ -1,10 +1,11 @@
 /* Pure scheduling and notation adapter; no microphone/expected-note inference. */
 (() => {
   'use strict';
+  const _t=globalThis.I18N?.t||((text,args)=>args?text.replace(/\{(\d+)\}/g,(m,i)=>args[i]):text);
   const modules=[
-    ['KG','Định hướng bàn phím',3,2],['NR','Đọc nốt',4,2],['IN','Đọc quãng',5,2],
-    ['PT','Nhận dạng mẫu',5,3],['TC','Kỹ thuật',5,2],['CH','Hợp âm & hòa âm',5,2],
-    ['RH','Tiết tấu',4,2],['SR','Thị tấu',8,4],['LA','Nhìn trước khi chơi',3,1],['EA','Nghe & hình dung âm',3,2]
+    ['KG',_t('Định hướng bàn phím'),3,2],['NR',_t('Đọc nốt'),4,2],['IN',_t('Đọc quãng'),5,2],
+    ['PT',_t('Nhận dạng mẫu'),5,3],['TC',_t('Kỹ thuật'),5,2],['CH',_t('Hợp âm & hòa âm'),5,2],
+    ['RH',_t('Tiết tấu'),4,2],['SR',_t('Thị tấu'),8,4],['LA',_t('Nhìn trước khi chơi'),3,1],['EA',_t('Nghe & hình dung âm'),3,2]
   ].map(([id,title,minutes,quota])=>({id,title,minutes,quota}));
   const midi=p=>12*(Number(p.slice(-1))+1)+{C:0,D:2,E:4,F:5,G:7,A:9,B:11}[p[0]]+(p.includes('#')?1:p.includes('b')?-1:0);
   const empty=()=>({version:1,records:{},session:null,previousFamilies:[],sessions:0,level:2});
@@ -49,7 +50,7 @@
       while(left>1e-8){
         if(pos>=meter-1e-8){bars.push([]);pos=0;}
         const room=Math.min(left,meter-pos),chunk=[4,3,2,1.5,1,.5,.25].find(x=>x<=room+1e-8);
-        if(!chunk)throw Error('Trường độ chưa hỗ trợ');
+        if(!chunk)throw Error(_t('Trường độ chưa hỗ trợ'));
         const pitches=event.rest||!event.pitches.length?null:event.pitches.length===1?event.pitches[0]:event.pitches;
         const more=left-chunk>1e-8,notation={duration:({4:'w',3:'h',2:'h',1.5:'q',1:'q',.5:'8',.25:'16'})[chunk],dotted:chunk===3||chunk===1.5};
         if(event.finger&&first)notation.finger=event.finger;
@@ -61,7 +62,7 @@
     const contentBeats=events.reduce((sum,e)=>sum+e.duration_beats,0);
     if(pos<meter-1e-8){
       let left=meter-pos;
-      while(left>1e-8){const chunk=[4,3,2,1.5,1,.5,.25].find(x=>x<=left+1e-8);if(!chunk)throw Error('Khoảng nghỉ chưa hỗ trợ');bars.at(-1).push([null,chunk,{duration:({4:'w',3:'h',2:'h',1.5:'q',1:'q',.5:'8',.25:'16'})[chunk],dotted:chunk===3||chunk===1.5}]);left-=chunk;}
+      while(left>1e-8){const chunk=[4,3,2,1.5,1,.5,.25].find(x=>x<=left+1e-8);if(!chunk)throw Error(_t('Khoảng nghỉ chưa hỗ trợ'));bars.at(-1).push([null,chunk,{duration:({4:'w',3:'h',2:'h',1.5:'q',1:'q',.5:'8',.25:'16'})[chunk],dotted:chunk===3||chunk===1.5}]);left-=chunk;}
     }
     return {bars,meter,contentBeats};
   }
@@ -81,7 +82,7 @@
     const first=variant.staves[0],signature=first.meter,[n,d]=signature.split('/').map(Number),meter=n*4/d;
     let rh=[],lh=[],labels=[],clefs={rh:'treble',lh:'bass'},contentBeats=0;
     if(sequential){
-      for(const staff of staves){const result=staffBars(staff);labels[rh.length]=staff.label==='Test'?'So sánh':'Mẫu tham chiếu';rh.push(...result.bars);contentBeats+=result.contentBeats;}
+      for(const staff of staves){const result=staffBars(staff);labels[rh.length]=staff.label==='Test'?_t('So sánh'):_t('Mẫu tham chiếu');rh.push(...result.bars);contentBeats+=result.contentBeats;}
       clefs.rh=first.clef;
     }else{
       for(const staff of staves){
@@ -95,7 +96,7 @@
     const emptyBar=()=>meter===2?[[null,2,{duration:'h'}]]:rests();
     while(rh.length<length)rh.push(emptyBar());while(lh.length<length)lh.push(emptyBar());
     const pitches=variant.staves.flatMap(s=>s.events.flatMap(e=>e.pitches)),ear=family.code.startsWith('EA')||family.code==='CH24'||variant.activity==='ear',reading=family.code.startsWith('SR');
-    return {id:variant.id,title:`${family.code} · ${family.title}`,goal:family.instruction,rh,lh,meter,timeSignature:signature,bpm:signature==='6/8'?40:60,pulse:signature==='6/8'?1.5:1,tempoBeat:signature==='6/8'?1.5:1,keySignature:variant.keySignature||'C',holds:variant.holds,readingRevision:'editorial-v2',readingClefs:clefs,readingHands:sequential?['rh']:['rh','lh'].filter(h=>(h==='rh'?rh:lh).some(b=>b.some(e=>e[0]))),contentBeats,studyLabels:variant.studyLabels||labels,focus:family.instruction,touch:'',rhythm:'mixed',reading:true,registerSplit,defaultHand:sequential?'rh':rh.some(b=>b.some(e=>e[0]))&&lh.some(b=>b.some(e=>e[0]))?'both':lh.some(b=>b.some(e=>e[0]))?'lh':'rh',defaultMode:ear?'listen':'timed',conceal:ear&&family.code!=='EA19'?'all':family.code==='NR15'?'notation':null,isSightReading:reading,lookAhead:family.code.startsWith('LA')?({'LA01':1,'LA02':2,'LA03':meter})[family.code]||0:0,hidePlayed:family.code==='LA04',sourceNote:[registerSplit?'Bài tìm phím: nốt dưới C4 ở khóa Fa / tay trái, từ C4 ở khóa Sol / tay phải; hai tay đánh luân phiên theo chuỗi mục tiêu.':'',family.contentNote,variant.editorial,contentBeats%meter?'Ô cuối có nghỉ bổ sung để hoàn tất khuông.':'',pitches.some(p=>midi(p)<36||midi(p)>84)?'Có nốt ngoài C2–C6: chơi theo nhịp, không chấm đơn âm toàn bài.':''].filter(Boolean).join(' ')};
+    return {id:variant.id,title:`${family.code} · ${family.title}`,goal:family.instruction,rh,lh,meter,timeSignature:signature,bpm:signature==='6/8'?40:60,pulse:signature==='6/8'?1.5:1,tempoBeat:signature==='6/8'?1.5:1,keySignature:variant.keySignature||'C',holds:variant.holds,readingRevision:'editorial-v2',readingClefs:clefs,readingHands:sequential?['rh']:['rh','lh'].filter(h=>(h==='rh'?rh:lh).some(b=>b.some(e=>e[0]))),contentBeats,studyLabels:variant.studyLabels||labels,focus:family.instruction,touch:'',rhythm:'mixed',reading:true,registerSplit,defaultHand:sequential?'rh':rh.some(b=>b.some(e=>e[0]))&&lh.some(b=>b.some(e=>e[0]))?'both':lh.some(b=>b.some(e=>e[0]))?'lh':'rh',defaultMode:ear?'listen':'timed',conceal:ear&&family.code!=='EA19'?'all':family.code==='NR15'?'notation':null,isSightReading:reading,lookAhead:family.code.startsWith('LA')?({'LA01':1,'LA02':2,'LA03':meter})[family.code]||0:0,hidePlayed:family.code==='LA04',sourceNote:[registerSplit?_t('Bài tìm phím: nốt dưới C4 ở khóa Fa / tay trái, từ C4 ở khóa Sol / tay phải; hai tay đánh luân phiên theo chuỗi mục tiêu.'):'',family.contentNote,variant.editorial,contentBeats%meter?_t('Ô cuối có nghỉ bổ sung để hoàn tất khuông.'):'',pitches.some(p=>midi(p)<36||midi(p)>84)?_t('Có nốt ngoài C2–C6: chơi theo nhịp, không chấm đơn âm toàn bài.'):''].filter(Boolean).join(' ')};
   }
   const core={modules,empty,sanitize,plan,staffBars,lesson,midi};
   if(typeof module!=='undefined'&&module.exports)module.exports=core;
