@@ -48,19 +48,25 @@
     $('today-progress').textContent=$('journey-progress').textContent;
   }
   let exitFocusForNavigation=()=>{},enterPracticeFocus=()=>{};
+  // Practice has no tab of its own: it belongs to the section it was opened from (or, on a direct link,
+  // to the courses, songs or reading section of what is open). That tab stays lit and "back" returns there.
+  const hubNames={today:'Hôm nay',journey:'Khóa học',songs:'Bài hát',skills:'Kỹ năng',reading:'Đọc nhạc'};
+  let lastHub=null;
+  const practiceHub=()=>state.reading?'reading':lastHub&&lastHub!=='reading'?lastHub:state.song?'songs':'journey';
   function showView(view,route=true){
     if(!['today','journey','songs','practice','skills','reading'].includes(view))return;
     // A build may ship without songs (scripts/build-static.py --hide-song): the library falls back to the journey.
     if(view==='songs'&&!window.PIANO_SONGS?.length)view='journey';
     if(view!=='practice'){exitFocusForNavigation();reading?.leave();cancelPracticeStart();microphone?.stop();rememberPractice();stop(false);refreshToday();}
     document.body.dataset.view=view;
+    if(view!=='practice')lastHub=view;
     for(const name of ['today','journey','songs','practice','skills','reading'])$(name+'-view').hidden=name!==view;
     if(view==='skills')skillGraph?.render();
     if(view==='reading')reading?.ready();
     document.querySelectorAll('.primary-nav [data-view],.mobile-nav [data-view]').forEach(button=>{
-      if(button.dataset.view===view)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
+      if(button.dataset.view===(view==='practice'?practiceHub():view))button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
     });
-    $('practice-exit').hidden=view!=='practice';$('practice-exit').textContent=state.reading?'← Đọc nhạc':'← Luyện tập';$('topbar-count').hidden=view!=='practice';
+    $('practice-exit').hidden=view!=='practice';$('practice-exit').textContent='← '+hubNames[practiceHub()];$('topbar-count').hidden=view!=='practice';
     $('view-label').textContent=({today:'LUYỆN TẬP HÔM NAY',journey:'KHÓA HỌC',songs:'BÀI HÁT',practice:'LUYỆN ĐÀN',skills:'BẢN ĐỒ KỸ NĂNG',reading:'ĐỌC NHẠC MỖI NGÀY'})[view];
     closeMenu();
     if(route)try{history.replaceState(null,'',view==='practice'?(state.reading?'#doc-nhac/tap':state.song?`#nhac-${state.song.id}`:`#bai-${ex().id}`):({today:'#hom-nay',journey:'#hanh-trinh',songs:'#bai-nhac',skills:'#ky-nang',reading:'#doc-nhac'})[view]);}catch(_){}
@@ -218,8 +224,23 @@
       staves[lead].setMeasure(e.barNumbers?.[bar]||bar+1);
       const noteStart=Math.max(...hands.map(hand=>staves[hand].getNoteStartX()));
       Object.values(staves).forEach(stave=>stave.setNoteStartX(noteStart).setContext(context).draw());
-      const label=e.studyLabels?.[bar]||e.harmony?.[bar]||e.dynamicLabels?.[bar];
+      // Bar annotations, one convention for every collection: section and chord above the top staff;
+      // dynamics and expression words in italics under the staff of their hand.
+      const section=e.phraseMarkers?.[bar],chord=e.harmony?.[bar],structured=!!(e.phraseMarkers||e.dynamicChanges||e.expressionWords);
+      const label=structured?[section,chord].filter(Boolean).join(' · '):e.studyLabels?.[bar]||chord;
       if(label){const text=svgNode('text',{class:'study-label',x:noteStart+8,y:53,'font-size':13,'font-weight':700,fill:'#5b3d7d'});text.textContent=label;measureGroup.append(text);}
+      const marks={};
+      for(const change of e.dynamicChanges?.[bar]||[])(marks[change.hand]??=[]).push(change.value);
+      for(const word of e.expressionWords?.[bar]||[]){const text=word.text.replace(/\s*\/\s*BPM\s*\d+/i,'').trim();if(text)(marks[word.hand]??=[]).push(text);}
+      if(e.dynamicLabels?.[bar])(marks[lead]??=[]).push(e.dynamicLabels[bar]);
+      for(const [hand,words] of Object.entries(marks)){
+        if(!staves[hand])continue;
+        // Piano convention: the upper staff's marks sit midway between the staves (clear of slurs under
+        // the melody); the lower staff's marks sit below it.
+        const y=hand==='rh'&&staves.lh?(staves.rh.getYForLine(4)+staves.lh.getYForLine(0))/2+6:staves[hand].getYForLine(4)+26;
+        const text=svgNode('text',{class:'dynamic-label',x:noteStart+8,y,'font-size':15,'font-style':'italic','font-weight':700,'font-family':'Georgia,"Times New Roman",serif',fill:'#3b2a55'});
+        text.textContent=words.join('  ');measureGroup.append(text);
+      }
       if(hands.length===2&&bar===0)new VF.StaveConnector(staves.rh,staves.lh).setType(VF.StaveConnector.type.BRACE).setContext(context).draw();
       if(hands.length===2)new VF.StaveConnector(staves.rh,staves.lh).setType(VF.StaveConnector.type.SINGLE_LEFT).setContext(context).draw();
       if(hands.length===2)new VF.StaveConnector(staves.rh,staves.lh).setType(bar===barCount()-1?VF.StaveConnector.type.BOLD_DOUBLE_RIGHT:VF.StaveConnector.type.SINGLE_RIGHT).setContext(context).draw();
@@ -855,7 +876,7 @@
       if(state.reading&&!reading?.diagnostics().saved.session?.finished){reading?.begin();return;}
       if(state.song||ex().id===id)showView('practice');else loadLesson(id-1);
     });
-    $('practice-exit').addEventListener('click',()=>showView(state.reading?'reading':'today'));
+    $('practice-exit').addEventListener('click',()=>showView(practiceHub()));
     const showExpression=()=>{$('song-expression-note').textContent=$('song-expression').value==='expressive'?'Giai điệu có hướng đi, phần đệm nhẹ, cuối câu dịu xuống. Nhịp vẫn giữ đều.':'Lực nhấn ổn định để dễ ghép hai tay.';};
     $('song-expression').addEventListener('change',()=>{
       const was=state.playing||state.loading;stop(false);showExpression();songs?.refreshCheck();if(was)start(false);
@@ -1191,7 +1212,7 @@
     const missing=inputs.keys.filter(midi=>!takes[midi]);
     if(missing.length){scoreModel={key,status:'missing',missing,have:inputs.keys.length-missing.length,model:null,background:[]};renderScoreModel();return;}
     scoreModel={key,status:'building',missing:[],model:null,background:[]};renderScoreModel();
-    modelWorker??=new Worker('audio/model-worker.js?v=0a7152c-eae104bfb684');
+    modelWorker??=new Worker('audio/model-worker.js?v=df55802-7ce77c1bfc5b');
     const result=await new Promise(resolve=>{
       modelWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};modelWorker.onerror=event=>resolve({request,error:event.message||'lỗi Worker'});
       modelWorker.postMessage({type:'build',request,id:key,notes:inputs.notes,targets:inputs.targets,takes:Object.fromEntries(Object.entries(takes).map(([midi,take])=>[midi,{pcm:take.pcm,rate:take.rate}]))});
@@ -1292,7 +1313,7 @@
     if(!run.params||!run.samples){textIfChanged(status,'Không thu được âm thanh · thử lại.');renderEval();return;}
     const pcm=new Float32Array(run.samples);let at=0;for(const block of run.blocks){pcm.set(block,at);at+=block.length;}
     textIfChanged(status,'Đang phân tích bằng cả hai cách chấm…');renderEval();
-    evalWorker??=new Worker('audio/eval-worker.js?v=0a7152c-eae104bfb684');const request=++evalRequest;
+    evalWorker??=new Worker('audio/eval-worker.js?v=df55802-7ce77c1bfc5b');const request=++evalRequest;
     const result=await new Promise(resolve=>{
       evalWorker.onmessage=({data})=>{if(data.request===request)resolve(data);};evalWorker.onerror=event=>resolve({error:event.message||'lỗi Worker'});
       evalWorker.postMessage({type:'evaluate',request,pcm,rate:run.rate,...run.params,startTime:run.params.startTime-run.firstTime});
