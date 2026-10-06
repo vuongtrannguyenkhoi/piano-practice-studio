@@ -1,5 +1,1 @@
-(() => {
-  'use strict';
-  // Static build: hidden songs removed by scripts/build-static.py.
-  window.PIANO_SONGS=[];
-})();
+(()=>{"use strict";window.PIANO_SONGS=[]})();

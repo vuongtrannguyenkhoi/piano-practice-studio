@@ -1,55 +1,4 @@
-// Reviewed lesson-to-skill mapping. Primary skills receive practice evidence;
-// context skills explain the music but do not inherit completion credit.
-(() => {
-  'use strict';
-  const groups=[['foundation','Phím & đọc nhạc','◎'],['hands','Hai tay độc lập','⇄'],['rhythm','Nhịp & tiết tấu','♩'],['harmony','Gam & hòa âm','♬'],['accompaniment','Mẫu đệm','≋'],['music','Chơi thành âm nhạc','♫']];
-  const rows=[
-    ['keyboard','Tìm phím & quãng tám','foundation',[],[51],'Nhận phím bằng nhóm đen và phân biệt cùng tên ở các quãng tám.'],
-    ['pulse','Giữ phách bên trong','foundation',[],[52,86],'Đếm đều khi đánh, giữ tiếng hoặc nghỉ; tốc độ phách không đổi.'],
-    ['durations','Giữ đủ trường độ','foundation',['pulse'],[52],'Phân biệt tròn, trắng, đen; tiếp tục đếm khi không đánh thêm.'],
-    ['rests','Khoảng nghỉ có nhịp','foundation',['pulse'],[53],'Giữ đúng khoảng lặng và vào nốt sau nghỉ đúng giờ.'],
-    ['read-rh','Đọc khóa Sol','foundation',['keyboard'],[58,59],'Dùng nốt mốc, hướng đi và quãng để đọc tay phải.'],
-    ['read-lh','Đọc khóa Fa','foundation',['keyboard'],[58,60],'Đọc tay trái bằng nốt mốc riêng, không đoán theo hình tay phải.'],
-    ['fingers','Thế năm ngón','foundation',['keyboard'],[56,57],'Giữ thế tay thoải mái, các ngón xuống phím đều.'],
-    ['intervals','Đọc & nghe quãng','foundation',['read-rh','read-lh'],[96,97,100],'Nhận bước, nhảy và khoảng cách; đặt hai nốt cùng một lần đánh.'],
-    ['together','Hai tay cùng vào','hands',['pulse','fingers'],[1,133],'Hai tay gặp đúng thời điểm, không tách thành hai tiếng.'],
-    ['hold','Một tay giữ, một tay đi','hands',['together','durations'],[4,61],'Giữ đủ nốt nền khi tay kia đổi nốt; không nhả hoặc đánh theo.'],
-    ['alternate','Chuyền lượt & đổi vai','hands',['together','rests'],[3,64],'Một tay thực sự nghỉ; chuyển vai mà nhịp vẫn tiếp tục.'],
-    ['ratio','Hai tốc độ trên một phách','hands',['together','durations'],[6,7],'Giữ điểm hẹn chung trong mẫu 2:1 và 1:2.'],
-    ['opposite','Cùng & ngược hướng','hands',['together'],[2,22],'Giữ đường đi riêng của mỗi tay và gặp đúng vạch nhịp.'],
-    ['canon','Hai câu vào lệch nhau','hands',['alternate','ratio'],[28,31],'Tay sau nhắc câu trong khi tay dẫn vẫn tiếp tục.'],
-    ['eighths','Chia phách làm hai','rhythm',['pulse'],[8,146],'Đếm số và “và”; hai phần bằng nhau mà BPM không tăng.'],
-    ['dotted','Dài–ngắn & dấu nối','rhythm',['eighths','durations'],[54,165],'Giữ tỉ lệ chấm dôi và giữ tiếng qua dấu nối, không đánh lại.'],
-    ['syncopation','Vào giữa phách','rhythm',['eighths','rests'],[10,150],'Vào phần yếu hoặc giữ qua phách mạnh; nền vẫn đều.'],
-    ['triple','Nhịp ba 3/4','rhythm',['pulse','durations'],[55],'Đếm ba phách mỗi ô, không thêm phách thứ tư.'],
-    ['compound','Hai nhóm ba 6/8','rhythm',['eighths','triple'],[106],'Cảm nhận hai nhịp lớn, mỗi nhịp chia ba; khác ba phách của 3/4.'],
-    ['triplets','Ba nốt trong một phách','rhythm',['eighths'],[42],'Chia ba đều trong cùng một phách.'],
-    ['sixteenths','Bốn nốt trong một phách','rhythm',['eighths'],[108],'Đếm 1–e–và–a; đổi nhóm mà không đổi phách.'],
-    ['polyrhythm','Ba đối hai','rhythm',['ratio','triplets'],[26,44],'Hai tay chia phách khác nhau nhưng cùng điểm bắt đầu và kết thúc.'],
-    ['swing','Swing & shuffle','rhythm',['eighths'],[36,37],'Nghe dài–ngắn 2:1 trên phách đều; không chia đôi như móc đơn thẳng.'],
-    ['thumb','Luồn & bắt chéo ngón','harmony',['fingers','read-rh'],[67,68,89],'Chuẩn bị ngón cái và nối đường gam qua điểm đổi ngón.'],
-    ['shift','Mở rộng & dịch thế','harmony',['fingers','rests'],[87,88,90],'Chuẩn bị vị trí mới rồi trở về hoặc chuyển thế đúng nhịp.'],
-    ['accidentals','Dấu hóa & hóa biểu','harmony',['read-rh','read-lh'],[66],'Phân biệt dấu hóa trong ô với hóa biểu áp dụng trên các quãng tám.'],
-    ['major','Gam trưởng hai tay','harmony',['thumb','accidentals','opposite'],[21,91,93],'Giữ hóa biểu và hai đường ngón khác nhau khi chơi gam.'],
-    ['minor','Màu giọng thứ','harmony',['accidentals'],[71,101],'Phân biệt thứ tự nhiên và hòa âm, nghe nốt thay đổi màu.'],
-    ['chords','Hợp âm thành một tiếng','harmony',['fingers','durations'],[72,131,132],'Đặt sẵn các ngón và thả nhiều nốt cùng lúc.'],
-    ['inversions','Thế đảo hợp âm','harmony',['chords'],[74,137],'Nhận thể gốc và hai đảo; chuyển cả hình tay thoải mái.'],
-    ['voice-leading','Đổi hợp âm bằng đường gần','harmony',['inversions'],[75,135,138],'Tìm nốt chung, đổi thế gần và giữ nhịp khi chuyển vòng.'],
-    ['seventh','Hợp âm bảy & trở về','harmony',['voice-leading','accidentals'],[116,153],'Đọc đúng nốt bảy, nghe dẫn bè về hợp âm chủ.'],
-    ['sus','Nốt treo & giải quyết','harmony',['chords','intervals'],[118],'Nghe nốt treo trở về nốt ba, giữ các nốt còn lại.'],
-    ['broken','Hợp âm rải đều','accompaniment',['chords','ratio'],[139,140],'Các nốt rải đều, ngón cái không to vọt, tay kia giữ câu.'],
-    ['bass-chord','Bass & hợp âm đáp','accompaniment',['chords','alternate'],[17,147],'Giữ đường bass và đặt hợp âm đúng lượt.'],
-    ['alberti','Thấp–cao–giữa–cao','accompaniment',['broken'],[24,149],'Đệm Alberti đều và nhẹ dưới giai điệu dài.'],
-    ['touch','Liền, ngắt & điểm nhấn','music',['durations','together'],[11,12,82],'Hai tay dùng cách chạm khác nhau mà tempo không đổi.'],
-    ['balance','Giai điệu nổi, nền nhẹ','music',['hold'],[13,151,152],'Nghe được người hát ở mỗi tay; nền nhẹ và đều.'],
-    ['pedal','Tay trước, chân sau','music',['chords','durations'],[83,124],'Đổi pedal sau khi đánh hợp âm mới, tự nghe tiếng chồng/hở.'],
-    ['phrases','Nối câu & chơi trọn','music',['hold','balance'],[65,154],'Luyện qua ranh giới ô/câu rồi nối bài, không chỉ lặp phần đầu.'],
-    ['ear','Nghe, hát & tìm lại','music',['keyboard'],[71,100],'Nghe hoặc hát trước, rồi tìm phím để kiểm tra.'],
-    ['reading','Đọc mới một lượt','music',['read-rh','read-lh','rests'],[85,128,129],'Quan sát trước rồi chơi một lượt chưa nghe mẫu; ghi chỗ vấp.'],
-    ['create','Tạo câu trên nền đệm','music',['rests','balance'],[46,130],'Chọn cao độ và tiết tấu; giữ nền khi đổi câu của mình.']
-  ];
-  // left of | = directly trained; right = musical context, no completion credit.
-  const mapping=`
+(()=>{"use strict";const r=[["foundation","Phím & đọc nhạc","◎"],["hands","Hai tay độc lập","⇄"],["rhythm","Nhịp & tiết tấu","♩"],["harmony","Gam & hòa âm","♬"],["accompaniment","Mẫu đệm","≋"],["music","Chơi thành âm nhạc","♫"]],s=[["keyboard","Tìm phím & quãng tám","foundation",[],[51],"Nhận phím bằng nhóm đen và phân biệt cùng tên ở các quãng tám."],["pulse","Giữ phách bên trong","foundation",[],[52,86],"Đếm đều khi đánh, giữ tiếng hoặc nghỉ; tốc độ phách không đổi."],["durations","Giữ đủ trường độ","foundation",["pulse"],[52],"Phân biệt tròn, trắng, đen; tiếp tục đếm khi không đánh thêm."],["rests","Khoảng nghỉ có nhịp","foundation",["pulse"],[53],"Giữ đúng khoảng lặng và vào nốt sau nghỉ đúng giờ."],["read-rh","Đọc khóa Sol","foundation",["keyboard"],[58,59],"Dùng nốt mốc, hướng đi và quãng để đọc tay phải."],["read-lh","Đọc khóa Fa","foundation",["keyboard"],[58,60],"Đọc tay trái bằng nốt mốc riêng, không đoán theo hình tay phải."],["fingers","Thế năm ngón","foundation",["keyboard"],[56,57],"Giữ thế tay thoải mái, các ngón xuống phím đều."],["intervals","Đọc & nghe quãng","foundation",["read-rh","read-lh"],[96,97,100],"Nhận bước, nhảy và khoảng cách; đặt hai nốt cùng một lần đánh."],["together","Hai tay cùng vào","hands",["pulse","fingers"],[1,133],"Hai tay gặp đúng thời điểm, không tách thành hai tiếng."],["hold","Một tay giữ, một tay đi","hands",["together","durations"],[4,61],"Giữ đủ nốt nền khi tay kia đổi nốt; không nhả hoặc đánh theo."],["alternate","Chuyền lượt & đổi vai","hands",["together","rests"],[3,64],"Một tay thực sự nghỉ; chuyển vai mà nhịp vẫn tiếp tục."],["ratio","Hai tốc độ trên một phách","hands",["together","durations"],[6,7],"Giữ điểm hẹn chung trong mẫu 2:1 và 1:2."],["opposite","Cùng & ngược hướng","hands",["together"],[2,22],"Giữ đường đi riêng của mỗi tay và gặp đúng vạch nhịp."],["canon","Hai câu vào lệch nhau","hands",["alternate","ratio"],[28,31],"Tay sau nhắc câu trong khi tay dẫn vẫn tiếp tục."],["eighths","Chia phách làm hai","rhythm",["pulse"],[8,146],"Đếm số và “và”; hai phần bằng nhau mà BPM không tăng."],["dotted","Dài–ngắn & dấu nối","rhythm",["eighths","durations"],[54,165],"Giữ tỉ lệ chấm dôi và giữ tiếng qua dấu nối, không đánh lại."],["syncopation","Vào giữa phách","rhythm",["eighths","rests"],[10,150],"Vào phần yếu hoặc giữ qua phách mạnh; nền vẫn đều."],["triple","Nhịp ba 3/4","rhythm",["pulse","durations"],[55],"Đếm ba phách mỗi ô, không thêm phách thứ tư."],["compound","Hai nhóm ba 6/8","rhythm",["eighths","triple"],[106],"Cảm nhận hai nhịp lớn, mỗi nhịp chia ba; khác ba phách của 3/4."],["triplets","Ba nốt trong một phách","rhythm",["eighths"],[42],"Chia ba đều trong cùng một phách."],["sixteenths","Bốn nốt trong một phách","rhythm",["eighths"],[108],"Đếm 1–e–và–a; đổi nhóm mà không đổi phách."],["polyrhythm","Ba đối hai","rhythm",["ratio","triplets"],[26,44],"Hai tay chia phách khác nhau nhưng cùng điểm bắt đầu và kết thúc."],["swing","Swing & shuffle","rhythm",["eighths"],[36,37],"Nghe dài–ngắn 2:1 trên phách đều; không chia đôi như móc đơn thẳng."],["thumb","Luồn & bắt chéo ngón","harmony",["fingers","read-rh"],[67,68,89],"Chuẩn bị ngón cái và nối đường gam qua điểm đổi ngón."],["shift","Mở rộng & dịch thế","harmony",["fingers","rests"],[87,88,90],"Chuẩn bị vị trí mới rồi trở về hoặc chuyển thế đúng nhịp."],["accidentals","Dấu hóa & hóa biểu","harmony",["read-rh","read-lh"],[66],"Phân biệt dấu hóa trong ô với hóa biểu áp dụng trên các quãng tám."],["major","Gam trưởng hai tay","harmony",["thumb","accidentals","opposite"],[21,91,93],"Giữ hóa biểu và hai đường ngón khác nhau khi chơi gam."],["minor","Màu giọng thứ","harmony",["accidentals"],[71,101],"Phân biệt thứ tự nhiên và hòa âm, nghe nốt thay đổi màu."],["chords","Hợp âm thành một tiếng","harmony",["fingers","durations"],[72,131,132],"Đặt sẵn các ngón và thả nhiều nốt cùng lúc."],["inversions","Thế đảo hợp âm","harmony",["chords"],[74,137],"Nhận thể gốc và hai đảo; chuyển cả hình tay thoải mái."],["voice-leading","Đổi hợp âm bằng đường gần","harmony",["inversions"],[75,135,138],"Tìm nốt chung, đổi thế gần và giữ nhịp khi chuyển vòng."],["seventh","Hợp âm bảy & trở về","harmony",["voice-leading","accidentals"],[116,153],"Đọc đúng nốt bảy, nghe dẫn bè về hợp âm chủ."],["sus","Nốt treo & giải quyết","harmony",["chords","intervals"],[118],"Nghe nốt treo trở về nốt ba, giữ các nốt còn lại."],["broken","Hợp âm rải đều","accompaniment",["chords","ratio"],[139,140],"Các nốt rải đều, ngón cái không to vọt, tay kia giữ câu."],["bass-chord","Bass & hợp âm đáp","accompaniment",["chords","alternate"],[17,147],"Giữ đường bass và đặt hợp âm đúng lượt."],["alberti","Thấp–cao–giữa–cao","accompaniment",["broken"],[24,149],"Đệm Alberti đều và nhẹ dưới giai điệu dài."],["touch","Liền, ngắt & điểm nhấn","music",["durations","together"],[11,12,82],"Hai tay dùng cách chạm khác nhau mà tempo không đổi."],["balance","Giai điệu nổi, nền nhẹ","music",["hold"],[13,151,152],"Nghe được người hát ở mỗi tay; nền nhẹ và đều."],["pedal","Tay trước, chân sau","music",["chords","durations"],[83,124],"Đổi pedal sau khi đánh hợp âm mới, tự nghe tiếng chồng/hở."],["phrases","Nối câu & chơi trọn","music",["hold","balance"],[65,154],"Luyện qua ranh giới ô/câu rồi nối bài, không chỉ lặp phần đầu."],["ear","Nghe, hát & tìm lại","music",["keyboard"],[71,100],"Nghe hoặc hát trước, rồi tìm phím để kiểm tra."],["reading","Đọc mới một lượt","music",["read-rh","read-lh","rests"],[85,128,129],"Quan sát trước rồi chơi một lượt chưa nghe mẫu; ghi chỗ vấp."],["create","Tạo câu trên nền đệm","music",["rests","balance"],[46,130],"Chọn cao độ và tiết tấu; giữ nền khi đổi câu của mình."]],o=`
 1 together | pulse,fingers
 2 opposite | together
 3 alternate | rests
@@ -222,13 +171,5 @@
 170 syncopation,balance,phrases | chords
 171 seventh,phrases | pedal
 172 phrases,balance | hold,broken,alberti,ratio
-`;
-  const lessons={};
-  for(const line of mapping.trim().split('\n')){
-    const [left,right='']=line.split('|'),[id,...tokens]=left.trim().split(/\s+/);
-    lessons[id]={primary:tokens.join('').split(','),context:right.trim().split(',').filter(Boolean)};
-  }
-  window.PIANO_SKILLS={version:1,groups:groups.map(([id,label,icon])=>({id,label,icon})),
-    nodes:rows.map(([id,label,group,requires,starters,description])=>({id,label,group,requires,starters,description})),lessons,
-    songs:{'nhat-ky-cua-me':{primary:['phrases','balance'],context:['triple','hold','broken','bass-chord','syncopation'],requires:['triple','hold','broken','balance','phrases']}}};
-})();
+`,i={};for(const n of o.trim().split(`
+`)){const[a,h=""]=n.split("|"),[t,...e]=a.trim().split(/\s+/);i[t]={primary:e.join("").split(","),context:h.trim().split(",").filter(Boolean)}}window.PIANO_SKILLS={version:1,groups:r.map(([n,a,h])=>({id:n,label:a,icon:h})),nodes:s.map(([n,a,h,t,e,c])=>({id:n,label:a,group:h,requires:t,starters:e,description:c})),lessons:i,songs:{"nhat-ky-cua-me":{primary:["phrases","balance"],context:["triple","hold","broken","bass-chord","syncopation"],requires:["triple","hold","broken","balance","phrases"]}}}})();

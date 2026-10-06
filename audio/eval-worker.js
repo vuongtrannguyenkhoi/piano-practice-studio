@@ -1,16 +1,1 @@
-/* Re-scores a recorded tempo round with both grading methods, off the main thread. */
-self.AudioWorkletProcessor=class{constructor(){this.port={};}};
-self.registerProcessor=(name,klass)=>{self.CaptureProcessor=klass;};
-importScripts('mic-worklet.js?v=f7c5e8e-d256c112f5fe','pitch-core.js?v=f7c5e8e-d256c112f5fe','polyphony-core.js?v=f7c5e8e-d256c112f5fe','chord-verify-core.js?v=f7c5e8e-d256c112f5fe','../mic-tempo.js?v=f7c5e8e-d256c112f5fe','evaluation-core.js?v=f7c5e8e-d256c112f5fe');
-let verifier=null;
-onmessage=async({data})=>{
-  if(data.type!=='evaluate')return;
-  try{
-    verifier??=await fetch('../assets/piano-polyphony-dictionary.json?v=f7c5e8e-d256c112f5fe').then(response=>{if(!response.ok)throw Error('Dictionary unavailable');return response.json();}).then(dictionary=>new PianoChordVerify.Verifier(new PianoPolyphony.Detector(dictionary)));
-    const common={input:data.pcm,rate:data.rate,targets:data.targets,tempo:data.tempo,fromBeat:data.fromBeat,endBeat:data.endBeat,startTime:data.startTime,config:data.config,mode:data.mode,
-      Processor:self.CaptureProcessor,setClock:(rate,frame)=>{self.sampleRate=rate;self.currentFrame=frame;},PitchTracker:PianoPitch.Tracker,VerifyTracker:PianoChordVerify.Tracker,Session:PianoMicTempo.Session,verifier};
-    const results={generic:PianoEvaluation.runMethod({...common,method:'generic'})};
-    if(data.model)results.model=PianoEvaluation.runMethod({...common,method:'model',model:data.model});
-    postMessage({request:data.request,results});
-  }catch(error){postMessage({request:data.request,error:error.message});}
-};
+self.AudioWorkletProcessor=class{constructor(){this.port={}}},self.registerProcessor=(e,r)=>{self.CaptureProcessor=r},importScripts("mic-worklet.js?v=9edbbb1-188e9e0ec4eb","pitch-core.js?v=9edbbb1-188e9e0ec4eb","polyphony-core.js?v=9edbbb1-188e9e0ec4eb","chord-verify-core.js?v=9edbbb1-188e9e0ec4eb","../mic-tempo.js?v=9edbbb1-188e9e0ec4eb","evaluation-core.js?v=9edbbb1-188e9e0ec4eb");let verifier=null;onmessage=async({data:e})=>{if(e.type==="evaluate")try{verifier??=await fetch("../assets/piano-polyphony-dictionary.json?v=9edbbb1-188e9e0ec4eb").then(o=>{if(!o.ok)throw Error("Dictionary unavailable");return o.json()}).then(o=>new PianoChordVerify.Verifier(new PianoPolyphony.Detector(o)));const r={input:e.pcm,rate:e.rate,targets:e.targets,tempo:e.tempo,fromBeat:e.fromBeat,endBeat:e.endBeat,startTime:e.startTime,config:e.config,mode:e.mode,Processor:self.CaptureProcessor,setClock:(o,t)=>{self.sampleRate=o,self.currentFrame=t},PitchTracker:PianoPitch.Tracker,VerifyTracker:PianoChordVerify.Tracker,Session:PianoMicTempo.Session,verifier},s={generic:PianoEvaluation.runMethod({...r,method:"generic"})};e.model&&(s.model=PianoEvaluation.runMethod({...r,method:"model",model:e.model})),postMessage({request:e.request,results:s})}catch(r){postMessage({request:e.request,error:r.message})}};

@@ -1,6 +1,1 @@
-/* Language switch in the top bar (i18n.js). */
-.language-switch{margin-left:auto;min-width:44px;min-height:36px;padding:0 12px;border:1px solid #ffffff38;border-radius:10px;background:#ffffff12;color:#f1e4ff;font:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;cursor:pointer}
-.language-switch:hover{background:#ffffff22}
-.language-switch:focus-visible{outline:2px solid #c48af1;outline-offset:2px}
-.topbar .pdf-link~.language-switch{margin-left:0}
-@media(max-width:850px){.language-switch{min-height:44px}}
+.language-switch{margin-left:auto;min-width:44px;min-height:36px;padding:0 12px;border:1px solid #ffffff38;border-radius:10px;background:#ffffff12;color:#f1e4ff;font:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;cursor:pointer}.language-switch:hover{background:#fff2}.language-switch:focus-visible{outline:2px solid #c48af1;outline-offset:2px}.topbar .pdf-link~.language-switch{margin-left:0}@media(max-width:850px){.language-switch{min-height:44px}}

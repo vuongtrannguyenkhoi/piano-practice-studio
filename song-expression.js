@@ -1,11 +1,1 @@
-(() => {
-  'use strict';
-  // Change touch and release only. Onsets, pitches and the beat grid stay intact.
-  window.pianoSongExpression=function(song,event){
-    const velocity=song.expression?.[`${event.hand}Velocity`]?.[event.bar]?.[event.noteIndex];
-    if(!Number.isFinite(velocity))return null;
-    const phraseEnd=event.hand==='rh'&&((song.barNumbers?.[event.bar]||event.bar+1)%4===0||event.bar===song.rh.length-1)&&event.noteIndex===song.rh[event.bar].length-1;
-    const gate=event.hand==='lh'?.96:phraseEnd?.90:.985;
-    return {velocity,gate,level:Math.max(.02,.045+(velocity-40)/64*.105)};
-  };
-})();
+(()=>{"use strict";window.pianoSongExpression=function(a,r){const i=a.expression?.[`${r.hand}Velocity`]?.[r.bar]?.[r.noteIndex];if(!Number.isFinite(i))return null;const n=r.hand==="rh"&&((a.barNumbers?.[r.bar]||r.bar+1)%4===0||r.bar===a.rh.length-1)&&r.noteIndex===a.rh[r.bar].length-1,h=r.hand==="lh"?.96:n?.9:.985;return{velocity:i,gate:h,level:Math.max(.02,.045+(i-40)/64*.105)}}})();

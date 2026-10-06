@@ -1,17 +1,1 @@
-/* Raw mono capture for single-key takes (per-exercise model). Only while armed; never monitored. */
-class PianoTake extends AudioWorkletProcessor {
-  constructor(){
-    super();this.armed=false;this.stopped=false;
-    this.port.onmessage=({data})=>{if(data.type==='arm')this.armed=true;else if(data.type==='disarm')this.armed=false;else if(data.type==='stop')this.stopped=true;};
-  }
-  process(inputs,outputs){
-    if(this.stopped)return false;
-    for(const output of outputs)for(const channel of output)channel.fill(0);
-    const channels=inputs[0];if(!this.armed||!channels?.length)return true;
-    const block=new Float32Array(channels[0].length);
-    for(let i=0;i<block.length;i++){let value=0;for(const channel of channels)value+=channel[i];block[i]=value/channels.length;}
-    this.port.postMessage({block,time:currentTime},[block.buffer]);
-    return true;
-  }
-}
-registerProcessor('piano-take',PianoTake);
+class PianoTake extends AudioWorkletProcessor{constructor(){super(),this.armed=!1,this.stopped=!1,this.port.onmessage=({data:t})=>{t.type==="arm"?this.armed=!0:t.type==="disarm"?this.armed=!1:t.type==="stop"&&(this.stopped=!0)}}process(t,n){if(this.stopped)return!1;for(const e of n)for(const o of e)o.fill(0);const s=t[0];if(!this.armed||!s?.length)return!0;const r=new Float32Array(s[0].length);for(let e=0;e<r.length;e++){let o=0;for(const i of s)o+=i[e];r[e]=o/s.length}return this.port.postMessage({block:r,time:currentTime},[r.buffer]),!0}}registerProcessor("piano-take",PianoTake);
