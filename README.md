@@ -92,6 +92,7 @@ Thanh điều hướng dưới cùng có Khóa học, Đọc nhạc, Kỹ năng 
 - Bấm **Tập lại** để về đầu đoạn đã chọn.
 - Bật **Nhịp gõ** để giữ nhịp đều.
 - Hiện hoặc ẩn bàn phím trên màn hình.
+- **Nốt rơi trên bàn phím** (trong Hiển thị & chuyển động, tắt sẵn): các vạch màu rơi xuống đúng phím theo tốc độ, dài ngắn theo trường độ. Chỉ có ở Nghe mẫu và Chơi theo nhịp, không có ở Đọc nhạc mỗi ngày; sheet vẫn hiện, và vạch mờ đi khi bài đã đủ 3 sao để bạn quay lại đọc sheet.
 - Bấm **Tập trung** để phóng to vùng luyện, dùng nút trước/sau để chuyển bài.
 
 Phím tắt: Space để bắt đầu hoặc dừng, Esc để thoát Tập trung.
@@ -218,6 +219,7 @@ The bottom navigation has Courses, Daily Reading, Skills and Today. Playback con
 - Use **Tập lại** (Replay) to return to the start of the passage.
 - Turn on **Nhịp gõ** (Metronome) for a steady beat.
 - Show or hide the on-screen keyboard.
+- **Nốt rơi trên bàn phím** (Falling notes, under Display & motion, off by default): coloured bars fall onto the right keys at your tempo, as long as each note lasts. Only in Listen and Play in time, never in Daily Reading; the sheet stays on screen, and the bars fade once a lesson has 3 stars so you go back to reading.
 - Enter **Tập trung** (Focus) for a larger view, and use the previous/next buttons to move between exercises.
 
 Shortcuts: Space starts or stops, Esc leaves Focus.
