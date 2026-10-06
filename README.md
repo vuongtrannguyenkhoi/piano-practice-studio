@@ -57,7 +57,7 @@ Khi luyện có micro chấm (**Tập từng nốt**, hoặc **Chơi theo nhịp
 - **Combo:** đúng liên tiếp 8 nốt thì điểm ×2, 16 nốt ×3, 32 nốt ×4. Sai hoặc bỏ sót thì combo về 0. Micro nghe không rõ thì không tính sai và không làm mất combo.
 - **Thưởng cuối lượt:** không lỗi +20%, đạt tempo của bài +10%, lượt đầu tiên trong ngày ×1,5.
 - **Hạng theo độ chính xác:** S (≥ 98% và đạt tempo), A (≥ 90%), B (≥ 75%), C.
-- **Kỷ lục:** mỗi bài lưu điểm cao nhất của bạn.
+- **Kỷ lục:** mỗi bài lưu điểm cao nhất của bạn; trang **Tiến độ** có mục **Kỷ lục điểm** (số lần đạt từng hạng và các bài điểm cao nhất). Lượt hạng C được tính là lượt khó: app gợi ý chậm lại, tập riêng một tay hoặc đoạn ngắn hơn.
 - **Màn hình:** góc trên sheet hiện tổng điểm, hệ số và combo; cuối lượt có bảng tổng kết. Không có âm thanh; nếu máy bật giảm chuyển động thì chỉ đổi màu.
 
 ## Hiệu chỉnh theo đàn của bạn
@@ -175,7 +175,7 @@ When the microphone grades a round (**Tập từng nốt** / Note by note, or **
 - **Combo:** 8 right notes in a row double the points, 16 triple them, 32 quadruple them. A wrong or missed note resets the combo; sounds the microphone can't make out never count as wrong and never break it.
 - **Round bonuses:** no mistakes +20%, at the lesson's tempo +10%, first round of the day ×1.5.
 - **Grade by accuracy:** S (≥ 98% and at tempo), A (≥ 90%), B (≥ 75%), C.
-- **Personal best:** each lesson keeps your best score.
+- **Personal best:** each lesson keeps your best score; the **Tiến độ** (Progress) screen has **Kỷ lục điểm** (Score records) with your grade counts and top lessons. A grade-C round counts as a hard round: the app suggests slowing down, one hand or a shorter passage.
 - **On screen:** the total, multiplier and combo sit in the corner of the sheet, with a summary at the end of the round. No sound; with reduced motion, only colours change.
 
 ## Calibrate for your piano
