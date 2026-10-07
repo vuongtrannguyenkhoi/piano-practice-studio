@@ -88,6 +88,7 @@ Thanh điều hướng dưới cùng có Khóa học, Đọc nhạc, Kỹ năng 
 
 - Đổi **Tốc độ** để tập chậm hoặc nhanh hơn.
 - Chọn ô nhịp bắt đầu và kết thúc để tập một đoạn ngắn.
+- Mở **Vị trí tay & cách chạm phím → Số ngón & chuyển vị trí** để xem phím/ngón đầu đoạn và mốc luồn, vắt ngón hoặc dịch tay. Hướng dẫn cập nhật theo tay/đoạn đang chọn; lời nhắc dưới sheet đi theo vị trí luyện. 1 cái, 2 trỏ, 3 giữa, 4 áp út, 5 út; → âm cao, ← âm trầm.
 - Bật **Lặp đoạn** để lặp lại đoạn đó.
 - Bấm **Tập lại** để về đầu đoạn đã chọn.
 - Bật **Nhịp gõ** để giữ nhịp đều.
@@ -215,6 +216,7 @@ The bottom navigation has Courses, Daily Reading, Skills and Today. Playback con
 
 - Change **Tốc độ** (Tempo) to slow down or speed up.
 - Select a starting and ending bar to work on a short passage.
+- Open **Hand position & touch → Fingering & hand shifts** for the segment’s starting keys and thumb crossings or hand shifts. Guidance follows your chosen hand and passage; the cue below the sheet follows the practice position. 1 thumb, 2 index, 3 middle, 4 ring, 5 little finger; → higher, ← lower.
 - Turn on **Lặp đoạn** (Loop) to repeat that passage.
 - Use **Tập lại** (Replay) to return to the start of the passage.
 - Turn on **Nhịp gõ** (Metronome) for a steady beat.
