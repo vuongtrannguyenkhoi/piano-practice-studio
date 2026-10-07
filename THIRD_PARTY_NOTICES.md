@@ -41,7 +41,7 @@ Piano in 162 is a Steinway Model B sample library by Simon Dalzell / Ivy Audio: 
 
 The four SFZ presets in `assets/piano162-presets` are application-authored settings referencing the user's unchanged Piano in 162 Korg-conversion samples by relative path. They adjust velocity crossfades, amplifier velocity tracking, release and microphone mix; they do not restore original Korg PCG settings or add original round robins/release recordings. The five comparison MP3s render the same eight-measure song excerpt with identical notes, velocities and timing. Presets and previews do not change the underlying recordings' ownership or redistribution terms.
 
-`scripts/build-piano162-web.py` can make an MP3 web bank (`assets/piano162-web`, 440 files) from the user's Piano in 162 conversion for the browser engine on the user's own computer. It is excluded from git and from the public build; `scripts/build-static.py --with-piano162` would include it and should only be used once Ivy Audio's terms are confirmed to allow redistribution.
+`scripts/build-piano162-web.py` can make an MP3 web bank (`assets/piano162-web`, 440 files) from the user's Piano in 162 conversion for the browser engine on the user's own computer. It is excluded from git and from the public build; `scripts/build-static.py --with-piano162` would include it and should only be used once Ivy Audio's terms are confirmed to allow redistribution. Developer mode (`dev-mode.js`, docs/DEV-MODE.md) can read that folder from the developer's own disk into their browser for testing; nothing is uploaded or published.
 
 ## VCSL Keys
 
