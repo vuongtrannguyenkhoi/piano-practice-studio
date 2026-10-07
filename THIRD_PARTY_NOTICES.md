@@ -13,7 +13,7 @@ This project embeds 39 stereo MP3 samples: 13 pitches (F#2 through F#5, in minor
 
 `assets/demo-salamander.mp3` is an 8.8-second preview of the first two measures of lesson 1, mixed from the new samples with pitch transposition and playback gain/release envelopes. It is dry, without metronome, room convolution or compressor. Rebuild with `scripts/build-piano-demo.py`.
 
-`assets/salamander-web/` (Salamander web bank) holds 568 MP3 files derived from the V3 FLAC samples: all 30 recorded pitches (A0 through C8, in minor thirds) with all 16 original velocity layers, trimmed to 10/8/5 seconds by register with a 0.4 s fade, and the 88 key-release noises (`rel1`–`rel88`) trimmed to 1.5 seconds, all peak-normalised to -0.8 dBFS and encoded at 128 kbps by `scripts/build-salamander-web.py`; the manifest keeps each file's original peak. `assets/salamander-web/compare-sfz.mp3` is an 11.6-second render of `compare-phrase.json` through sfizz 1.2.3 with the full V3 instrument. Changes were made to the original samples; the same CC BY 3.0 license applies.
+`assets/salamander-web/` (the web bank, shown as "Accurate-Salamander web") holds 568 MP3 files made by `scripts/build-salamander-web.py` from the Accurate-Salamander Grand Piano 6.2 (see below), itself a remastered and retuned edition of these V3 samples: all 30 recorded pitches (A0 through C8, in minor thirds) with all 16 velocity layers, trimmed to 10/8/5 seconds by register with a 0.4 s fade, and the 88 key-release noises trimmed to 1.5 seconds, all peak-normalised to -0.8 dBFS and encoded at 128 kbps. The app applies each key's tuning from the Accurate-Salamander SFZ on playback.
 
 ## VexFlow 4.2.5
 
@@ -33,9 +33,9 @@ Full mode uses sfizz 1.2.3, BSD-2-Clause, from https://github.com/sfztools/sfizz
 
 `assets/demo-salamander-full.mp3` is a 12.5-second preview (eight seconds of lesson 1 plus the SFZ release tail), rendered through the native SFZ service and encoded at 192 kbps. It omits browser room convolution and the metronome. Rebuild while the service is running with `python3 tests/full-http-check.py`.
 
-## Accurate-Salamander (trial)
+## Accurate-Salamander
 
-Accurate-Salamander Grand Piano 6.2 by the Accurate-Salamander Project (https://www.ir.isas.jaxa.jp/~cyamauch/AccurateSalamander/) is a remastered and retuned edition of the Salamander Grand Piano V3 by Alexander Holm, released under the same Creative Commons Attribution 3.0 license (https://creativecommons.org/licenses/by/3.0/). Retuning by Hiroharu Narikawa. `scripts/build-salamander-web.py --source accurate` makes an MP3 web bank (`assets/accurate-salamander-web`) from the project's "Accurate-Salamander" soundbank: 30 keys x 16 velocity layers and 88 release noises, trimmed, faded and peak-normalised, with each key's tuning from its recommended SFZ applied on playback. The app offers it as a trial where the bank is present; it is not yet part of the public build.
+Accurate-Salamander Grand Piano 6.2 by the Accurate-Salamander Project (https://www.ir.isas.jaxa.jp/~cyamauch/AccurateSalamander/) is a remastered and retuned edition of the Salamander Grand Piano V3 by Alexander Holm, released under the same Creative Commons Attribution 3.0 license (https://creativecommons.org/licenses/by/3.0/). Retuning by Hiroharu Narikawa. The app's web bank (`assets/salamander-web/`, above) is made from its "Accurate-Salamander" soundbank with `scripts/build-salamander-web.py`; the soundbank itself (`assets/accurate-salamander-full`) is not distributed. The embedded compact bank and the native SFZ engine still use the original Salamander V3.
 
 ## Optional Piano in 162
 
