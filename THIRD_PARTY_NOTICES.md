@@ -33,6 +33,10 @@ Full mode uses sfizz 1.2.3, BSD-2-Clause, from https://github.com/sfztools/sfizz
 
 `assets/demo-salamander-full.mp3` is a 12.5-second preview (eight seconds of lesson 1 plus the SFZ release tail), rendered through the native SFZ service and encoded at 192 kbps. It omits browser room convolution and the metronome. Rebuild while the service is running with `python3 tests/full-http-check.py`.
 
+## Accurate-Salamander (trial)
+
+Accurate-Salamander Grand Piano 6.2 by the Accurate-Salamander Project (https://www.ir.isas.jaxa.jp/~cyamauch/AccurateSalamander/) is a remastered and retuned edition of the Salamander Grand Piano V3 by Alexander Holm, released under the same Creative Commons Attribution 3.0 license (https://creativecommons.org/licenses/by/3.0/). Retuning by Hiroharu Narikawa. `scripts/build-salamander-web.py --source accurate` makes an MP3 web bank (`assets/accurate-salamander-web`) from the project's "Accurate-Salamander" soundbank: 30 keys x 16 velocity layers and 88 release noises, trimmed, faded and peak-normalised, with each key's tuning from its recommended SFZ applied on playback. The app offers it as a trial where the bank is present; it is not yet part of the public build.
+
 ## Optional Piano in 162
 
 `assets/piano-polyphony-dictionary.json` contains derived, normalized spectral features for an experimental NNLS observer, not audio samples. It is prepared locally from Salamander Grand Piano by Alexander Holm (CC BY 3.0, see the credits above), the user's installed Piano in 162 Close conversion by Simon Dalzell / Ivy Audio, and application-generated harmonic tones. Original sample ownership and terms continue to apply to the derived features. The JSON records its training file hashes; no claim is made that these features model other pianos or acoustic microphone recordings.
