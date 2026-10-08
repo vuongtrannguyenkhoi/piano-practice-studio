@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tạo biểu diễn AI · Piano Studio</title>
+<link rel="icon" href="favicon.svg"><link rel="stylesheet" href="ai-studio.css?v=710da5c-183d848dde92">
+<script src="assets/salamander-samples.js?v=710da5c-183d848dde92" defer></script><script src="piano-audio.js?v=710da5c-183d848dde92" defer></script>
+<script src="web-piano-audio.js?v=710da5c-183d848dde92" defer></script><script src="full-piano-audio.js?v=710da5c-183d848dde92" defer></script>
+<script src="expressive-midi-core.js?v=710da5c-183d848dde92" defer></script><script src="ai-performance-bundle.js?v=710da5c-183d848dde92" defer></script>
+<script src="ai-studio.js?v=710da5c-183d848dde92" defer></script>
+</head>
+<body><main>
+<nav><a href="index.html#bai-nhac">← Piano Studio</a><span>TẠO BẢN DIỄN CỦA BẠN</span></nav>
+<header><p class="eyebrow">TỪ BẢN NHẠC ĐẾN CÁCH CHƠI</p><h1>Một bài nhạc.<br>Nhiều cách kể.</h1><p>Chọn phong cách diễn tấu, nghe qua bộ đàn bạn thích, rồi mang bản AI vào bài luyện.</p></header>
+<p id="local-notice" class="notice" hidden>Tạo AI cần công cụ chạy trên máy. Mở <strong>Open AI Studio.command</strong> trong thư mục ứng dụng. Bạn vẫn có thể mở file AI đã xuất để nghe thử tại đây.</p>
+<div class="layout"><section class="card" aria-labelledby="create-title"><span class="step">01 · TẠO BẢN AI</span><h2 id="create-title">Chọn cách diễn tấu</h2>
+<label class="file-box" for="score-file"><strong>Chọn bản nhạc MusicXML</strong><span id="file-label">.musicxml · .xml · .mxl · tối đa 5 MB</span><input id="score-file" type="file" accept=".musicxml,.xml,.mxl"></label>
+<label class="field">Model<select id="model"><option value="virtuosonet">VirtuosoNet · chọn phong cách</option><option value="pianist" disabled>Pianist Transformer · diễn tấu tự động</option></select></label>
+<label class="field">Phong cách<select id="composer"><option value="Chopin">Chopin</option></select></label>
+<p id="style-hint" class="hint">Phong cách định hướng nhịp điệu và lực nhấn; nốt nhạc của bạn được giữ nguyên.</p>
+<details><summary>Đổi biến thể diễn tấu</summary><label class="field">Biến thể<input id="seed" type="number" value="626" min="0" max="2147483647" step="1"></label><p class="hint">Cùng phong cách, một số khác cho một cách chơi khác.</p></details>
+<button id="generate" class="primary" disabled>Tạo bản biểu diễn AI</button><p id="generation-status" role="status" aria-live="polite">Đang kết nối công cụ tạo AI…</p>
+</section>
+<section class="card preview" aria-labelledby="preview-title"><span class="step">02 · NGHE & XUẤT</span><h2 id="preview-title">Nghe cách bài nhạc kể chuyện</h2>
+<div id="result" class="result"><strong id="result-title">Bản diễn sẽ xuất hiện ở đây</strong><span id="result-meta">Tạo bản mới hoặc mở file AI đã xuất.</span></div>
+<label class="field">Âm thanh nghe thử<select id="sound"><option value="web">Accurate-Salamander · 16 lớp</option><option value="compact">Salamander · MP3 gọn</option></select></label>
+<label class="field">Đoạn nghe<select id="passage"><option value="8">8 ô đầu</option><option value="16">16 ô đầu</option><option value="all">Toàn bài</option></select></label>
+<div class="controls"><button id="preview" class="primary" disabled>▶ Nghe thử</button><button id="stop" disabled>■ Dừng</button></div>
+<p id="preview-status" role="status" aria-live="polite"></p>
+<div class="exports"><button id="export" disabled>↓ Xuất file import</button><button id="midi-export" disabled>↓ MIDI</button></div>
+<p class="hint">File import chứa bản nhạc và cách diễn tấu AI. Khi luyện trên web, bạn có thể chọn lại bộ tiếng.</p>
+<label class="existing">Hoặc mở file AI đã có<input id="bundle-file" type="file" accept=".json"></label>
+</section></div>
+<footer>MusicXML → tạo bản AI → nghe thử → xuất .ai-performance.json → nhập vào Piano Studio.<br>Quá trình tạo AI chạy trên máy bạn.</footer>
+</main></body></html>

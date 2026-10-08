@@ -37,6 +37,10 @@ Full mode uses sfizz 1.2.3, BSD-2-Clause, from https://github.com/sfztools/sfizz
 
 Accurate-Salamander Grand Piano 6.2 by the Accurate-Salamander Project (https://www.ir.isas.jaxa.jp/~cyamauch/AccurateSalamander/) is a remastered and retuned edition of the Salamander Grand Piano V3 by Alexander Holm, released under the same Creative Commons Attribution 3.0 license (https://creativecommons.org/licenses/by/3.0/). Retuning by Hiroharu Narikawa. The app's web bank (`assets/salamander-web/`, above) is made from its "Accurate-Salamander" soundbank with `scripts/build-salamander-web.py`; the soundbank itself (`assets/accurate-salamander-full`) is not distributed. The embedded compact bank and the native SFZ engine still use the original Salamander V3.
 
+## AI performances — VirtuosoNet
+
+The files in `assets/ai-performances/` (MIDI and JSON) are performances of the author's own pieces generated offline by the pretrained VirtuosoNet model (HAN+GRU, huggingface.co/dasaem/virtuosonet, revision 7db7510ff91a; code github.com/jdasam/virtuosoNet). Neither the code nor the weights carry a licence; the weights and code are not included in this app. Reference: D. Jeong, T. Kwon, Y. Kim, K. Lee, J. Nam, "VirtuosoNet: A Hierarchical RNN-based System for Modeling Expressive Piano Performance", ISMIR 2019.
+
 ## Optional Piano in 162
 
 `assets/piano-polyphony-dictionary.json` contains derived, normalized spectral features for an experimental NNLS observer, not audio samples. It is prepared locally from Salamander Grand Piano by Alexander Holm (CC BY 3.0, see the credits above), the user's installed Piano in 162 Close conversion by Simon Dalzell / Ivy Audio, and application-generated harmonic tones. Original sample ownership and terms continue to apply to the derived features. The JSON records its training file hashes; no claim is made that these features model other pianos or acoustic microphone recordings.
