@@ -3,17 +3,29 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tạo biểu diễn AI · Piano Studio</title>
-<link rel="icon" href="favicon.svg"><link rel="stylesheet" href="ai-studio.css?v=5f3aead-edea0ef4922c">
-<script src="assets/salamander-samples.js?v=5f3aead-edea0ef4922c" defer></script><script src="piano-audio.js?v=5f3aead-edea0ef4922c" defer></script>
-<script src="web-piano-audio.js?v=5f3aead-edea0ef4922c" defer></script><script src="full-piano-audio.js?v=5f3aead-edea0ef4922c" defer></script>
-<script src="expressive-midi-core.js?v=5f3aead-edea0ef4922c" defer></script><script src="ai-performance-bundle.js?v=5f3aead-edea0ef4922c" defer></script>
-<script src="ai-studio.js?v=5f3aead-edea0ef4922c" defer></script>
+<link rel="icon" href="favicon.svg"><link rel="stylesheet" href="ai-studio.css?v=5f3aead-4a0dfb7edba6">
+<script src="assets/salamander-samples.js?v=5f3aead-4a0dfb7edba6" defer></script><script src="piano-audio.js?v=5f3aead-4a0dfb7edba6" defer></script>
+<script src="web-piano-audio.js?v=5f3aead-4a0dfb7edba6" defer></script><script src="full-piano-audio.js?v=5f3aead-4a0dfb7edba6" defer></script>
+<script src="expressive-midi-core.js?v=5f3aead-4a0dfb7edba6" defer></script><script src="ai-performance-bundle.js?v=5f3aead-4a0dfb7edba6" defer></script>
+<script src="ai-studio.js?v=5f3aead-4a0dfb7edba6" defer></script>
 </head>
 <body><main>
 <nav><a href="index.html#bai-nhac">← Piano Studio</a><span>TẠO BẢN DIỄN CỦA BẠN</span></nav>
-<header><p class="eyebrow">TỪ BẢN NHẠC ĐẾN CÁCH CHƠI</p><h1>Một bài nhạc.<br>Nhiều cách kể.</h1><p>Chọn phong cách diễn tấu, nghe qua bộ đàn bạn thích, rồi mang bản AI vào bài luyện.</p></header>
+<header><p class="eyebrow">TỪ BẢN NHẠC ĐẾN CÁCH CHƠI</p><h1>Một bài nhạc.<br>Nhiều cách kể.</h1><p>Tự chọn sheet, đọc thành MusicXML, chọn phong cách và xuất bản diễn để luyện đàn.</p></header>
 <p id="local-notice" class="notice" hidden>Tạo AI cần công cụ chạy trên máy. Mở <strong>Open AI Studio.command</strong> trong thư mục ứng dụng. Bạn vẫn có thể mở file AI đã xuất để nghe thử tại đây.</p>
-<div class="layout"><section class="card" aria-labelledby="create-title"><span class="step">01 · TẠO BẢN AI</span><h2 id="create-title">Chọn cách diễn tấu</h2>
+<ol class="workflow" aria-label="Tiến trình"><li id="flow-source">1 · Chọn sheet</li><li id="flow-score">2 · Kiểm tra MusicXML</li><li id="flow-ai">3 · Tạo & nghe AI</li></ol>
+<section class="card sheet-conversion" aria-labelledby="sheet-title"><span class="step">01 · CHỌN & ĐỌC SHEET</span><h2 id="sheet-title">PDF / SVG → MusicXML</h2>
+<p class="hint">Chọn một PDF hoặc nhiều trang SVG cùng bài. Trang SVG được xếp theo tên file (score_0, score_1…). Nhận dạng chạy trên máy bạn.</p>
+<label class="file-box" for="sheet-files"><strong>Chọn sheet PDF hoặc SVG</strong><input id="sheet-files" type="file" accept=".pdf,.svg" multiple><span id="sheet-file-label">Tối đa 20 trang · tổng 20 MB</span></label>
+<label class="existing">Hoặc chọn thư mục chứa các trang SVG<input id="sheet-folder" type="file" webkitdirectory multiple></label>
+<div id="source-review" hidden><label class="field">Trang sheet<select id="source-page"></select></label><div id="source-view" class="source-view"></div></div>
+<label class="field">Tên bản nhạc<input id="sheet-name" type="text" maxlength="150" placeholder="Tên bài trên sheet"></label>
+<label class="auto-option"><input id="auto-ai" type="checkbox"> Đọc xong, tự tạo AI theo phong cách bên dưới</label>
+<div class="controls"><button id="convert-sheet" class="primary" disabled>Đọc sheet thành MusicXML</button><button id="xml-export" disabled>↓ MusicXML</button></div>
+<p id="conversion-status" role="status" aria-live="polite">Đang kiểm tra công cụ đọc sheet…</p>
+<p class="hint">MusicXML nhận dạng có thể sai nốt, dấu hóa, nhịp hoặc dịch quãng tám. Tải xuống kiểm tra trong MuseScore trước khi bấm tạo AI bên dưới.</p></section>
+<section id="score-review" class="card score-review" hidden aria-labelledby="review-title"><span class="step">02 · KIỂM TRA MUSICXML</span><h2 id="review-title">Nốt nhạc đã nhận dạng</h2><p id="score-summary" class="hint"></p><label class="field">Ô nhịp<select id="review-bar"></select></label><div class="note-table"><table><thead><tr><th>Bè / tay</th><th>Vị trí (phách)</th><th>Nốt</th><th>Độ dài (phách)</th></tr></thead><tbody id="review-notes"></tbody></table></div><p id="review-message" class="hint"></p><p class="hint">Đối chiếu với sheet gốc phía trên. Muốn sửa nốt: tải MusicXML, sửa trong MuseScore và nạp bản đã sửa ở bước tạo AI. AI thay đổi cách diễn tấu, không tự sửa lỗi nhận dạng.</p></section>
+<div class="layout"><section class="card" aria-labelledby="create-title"><span class="step">03 · TẠO BẢN AI</span><h2 id="create-title">Chọn cách diễn tấu</h2>
 <label class="file-box" for="score-file"><strong>Chọn bản nhạc MusicXML</strong><span id="file-label">.musicxml · .xml · .mxl · tối đa 5 MB</span><input id="score-file" type="file" accept=".musicxml,.xml,.mxl"></label>
 <label class="field">Model<select id="model"><option value="virtuosonet">VirtuosoNet · chọn phong cách</option><option value="pianist" disabled>Pianist Transformer · diễn tấu tự động</option></select></label>
 <label class="field">Phong cách<select id="composer"><option value="Chopin">Chopin</option></select></label>
@@ -21,7 +33,7 @@
 <details><summary>Đổi biến thể diễn tấu</summary><label class="field">Biến thể<input id="seed" type="number" value="626" min="0" max="2147483647" step="1"></label><p class="hint">Cùng phong cách, một số khác cho một cách chơi khác.</p></details>
 <button id="generate" class="primary" disabled>Tạo bản biểu diễn AI</button><p id="generation-status" role="status" aria-live="polite">Đang kết nối công cụ tạo AI…</p>
 </section>
-<section class="card preview" aria-labelledby="preview-title"><span class="step">02 · NGHE & XUẤT</span><h2 id="preview-title">Nghe cách bài nhạc kể chuyện</h2>
+<section class="card preview" aria-labelledby="preview-title"><span class="step">04 · NGHE & XUẤT</span><h2 id="preview-title">Nghe cách bài nhạc kể chuyện</h2>
 <div id="result" class="result"><strong id="result-title">Bản diễn sẽ xuất hiện ở đây</strong><span id="result-meta">Tạo bản mới hoặc mở file AI đã xuất.</span></div>
 <label class="field">Âm thanh nghe thử<select id="sound"><option value="web">Accurate-Salamander · 16 lớp</option><option value="compact">Salamander · MP3 gọn</option></select></label>
 <label class="field">Đoạn nghe<select id="passage"><option value="8">8 ô đầu</option><option value="16">16 ô đầu</option><option value="all">Toàn bài</option></select></label>
@@ -31,5 +43,6 @@
 <p class="hint">File import chứa bản nhạc và cách diễn tấu AI. Khi luyện trên web, bạn có thể chọn lại bộ tiếng.</p>
 <label class="existing">Hoặc mở file AI đã có<input id="bundle-file" type="file" accept=".json"></label>
 </section></div>
-<footer>MusicXML → tạo bản AI → nghe thử → xuất .ai-performance.json → nhập vào Piano Studio.<br>Quá trình tạo AI chạy trên máy bạn.</footer>
+<section class="card studio-practice" aria-labelledby="studio-practice-title"><span class="step">05 · CHƠI & QUAY VIDEO</span><h2 id="studio-practice-title">Sheet và bàn phím của bạn</h2><p class="hint">Mở MusicXML để luyện ngay, hoặc dùng bản AI vừa tạo. Sheet, hướng ngón, nốt rơi, hiệu ứng phím và quay video đến 4K dùng cùng module luyện tập.</p><div class="controls"><button id="open-practice" class="primary" disabled>Mở sheet & bàn phím</button><button id="close-practice" hidden>Đóng màn luyện</button></div><p id="practice-status" role="status" aria-live="polite">Chọn MusicXML hoặc tạo / mở bản AI để bắt đầu.</p><iframe id="practice-frame" title="Luyện sheet, bàn phím và quay video" allow="autoplay; microphone; fullscreen" allowfullscreen hidden></iframe></section>
+<footer>PDF / SVG → MusicXML → tạo bản AI → nghe thử → xuất .ai-performance.json → nhập vào Piano Studio.<br>Quá trình tạo AI chạy trên máy bạn.</footer>
 </main></body></html>
