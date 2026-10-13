@@ -1,0 +1,22 @@
+Salamander Grand Piano V3 — Alexander Holm.
+Yamaha C5 recordings, licensed under Creative Commons Attribution 3.0 Unported.
+License: https://creativecommons.org/licenses/by/3.0/
+Original source: https://archive.org/details/SalamanderGrandPianoV3
+Distribution / SFZ mapping: https://github.com/sfzinstruments/SalamanderGrandPiano
+SFZ reconstruction: kinwie. Retuned variant: Markus Fiedler.
+
+Changes in Ballad Concert v1: selected natural tuning, flattened SFZ macros,
+changed release/noise levels and retrigger limits, added a host velocity curve,
+warm EQ and algorithmic stereo reverb. Audio sample files are unchanged.
+This pack uses Yamaha C5 samples; it is not a Yamaha CFX sample library.
+App integration changes: relocated the SFZ sample path; added adjustable wet
+reverb, offline freewheeling, a preloaded-sample guard and CC66/CC67 routing
+to the copied wrapper. Added sostenuto and soft-pedal velocity/filter modeling.
+No endorsement by Alexander Holm, Yamaha, kinwie or Markus Fiedler is implied.
+
+Keep this attribution and licenses/CC-BY-3.0.txt with distributed samples.
+Also display credit and a license link in the app's Credits / About screen.
+Do not impose additional restrictions or effective DRM on the CC BY material.
+Your app code may have a different license; identify the sample exception.
+If distributing sfizz, also preserve its BSD notice, authors and the notices
+required by the actual dependencies used in your engine build.
