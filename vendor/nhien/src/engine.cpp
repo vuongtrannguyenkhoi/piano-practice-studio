@@ -71,12 +71,12 @@ struct Delay {
     Delay(unsigned n,float fb):data(n,0),feedback(fb){}
     float tick(float x) { float y=data[pos]; low=0.32f*y+0.68f*low; data[pos]=x+feedback*low; pos=(pos+1)%data.size(); return y; }
 };
-struct Mode { double y1=0,y2=0,r=0,c=0; };
+struct Mode { double y1=0,y2=0,r=0,c=0,g=0; };
 struct Voice {
     const Sample *s1=nullptr,*s2=nullptr;
     double pos=0,step=1; float g1=0,g2=0,env=1,decay=1;
-    int note=0,velocity=0; uint64_t id=0;
-    bool active=false,held=false,released=false,main=false,damperSound=false,sostenuto=false;
+    int note=0,velocity=0; unsigned extraOffs=0; uint64_t id=0;
+    bool active=false,held=false,released=false,main=false,damperSound=false,sostenuto=false,fading=false;
     float softAlpha=0,softL=0,softR=0;
 };
 struct Engine::Impl {
@@ -93,7 +93,10 @@ struct Engine::Impl {
     explicit Impl(Config c):cfg(c) {
         if(!std::isfinite(c.sampleRate) || c.sampleRate<22050 || c.sampleRate>96000 || !std::isfinite(c.velocityGamma) || c.velocityGamma<=0 || !std::isfinite(c.release) || c.release<=0 || !std::isfinite(c.gain) || c.gain<0 || !std::isfinite(c.resonance) || !std::isfinite(c.room) || !std::isfinite(c.reverb)) throw std::runtime_error("Invalid engine configuration");
         roots.fill(-1); volumeSmoothing=float(std::exp(-1/(cfg.sampleRate*.020))); limiterRelease=float(std::exp(-1/(cfg.sampleRate*.08)));
-        for(int i=0;i<88;i++) { double freq=440*std::pow(2.,(i+21-69)/12.); modes[i].r=std::exp(-1/(cfg.sampleRate*(1.7-0.012*i))); modes[i].c=2*modes[i].r*std::cos(2*pi*freq/cfg.sampleRate); }
+        for(int i=0;i<88;i++) { double freq=440*std::pow(2.,(i+21-69)/12.); modes[i].r=std::exp(-1/(cfg.sampleRate*(1.7-0.012*i))); modes[i].c=2*modes[i].r*std::cos(2*pi*freq/cfg.sampleRate);
+            // A two-pole resonator fed with (1-r) peaks near 1/(2 sin w): about +10 dB on a held bass note's fundamental,
+            // ringing for 1.5 s, which booms. Below 1 kHz, scale the drive so every mode peaks as one at 1 kHz does.
+            modes[i].g=(1-modes[i].r)*std::min(1.,std::sin(2*pi*freq/cfg.sampleRate)/std::sin(2*pi*1000/cfg.sampleRate)); }
         for(int ch=0;ch<2;ch++) {
             eq[ch][0].highpass(cfg.sampleRate,28); eq[ch][1].peak(cfg.sampleRate,330,.75,-1.8); eq[ch][2].peak(cfg.sampleRate,2800,.7,1.1);
             const double times[4]={.0371,.0413,.0437,.0479};
@@ -101,7 +104,19 @@ struct Engine::Impl {
             early[ch].resize(unsigned(.12*cfg.sampleRate)+1,0);
         }
     }
+    // A short fade to silence that pedal and damper changes leave alone.
+    void fade(Voice& v,double seconds) {
+        v.fading=true; v.released=true; v.held=false; v.damperSound=true; v.sostenuto=false;
+        v.decay=float(std::exp(-6.907755/(seconds*cfg.sampleRate)));
+    }
     Voice& alloc() {
+        // Before the bank is full, fade the quietest unheld voice over 20 ms so a hard steal (a click) is a last resort.
+        unsigned busy=0; Voice* quiet=nullptr; float level=0;
+        for(auto& v:voices) if(v.active) {
+            busy++; float l=v.env*(std::abs(v.g1)+std::abs(v.g2));
+            if(!v.held&&!v.fading&&(!quiet||l<level)) { quiet=&v; level=l; }
+        }
+        if(busy>=224&&quiet) fade(*quiet,.02);
         for(auto& v:voices) if(!v.active) { v=Voice{}; v.active=true; v.id=++serial; return v; }
         auto it=std::min_element(voices.begin(),voices.end(),[](const Voice& a,const Voice& b) {
             float sa=a.env*(std::abs(a.g1)+std::abs(a.g2))+(a.held?10:0);
@@ -115,6 +130,7 @@ struct Engine::Impl {
         if(!s) return; auto& v=alloc(); v.s1=s; v.note=note; v.g1=gain; v.step=s->rate/cfg.sampleRate;
     }
     void damping(Voice& v) {
+        if(v.fading) return;
         if(v.note>=89) { v.decay=float(std::exp(-6.907755/(3*cfg.sampleRate))); }
         else {
             float x=std::min(pedal*127/63,1.f); double t=cfg.release+(1.8-cfg.release)*x*x;
@@ -178,19 +194,28 @@ void Engine::noteOn(int n,int velocity) {
     // App extension: approximate una corda at attack, without separate samples.
     velocity=std::max(1,int(std::lround(velocity*(1-.15f*e.softPedal))));
     auto mix=velocityMix(velocity,e.cfg.dry?1.f:e.cfg.velocityGamma);
-    if(e.cfg.dry) { int layer=mix.a>=mix.b?mix.lo:mix.hi; mix={layer,layer,1,0,float(velocity)}; }
+    // Adjacent layers are separate takes whose onsets differ by 1-4 ms: summing two comb-filters the tone (about 30 % of
+    // 200 Hz-4 kHz down by 6 dB or more). Play the nearer layer alone, as the original SFZ does; the gain stays continuous.
+    { int layer=mix.a>=mix.b?mix.lo:mix.hi; mix={layer,layer,1,0,e.cfg.dry?float(velocity):mix.mapped}; }
     auto a=e.mainSamples.find({root,mix.lo}), b=e.mainSamples.find({root,mix.hi}); if(a==e.mainSamples.end()||b==e.mainSamples.end()) return;
-    e.keys[n]++; auto& v=e.alloc(); v.main=true; v.held=true; v.note=n; v.velocity=velocity;
+    // Striking a key again stops what it was still sounding (pedal held or decaying) over 100 ms, as the hammer does;
+    // otherwise repeated notes stack voices until the bank is full and voices are cut.
+    unsigned heldBefore=0;
+    for(auto& old:e.voices) if(old.active&&old.main&&old.note==n&&!old.fading) { if(old.held) heldBefore+=1+old.extraOffs; e.fade(old,.1); }
+    // Their note-offs now belong to the new voice.
+    e.keys[n]++; auto& v=e.alloc(); v.extraOffs=heldBefore; v.main=true; v.held=true; v.note=n; v.velocity=velocity;
     if(e.softPedal>0) v.softAlpha=float(std::exp(-2*pi*(20000-14000*e.softPedal)/e.cfg.sampleRate));
-    v.s1=&a->second; v.s2=&b->second; v.step=v.s1->rate/e.cfg.sampleRate*std::pow(2.,(n-root)/12.);
+    v.s1=&a->second; v.s2=nullptr; v.step=v.s1->rate/e.cfg.sampleRate*std::pow(2.,(n-root)/12.);
     float gain=.70f*std::pow(mix.mapped/127.f,.5f); v.g1=mix.a*gain; v.g2=mix.b*gain;
 }
 void Engine::noteOff(int n) {
     if(n<21 || n>108) return; auto& e=*p;
     if(e.keys[n]) e.keys[n]--;
     Voice* found=nullptr;
-    for(auto& v:e.voices) if(v.active&&v.main&&v.held&&v.note==n&&(!found||v.id<found->id)) found=&v;
-    if(!found) return; found->held=false; int velocity=found->velocity;
+    for(auto& v:e.voices) if(v.active&&v.main&&v.held&&!v.fading&&v.note==n&&(!found||v.id<found->id)) found=&v;
+    if(!found) return;
+    if(found->extraOffs) { found->extraOffs--; return; }
+    found->held=false; int velocity=found->velocity;
     if(e.pedal*127<64 && !found->sostenuto) e.damping(*found);
     if(!e.cfg.dry) { auto s=e.releases.find(n); if(s!=e.releases.end()) e.shot(&s->second,n,.12f*std::pow(velocity/127.f,.5f)); }
 }
@@ -206,7 +231,7 @@ void Engine::cc(int controller,int value) {
         if(down==e.sostenutoDown) return;
         e.sostenutoDown=down;
         // Capture individual voices held at the pedal's rising edge only.
-        for(auto& v:e.voices) if(v.active && v.main) {
+        for(auto& v:e.voices) if(v.active && v.main && !v.fading) {
             if(down) v.sostenuto=v.held;
             else if(v.sostenuto) {
                 v.sostenuto=false;
@@ -220,7 +245,7 @@ void Engine::cc(int controller,int value) {
         int index=(down?1:3)+(e.pedalCycle[down?0:1]++%2); auto it=e.pedals.find(index);
         if(it!=e.pedals.end()) e.shot(&it->second,0,.08f);
     }
-    for(auto& v:e.voices) if(v.active&&v.main&&!v.held) {
+    for(auto& v:e.voices) if(v.active&&v.main&&!v.held&&!v.fading) {
         if(down && v.env>.025f) { v.released=false; v.damperSound=false; }
         else if(!down && !v.sostenuto) e.damping(v);
     }
@@ -252,7 +277,7 @@ void Engine::process(float* left,float* right,unsigned frames) {
             double resonance=0; float input=(l+r)*.5f;
             for(int k=0;k<88;k++) {
                 auto& m=e.modes[k]; double openness=e.keys[k+21]?1:e.pedal;
-                double y=m.c*m.y1-m.r*m.r*m.y2+(1-m.r)*input*openness;
+                double y=m.c*m.y1-m.r*m.r*m.y2+m.g*input*openness;
                 m.y2=m.y1; m.y1=std::abs(y)<1e-20?0:y; resonance+=y*openness;
             }
             l+=float(resonance)*e.cfg.resonance; r+=float(resonance)*e.cfg.resonance;
